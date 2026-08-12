@@ -1,0 +1,17 @@
+name: AI issue summary
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate issue summary
+        uses: actions/ai-inference@v1
+        with:
+          prompt: "Summarize the following GitHub issue concisely: ${{ github.event.issue.title }} - ${{ github.event.issue.body }}"
