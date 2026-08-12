@@ -10,6 +10,7 @@ import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
 
 const productStore = useProductStore()
+const base = import.meta.env.BASE_URL
 const query = ref('')
 
 const products = computed(() => {
@@ -25,7 +26,7 @@ const products = computed(() => {
     <header class="catalog-header">
       <div class="container catalog-header__inner">
         <RouterLink :to="{ name: 'landing' }" class="catalog-brand">
-          <img src="/images/logo.png" alt="Auloava" class="catalog-logo" />
+          <img :src="`${base}images/logo.png`" alt="Auloava" class="catalog-logo" />
         </RouterLink>
         <form class="catalog-search" @submit.prevent>
           <input

@@ -18,10 +18,11 @@ const productStore = useProductStore()
 
 const featured = computed(() => productStore.products)
 
+const assetsBase = import.meta.env.BASE_URL
 const platformLogos = {
-  aliexpress: '/images/logos/aliexpress.svg',
-  amazon: '/images/logos/amazon.svg',
-  alibaba: '/images/logos/alibaba.svg',
+  aliexpress: assetsBase + 'images/logos/aliexpress.svg',
+  amazon: assetsBase + 'images/logos/amazon.svg',
+  alibaba: assetsBase + 'images/logos/alibaba.svg',
 }
 const logoFor = (id) => platformLogos[id] || ''
 
@@ -84,7 +85,7 @@ onMounted(() => {
     <header class="topbar">
       <nav class="container topbar__inner">
         <RouterLink class="topbar__brand" :to="{ name: 'landing' }">
-          <img class="topbar__logo-img" src="/images/logo.png" alt="Auloava" />
+          <img class="topbar__logo-img" :src="`${assetsBase}images/logo.png`" alt="Auloava" />
         </RouterLink>
 
         <div class="topbar__links">
@@ -881,6 +882,7 @@ onMounted(() => {
 }
 
 .feature__index {
+  flex: 0 0 48px;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -929,6 +931,7 @@ onMounted(() => {
     flex-direction: row;
     align-items: flex-start;
     text-align: left;
+    gap: 18px;
     padding-bottom: 30px;
   }
   .feature:last-child {
@@ -944,7 +947,7 @@ onMounted(() => {
     background: var(--green-200);
   }
   .feature__body {
-    margin-top: 4px;
+    margin-top: 2px;
     align-items: flex-start;
     padding: 0;
   }
@@ -995,6 +998,21 @@ onMounted(() => {
   }
   .logo-strip__logo {
     height: 38px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px 12px;
+  }
+  .logo-strip__item {
+    justify-content: center;
+  }
+  .logo-strip__logo {
+    height: 22px;
+    max-width: 92px;
   }
 }
 

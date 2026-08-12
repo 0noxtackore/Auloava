@@ -2,6 +2,7 @@
 // ============================================================
 // TheFooter · Pie de página global (logo, redes y navegación)
 // ============================================================
+const base = import.meta.env.BASE_URL
 </script>
 
 <template>
@@ -9,17 +10,17 @@
     <div class="container footer__inner">
       <div class="footer__brand">
         <RouterLink class="topbar__brand" :to="{ name: 'landing' }">
-          <img class="topbar__logo-img" src="/images/logo-white.png" alt="Auloava" />
+          <img class="topbar__logo-img" :src="`${base}images/logo-white.png`" alt="Auloava" />
         </RouterLink>
         <p>
           Enlaces de afiliado: al comprar a través de Auloava podemos recibir
           una comisión sin coste extra para ti.
         </p>
         <div class="footer__social">
-          <a href="#" aria-label="Reddit"><img src="/images/social/reddit.svg" alt="Reddit" /></a>
-          <a href="#" aria-label="Facebook"><img src="/images/social/facebook.svg" alt="Facebook" /></a>
-          <a href="#" aria-label="Pinterest"><img src="/images/social/pinterest.svg" alt="Pinterest" /></a>
-          <a href="#" aria-label="TikTok"><img src="/images/social/tiktok.svg" alt="TikTok" /></a>
+          <a href="#" aria-label="Reddit"><img :src="`${base}images/social/reddit.svg`" alt="Reddit" /></a>
+          <a href="#" aria-label="Facebook"><img :src="`${base}images/social/facebook.svg`" alt="Facebook" /></a>
+          <a href="#" aria-label="Pinterest"><img :src="`${base}images/social/pinterest.svg`" alt="Pinterest" /></a>
+          <a href="#" aria-label="TikTok"><img :src="`${base}images/social/tiktok.svg`" alt="TikTok" /></a>
         </div>
       </div>
 

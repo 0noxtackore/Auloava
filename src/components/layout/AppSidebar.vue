@@ -5,6 +5,8 @@
 // ============================================================
 import { RouterLink } from 'vue-router'
 
+const base = import.meta.env.BASE_URL
+
 defineProps({
   open: { type: Boolean, default: false },
 })
@@ -27,7 +29,7 @@ const icons = {
 <template>
   <aside class="sidebar" :class="{ 'sidebar--open': open }">
     <RouterLink :to="{ name: 'landing' }" class="sidebar__brand" @click="$emit('close')">
-      <img class="sidebar__logo-img" src="/images/logo.png" alt="Auloava" />
+      <img class="sidebar__logo-img" :src="`${base}images/logo.png`" alt="Auloava" />
     </RouterLink>
 
     <nav class="sidebar__nav" aria-label="Navegación principal">
