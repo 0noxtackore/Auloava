@@ -255,4 +255,26 @@ const platform = computed(() => PLATFORMS[props.product.platform])
   font-size: 0.78rem;
   color: var(--muted);
 }
+
+@media (max-width: 480px) {
+  .pin__meta {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pin__prices {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .pin__avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 0.7rem;
+  }
+  .pin__rating {
+    font-size: 0.76rem;
+  }
+  .pin__commission {
+    font-size: 0.72rem;
+  }
+}
 </style>
