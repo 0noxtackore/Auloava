@@ -1,0 +1,6 @@
+/* ============================================================
+   AULOAVA · Hoja de estilos principal
+   Importa variables y estilos base en orden.
+   ============================================================ */
+@import './variables.css';
+@import './base.css';
