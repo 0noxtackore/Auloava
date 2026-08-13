@@ -303,12 +303,8 @@ onMounted(() => {
         </div>
       </section>
 
-      <!-- ============ MEDIDOR ADSENSE ============ -->
-      <section class="section">
-        <div class="container">
-          <EarningsMeter />
-        </div>
-      </section>
+      <!-- ============ ADSENSE (oculto) ============ -->
+      <EarningsMeter />
     </main>
 
     <TheFooter />

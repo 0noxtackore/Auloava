@@ -28,7 +28,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <aside class="ads-meter" aria-label="AdSense">
+  <aside class="ads-meter" aria-label="AdSense" v-show="false">
     <div class="ads-meter__info" aria-hidden="true">
       <div class="ads-meter__head">
         <span class="ads-meter__badge">AdSense</span>
