@@ -28,21 +28,23 @@ onMounted(() => {
 </script>
 
 <template>
-  <aside class="ads-meter" aria-label="Medidor de ganancias estimadas de AdSense">
-    <div class="ads-meter__head">
-      <span class="ads-meter__badge">AdSense</span>
-      <span class="ads-meter__label">Ganancia estimada</span>
+  <aside class="ads-meter" aria-label="AdSense">
+    <div class="ads-meter__info" aria-hidden="true">
+      <div class="ads-meter__head">
+        <span class="ads-meter__badge">AdSense</span>
+        <span class="ads-meter__label">Ganancia estimada</span>
+      </div>
+
+      <div class="ads-meter__amount">${{ earnings.toFixed(2) }}</div>
+
+      <div class="ads-meter__bar">
+        <span :style="{ width: nextDollarProgress + '%' }" />
+      </div>
+
+      <p class="ads-meter__hint">
+        {{ views }} vista(s) · ~${{ RPM.toFixed(2) }} / 1.000 vistas (estimación)
+      </p>
     </div>
-
-    <div class="ads-meter__amount">${{ earnings.toFixed(2) }}</div>
-
-    <div class="ads-meter__bar">
-      <span :style="{ width: nextDollarProgress + '%' }" />
-    </div>
-
-    <p class="ads-meter__hint">
-      {{ views }} vista(s) · ~${{ RPM.toFixed(2) }} / 1.000 vistas (estimación)
-    </p>
 
     <div class="ads-meter__ad">
       <ins
@@ -61,11 +63,11 @@ onMounted(() => {
 .ads-meter {
   max-width: 420px;
   margin: 0 auto;
-  padding: 18px 20px;
-  border: 1px solid var(--green-200);
-  border-radius: var(--radius-lg);
-  background: var(--white);
-  box-shadow: var(--shadow-sm);
+}
+
+/* Medidor de ganancias oculto a los usuarios (solo tracking interno) */
+.ads-meter__info {
+  display: none;
 }
 
 .ads-meter__head {
