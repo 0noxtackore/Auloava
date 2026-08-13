@@ -5,13 +5,15 @@
 // productos, sin entrar al área de administración.
 // ============================================================
 import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
 
 const productStore = useProductStore()
-const query = ref('')
+const route = useRoute()
+const query = ref(String(route.query.q || ''))
 
 const products = computed(() => {
   const q = query.value.trim().toLowerCase()

@@ -3,10 +3,17 @@
 // PublicHeader · Menubar compartido (landing + catálogo)
 // Logo, enlaces de sección, "Iniciar sesión" y CTA.
 // ============================================================
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
+const search = ref('')
+
+function goSearch() {
+  const q = search.value.trim()
+  router.push({ name: 'catalog', query: q ? { q } : {} })
+}
 </script>
 
 <template>
@@ -16,18 +23,21 @@ const base = import.meta.env.BASE_URL
         <img class="topbar__logo-img" :src="`${base}images/logo.png`" alt="Auloava" />
       </RouterLink>
 
-      <div class="topbar__links">
-        <a href="#featured">Explorar</a>
-        <a href="#marketplaces">Marketplaces</a>
-        <a href="#how">Cómo funciona</a>
-      </div>
+      <form class="topbar__search" @submit.prevent="goSearch">
+        <input
+          v-model="search"
+          type="search"
+          placeholder="Buscar ofertas…"
+          aria-label="Buscar ofertas"
+        />
+      </form>
 
       <RouterLink class="topbar__login" :to="{ name: 'admin-login' }">
         Iniciar sesión
       </RouterLink>
 
-      <button class="topbar__cta" @click="router.push({ name: 'catalog' })">
-        Explorar ofertas
+      <button class="topbar__cta" @click="router.push({ name: 'register' })">
+        Regístrese
       </button>
     </nav>
   </header>
@@ -62,21 +72,24 @@ const base = import.meta.env.BASE_URL
   object-fit: contain;
 }
 
-.topbar__links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.topbar__search {
+  flex: 1;
+  max-width: 420px;
   margin-left: 12px;
 }
-
-.topbar__links a {
+.topbar__search input {
+  width: 100%;
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--off-white);
   font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--ink);
-  transition: color var(--transition);
+  transition: border-color var(--transition), background var(--transition);
 }
-.topbar__links a:hover {
-  color: var(--green-600);
+.topbar__search input:focus {
+  outline: none;
+  border-color: var(--green-500);
+  background: var(--white);
 }
 
 .topbar__login {
@@ -113,8 +126,8 @@ const base = import.meta.env.BASE_URL
   box-shadow: var(--shadow);
 }
 
-@media (max-width: 820px) {
-  .topbar__links {
+@media (max-width: 560px) {
+  .topbar__search {
     display: none;
   }
 }
