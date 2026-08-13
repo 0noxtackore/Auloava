@@ -1,38 +1,49 @@
 // ============================================================
 // AULOAVA · Servicio de productos (CRUD)
-// Ejemplo de llamadas API desde servicios.
+// Orquesta el backend: Firebase (VITE_USE_FIREBASE=true) >
+// mock (VITE_MOCK_API != 'false') > API REST real.
 // ============================================================
 import api from './api'
 import { productHandlers, MOCK_ENABLED } from './mock'
+import { firebaseProducts } from './firebase/products'
+
+const USE_FIREBASE = import.meta.env.VITE_USE_FIREBASE === 'true'
+
+/** Backend REST real (axios) adaptado a la interfaz del servicio */
+const restBackend = {
+  getAll: async () => (await api.get('/products')).data,
+  getById: async (id) => (await api.get(`/products/${id}`)).data,
+  create: async (payload) => (await api.post('/products', payload)).data,
+  update: async (id, payload) => (await api.put(`/products/${id}`, payload)).data,
+  remove: async (id) => (await api.delete(`/products/${id}`)).data,
+}
+
+/** Backend mock adaptado a la misma interfaz */
+const mockBackend = {
+  getAll: productHandlers.list,
+  getById: productHandlers.get,
+  create: productHandlers.create,
+  update: productHandlers.update,
+  remove: productHandlers.remove,
+}
+
+const backend = USE_FIREBASE ? firebaseProducts : MOCK_ENABLED ? mockBackend : restBackend
 
 export const productService = {
   /** Lista todos los productos */
-  async getAll() {
-    if (MOCK_ENABLED) return productHandlers.list()
-    return (await api.get('/products')).data
-  },
+  getAll: () => backend.getAll(),
 
   /** Obtiene un producto por id */
-  async getById(id) {
-    if (MOCK_ENABLED) return productHandlers.get(id)
-    return (await api.get(`/products/${id}`)).data
-  },
+  getById: (id) => backend.getById(id),
 
   /** Crea un producto nuevo */
-  async create(payload) {
-    if (MOCK_ENABLED) return productHandlers.create(payload)
-    return (await api.post('/products', payload)).data
-  },
+  create: (payload) => backend.create(payload),
 
   /** Actualiza un producto existente */
-  async update(id, payload) {
-    if (MOCK_ENABLED) return productHandlers.update(id, payload)
-    return (await api.put(`/products/${id}`, payload)).data
-  },
+  update: (id, payload) => backend.update(id, payload),
 
   /** Elimina un producto */
-  async remove(id) {
-    if (MOCK_ENABLED) return productHandlers.remove(id)
-    return (await api.delete(`/products/${id}`)).data
-  },
+  remove: (id) => backend.remove(id),
 }
+
+export { USE_FIREBASE }

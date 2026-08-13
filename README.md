@@ -2,6 +2,17 @@
 
 # Auloava
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Vue-3-42b883" />
+  <img src="https://img.shields.io/badge/Vite-5-646cff" />
+  <img src="https://img.shields.io/badge/Pinia-2-ffd94b" />
+  <img src="https://img.shields.io/badge/Vue%20Router-4-red" />
+  <img src="https://img.shields.io/badge/Axios-1-671ddf" />
+  <img src="https://img.shields.io/badge/Firebase-FFCA28" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E" />
+  <img src="https://img.shields.io/badge/License-MIT-green" />
+</p>
+
 Auloava is an affiliate product catalog that compares deals from the three largest ecommerce marketplaces — AliExpress, Amazon and Alibaba — in a single place. The experience is built around a Pinterest-style masonry feed where shoppers can browse curated products, compare prices, ratings and commissions, and reach the best offer through verified affiliate links.
 
 ## Overview
@@ -24,6 +35,7 @@ Auloava is designed for shoppers, not store owners. Visitors land on a public ma
 - **Pinia** for state management
 - **Vue Router 4** for routing
 - **Axios** for API communication
+- **Firebase** (Realtime Database + Analytics) as the backend for the product catalog
 
 ## Getting Started
 
