@@ -138,7 +138,7 @@ async function onSubmit() {
 
         <button class="login__submit" type="submit" :disabled="loading">
           <span v-if="loading" class="login__spinner" aria-hidden="true" />
-          {{ loading ? 'Entrando…' : 'Entrar al panel' }}
+          {{ loading ? 'Entrando…' : 'Iniciar sesión' }}
         </button>
 
         <p class="login__foot">Conexión segura · Auloava</p>
