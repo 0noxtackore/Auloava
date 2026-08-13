@@ -101,9 +101,18 @@ onMounted(detectLocation)
         </form>
 
         <div class="topbar__location" :title="country || 'Ubicación desconocida'">
-          <svg class="topbar__location-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z" />
-            <circle cx="12" cy="10" r="2.6" />
+          <svg
+            class="topbar__location-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
           </svg>
           <span>{{ country || '—' }}</span>
         </div>
@@ -220,9 +229,9 @@ onMounted(detectLocation)
 .topbar__location-icon {
   width: 18px;
   height: 18px;
-  fill: var(--green-600);
+  color: var(--green-600);
   stroke: var(--green-600);
-  stroke-width: 1.5;
+  fill: none;
   flex-shrink: 0;
 }
 .topbar__location span {
