@@ -5,6 +5,7 @@
 import {
   getAuth,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
   setPersistence,
@@ -37,4 +38,11 @@ export async function login(email, password, remember = true) {
 /** Cierra la sesión del administrador */
 export async function logout() {
   await signOut(auth)
+}
+
+/** Registra un nuevo usuario con email y contraseña */
+export async function register(email, password) {
+  await setPersistence(auth, browserLocalPersistence)
+  const credential = await createUserWithEmailAndPassword(auth, email, password)
+  return credential.user
 }

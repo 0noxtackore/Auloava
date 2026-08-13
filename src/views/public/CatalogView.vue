@@ -8,9 +8,9 @@ import { computed, ref } from 'vue'
 import { useProductStore } from '@/store/products'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
+import PublicHeader from '@/components/layout/PublicHeader.vue'
 
 const productStore = useProductStore()
-const base = import.meta.env.BASE_URL
 const query = ref('')
 
 const products = computed(() => {
@@ -23,23 +23,18 @@ const products = computed(() => {
 
 <template>
   <div class="catalog-page">
-    <header class="catalog-header">
-      <div class="container catalog-header__inner">
-        <RouterLink :to="{ name: 'landing' }" class="catalog-brand">
-          <img :src="`${base}images/logo.png`" alt="Auloava" class="catalog-logo" />
-        </RouterLink>
-        <form class="catalog-search" @submit.prevent>
-          <input
-            v-model="query"
-            type="search"
-            placeholder="Busca ofertas en AliExpress, Amazon y Alibaba…"
-            aria-label="Buscar ofertas"
-          />
-        </form>
-      </div>
-    </header>
+    <PublicHeader />
 
     <main class="container catalog-main">
+      <form class="catalog-search" @submit.prevent>
+        <input
+          v-model="query"
+          type="search"
+          placeholder="Busca ofertas en AliExpress, Amazon y Alibaba…"
+          aria-label="Buscar ofertas"
+        />
+      </form>
+
       <div class="section__head">
         <span class="section__tag">Catálogo</span>
         <h1 class="section__title">Explora todas las ofertas</h1>
@@ -71,31 +66,9 @@ const products = computed(() => {
   background: var(--white);
 }
 
-.catalog-header {
-  position: sticky;
-  top: 0;
-  z-index: 800;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
-}
-.catalog-header__inner {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  height: 66px;
-}
-.catalog-brand {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-.catalog-logo {
-  height: 34px;
-}
 .catalog-search {
-  flex: 1;
-  min-width: 0;
+  width: min(560px, 100%);
+  margin: 0 auto 28px;
 }
 .catalog-search input {
   width: 100%;
@@ -123,22 +96,6 @@ const products = computed(() => {
 }
 
 @media (max-width: 560px) {
-  .catalog-header__inner {
-    gap: 12px;
-    height: auto;
-    flex-wrap: wrap;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-  .catalog-brand {
-    flex: 1;
-  }
-  .catalog-logo {
-    height: 28px;
-  }
-  .catalog-search {
-    flex-basis: 100%;
-  }
   .catalog-search input {
     padding: 9px 14px;
     font-size: 0.9rem;

@@ -64,6 +64,14 @@ const routes = [
     meta: { title: 'Iniciar sesión' },
   },
 
+  // ===== Registro de nuevos usuarios =====
+  {
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/RegisterView.vue'),
+    meta: { title: 'Crear cuenta' },
+  },
+
   // ===== 404 =====
   {
     path: '/:pathMatch(.*)*',

@@ -1,18 +1,18 @@
 <script setup>
 // ============================================================
-// AdminLoginView · Login oculto del administrador (ruta /admin)
-// Pantalla dividida: panel de marca (logo) + formulario glass.
-// No aparece en ningún menú: solo se accede escribiendo la URL.
+// RegisterView · Registro de nuevos usuarios (ruta /register)
+// Misma estética que el login; usa Firebase Auth (Email/Password).
 // ============================================================
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { login } from '@/services/auth'
+import { register } from '@/services/auth'
 
 const router = useRouter()
 const route = useRoute()
 
 const email = ref('')
 const password = ref('')
+const confirm = ref('')
 const showPassword = ref(false)
 const loading = ref(false)
 const error = ref('')
@@ -20,38 +20,40 @@ const error = ref('')
 const emailInput = ref(null)
 
 const emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()))
+const passwordValid = computed(() => password.value.length >= 6)
+const passwordsMatch = computed(() => password.value === confirm.value)
 
 const ERROR_MESSAGES = {
-  'auth/invalid-credential': 'Email o contraseña incorrectos.',
-  'auth/wrong-password': 'Email o contraseña incorrectos.',
-  'auth/user-not-found': 'No existe una cuenta con ese email.',
+  'auth/email-already-in-use': 'Este email ya está registrado.',
   'auth/invalid-email': 'El email no tiene un formato válido.',
-  'auth/too-many-requests': 'Demasiados intentos. Inténtalo más tarde.',
-  'auth/user-disabled': 'Esta cuenta ha sido deshabilitada.',
+  'auth/weak-password': 'La contraseña es muy débil (mínimo 6 caracteres).',
   'auth/network-request-failed': 'Error de red. Revisa tu conexión.',
 }
 
 onMounted(() => emailInput.value?.focus())
 
+function validate() {
+  if (!emailValid.value) return 'Introduce un email válido.'
+  if (!passwordValid.value) return 'La contraseña debe tener al menos 6 caracteres.'
+  if (!passwordsMatch.value) return 'Las contraseñas no coinciden.'
+  return ''
+}
+
 async function onSubmit() {
   error.value = ''
-
-  if (!emailValid.value) {
-    error.value = 'Introduce un email válido.'
-    return
-  }
-  if (!password.value) {
-    error.value = 'Introduce la contraseña.'
+  const validationError = validate()
+  if (validationError) {
+    error.value = validationError
     return
   }
 
   loading.value = true
   try {
-    await login(email.value.trim(), password.value)
+    await register(email.value.trim(), password.value)
     const redirect = route.query.redirect
     router.push(redirect ? { path: redirect } : { name: 'dashboard' })
   } catch (err) {
-    error.value = ERROR_MESSAGES[err?.code] || err?.message || 'No se pudo iniciar sesión'
+    error.value = ERROR_MESSAGES[err?.code] || err?.message || 'No se pudo crear la cuenta'
   } finally {
     loading.value = false
   }
@@ -95,8 +97,8 @@ async function onSubmit() {
       <form class="login__card" @submit.prevent="onSubmit" novalidate>
         <img class="login__card-logo" src="/images/logo.png" alt="Auloava" />
 
-        <h2 class="login__title">Inicia sesión</h2>
-        <p class="login__subtitle">Accede a tu cuenta de Auloava</p>
+        <h2 class="login__title">Crea tu cuenta</h2>
+        <p class="login__subtitle">Regístrate para empezar</p>
 
         <label class="login__field" :class="{ 'is-invalid': error && !emailValid }">
           <span>Email</span>
@@ -117,8 +119,8 @@ async function onSubmit() {
             <input
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
-              autocomplete="current-password"
-              placeholder="••••••••"
+              autocomplete="new-password"
+              placeholder="Mínimo 6 caracteres"
             />
             <button
               type="button"
@@ -132,18 +134,30 @@ async function onSubmit() {
           </div>
         </label>
 
+        <label class="login__field">
+          <span>Confirmar contraseña</span>
+          <div class="login__password">
+            <input
+              v-model="confirm"
+              :type="showPassword ? 'text' : 'password'"
+              autocomplete="new-password"
+              placeholder="Repite la contraseña"
+            />
+          </div>
+        </label>
+
         <Transition name="fade">
           <p v-if="error" class="login__error">{{ error }}</p>
         </Transition>
 
         <button class="login__submit" type="submit" :disabled="loading">
           <span v-if="loading" class="login__spinner" aria-hidden="true" />
-          {{ loading ? 'Entrando…' : 'Iniciar sesión' }}
+          {{ loading ? 'Creando cuenta…' : 'Crear cuenta' }}
         </button>
 
         <p class="login__switch">
-          ¿No tienes cuenta?
-          <RouterLink :to="{ name: 'register' }">Regístrate</RouterLink>
+          ¿Ya tienes cuenta?
+          <RouterLink :to="{ name: 'admin-login' }">Inicia sesión</RouterLink>
         </p>
 
         <p class="login__foot">Conexión segura · Auloava</p>
@@ -159,7 +173,6 @@ async function onSubmit() {
   grid-template-columns: 1.05fr 1fr;
 }
 
-/* ===== Panel de marca ===== */
 .login__brand {
   position: relative;
   overflow: hidden;
@@ -282,7 +295,6 @@ async function onSubmit() {
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* ===== Panel de formulario ===== */
 .login__panel {
   display: grid;
   place-items: center;
@@ -446,13 +458,6 @@ async function onSubmit() {
   to { transform: rotate(360deg); }
 }
 
-.login__foot {
-  margin: 6px 0 0;
-  text-align: center;
-  font-size: 0.74rem;
-  color: var(--muted);
-}
-
 .login__switch {
   margin: 4px 0 0;
   text-align: center;
@@ -466,6 +471,13 @@ async function onSubmit() {
 }
 .login__switch a:hover {
   text-decoration: underline;
+}
+
+.login__foot {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 0.74rem;
+  color: var(--muted);
 }
 
 /* ===== Responsive ===== */
@@ -491,10 +503,6 @@ async function onSubmit() {
   }
   .login__lead {
     margin-bottom: 22px;
-  }
-  .login__title,
-  .login__subtitle {
-    text-align: center;
   }
   .login__features {
     align-items: center;
@@ -535,15 +543,6 @@ async function onSubmit() {
   }
   .login__subtitle {
     font-size: 0.84rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .login__card {
-    padding: 26px 16px;
-  }
-  .login__field input {
-    padding: 11px 12px;
   }
 }
 </style>
