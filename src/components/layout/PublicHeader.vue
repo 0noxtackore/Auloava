@@ -4,7 +4,7 @@
 // Logo, navegación, buscador, "Iniciar sesión" y "Regístrese".
 // En móvil todo se colapsa en un menú desplegable.
 // ============================================================
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -12,6 +12,7 @@ const base = import.meta.env.BASE_URL
 const search = ref('')
 const open = ref(false)
 const subOpen = ref(false)
+const country = ref('')
 
 function goSearch() {
   const q = search.value.trim()
@@ -29,6 +30,42 @@ function closeMenu() {
 function toggleSub() {
   subOpen.value = !subOpen.value
 }
+
+async function detectLocation() {
+  const setCountry = (name) => {
+    if (name) country.value = name
+  }
+  const byIp = async () => {
+    try {
+      const res = await fetch('https://ipapi.co/json/')
+      const data = await res.json()
+      setCountry(data.country_name)
+    } catch {
+      /* sin ubicación */
+    }
+  }
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords
+          const res = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=es`
+          )
+          const data = await res.json()
+          setCountry(data.countryName)
+        } catch {
+          byIp()
+        }
+      },
+      () => byIp(),
+      { timeout: 8000 }
+    )
+  } else {
+    byIp()
+  }
+}
+onMounted(detectLocation)
 </script>
 
 <template>
@@ -62,6 +99,14 @@ function toggleSub() {
             aria-label="Buscar ofertas"
           />
         </form>
+
+        <div class="topbar__location" :title="country || 'Ubicación desconocida'">
+          <svg class="topbar__location-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z" />
+            <circle cx="12" cy="10" r="2.6" />
+          </svg>
+          <span>{{ country || '—' }}</span>
+        </div>
 
         <ul class="topbar__nav">
           <li>
@@ -159,6 +204,31 @@ function toggleSub() {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+/* ---- Indicador de ubicación ---- */
+.topbar__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: var(--green-50);
+  white-space: nowrap;
+}
+.topbar__location-icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--green-600);
+  stroke: var(--green-600);
+  stroke-width: 1.5;
+  flex-shrink: 0;
+}
+.topbar__location span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green-700);
 }
 .topbar__nav > li > a,
 .topbar__sub-toggle {
@@ -384,6 +454,9 @@ function toggleSub() {
   }
   .topbar__search {
     max-width: 100%;
+  }
+  .topbar__location {
+    align-self: flex-start;
   }
   .topbar__actions {
     flex-direction: column;
