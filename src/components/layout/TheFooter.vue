@@ -45,9 +45,9 @@ const base = import.meta.env.BASE_URL
       <div class="footer__col">
         <h4>Más</h4>
         <ul>
-          <li><a href="#">Quiénes somos</a></li>
-          <li><a href="#">Cómo funciona</a></li>
-          <li><a href="#">Prensa</a></li>
+          <li><RouterLink :to="{ name: 'landing', hash: '#about' }">Quiénes somos</RouterLink></li>
+          <li><RouterLink :to="{ name: 'landing', hash: '#how' }">Cómo funciona</RouterLink></li>
+          <li><RouterLink :to="{ name: 'landing', hash: '#press' }">Prensa</RouterLink></li>
         </ul>
       </div>
     </div>

@@ -135,7 +135,7 @@ onMounted(() => {
       </section>
 
       <!-- ============ CATEGORÍAS (chips) ============ -->
-      <section class="chips">
+      <section id="nav" class="chips">
         <div class="container chips__inner">
           <RouterLink
             v-for="category in CATEGORIES"
@@ -191,7 +191,7 @@ onMounted(() => {
       </section>
 
       <!-- ============ POR QUÉ AULOAVA ============ -->
-      <section class="section section--gray">
+      <section id="about" class="section section--gray">
         <div class="container">
           <div class="section__head">
             <span class="section__tag">Ventajas</span>
@@ -263,7 +263,7 @@ onMounted(() => {
       </section>
 
       <!-- ============ TESTIMONIOS ============ -->
-      <section class="section">
+      <section id="press" class="section">
         <div class="container">
           <div class="section__head">
             <span class="section__tag">Opiniones</span>
