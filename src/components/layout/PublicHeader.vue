@@ -1,7 +1,7 @@
 <script setup>
 // ============================================================
 // PublicHeader · Menubar compartido (landing + catálogo)
-// Logo, buscador, "Iniciar sesión" y CTA "Regístrese".
+// Logo, navegación, buscador, "Iniciar sesión" y "Regístrese".
 // En móvil todo se colapsa en un menú desplegable.
 // ============================================================
 import { ref } from 'vue'
@@ -11,6 +11,7 @@ const router = useRouter()
 const base = import.meta.env.BASE_URL
 const search = ref('')
 const open = ref(false)
+const subOpen = ref(false)
 
 function goSearch() {
   const q = search.value.trim()
@@ -23,6 +24,10 @@ function goRegister() {
 }
 function closeMenu() {
   open.value = false
+  subOpen.value = false
+}
+function toggleSub() {
+  subOpen.value = !subOpen.value
 }
 </script>
 
@@ -45,6 +50,67 @@ function closeMenu() {
       </button>
 
       <div class="topbar__collapse" :class="{ 'is-open': open }">
+        <ul class="topbar__nav">
+          <li>
+            <RouterLink :to="{ name: 'landing' }" @click="closeMenu">Inicio</RouterLink>
+          </li>
+          <li>
+            <RouterLink :to="{ name: 'catalog' }" @click="closeMenu">Catálogo</RouterLink>
+          </li>
+          <li>
+            <RouterLink :to="{ name: 'landing', hash: '#how' }" @click="closeMenu">
+              Cómo funciona
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink :to="{ name: 'landing', hash: '#nav' }" @click="closeMenu">
+              Navegación
+            </RouterLink>
+          </li>
+          <li>
+            <a href="https://www.aliexpress.com" target="_blank" rel="noopener noreferrer">
+              AliExpress
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com" target="_blank" rel="noopener noreferrer">
+              Amazon
+            </a>
+          </li>
+          <li>
+            <a href="https://www.alibaba.com" target="_blank" rel="noopener noreferrer">
+              Alibaba
+            </a>
+          </li>
+          <li class="topbar__has-sub">
+            <button
+              class="topbar__sub-toggle"
+              type="button"
+              :aria-expanded="subOpen"
+              @click="toggleSub"
+            >
+              Más
+            </button>
+            <ul class="topbar__sub" :class="{ 'is-open': subOpen }">
+              <li>
+                <RouterLink :to="{ name: 'landing', hash: '#about' }" @click="closeMenu">
+                  Quiénes somos
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink :to="{ name: 'landing', hash: '#how' }" @click="closeMenu">
+                  Cómo funciona
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink :to="{ name: 'landing', hash: '#press' }" @click="closeMenu">
+                  Prensa
+                </RouterLink>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
         <form class="topbar__search" @submit.prevent="goSearch">
           <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7" />
@@ -88,7 +154,7 @@ function closeMenu() {
 .topbar__inner {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   height: 66px;
 }
 
@@ -108,15 +174,80 @@ function closeMenu() {
 .topbar__collapse {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex: 1;
-  margin-left: 12px;
+  margin-left: 14px;
 }
 
+/* ---- Navegación ---- */
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.topbar__nav > li > a,
+.topbar__sub-toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+}
+.topbar__nav > li > a:hover,
+.topbar__sub-toggle:hover {
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+.topbar__has-sub {
+  position: relative;
+}
+.topbar__sub {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  min-width: 190px;
+  padding: 8px;
+  list-style: none;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  z-index: 900;
+}
+.topbar__sub.is-open {
+  display: block;
+}
+.topbar__sub li a {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  transition: background var(--transition), color var(--transition);
+}
+.topbar__sub li a:hover {
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+/* ---- Buscador ---- */
 .topbar__search {
   position: relative;
   flex: 1;
-  max-width: 460px;
+  max-width: 320px;
 }
 .topbar__search-icon {
   position: absolute;
@@ -146,22 +277,22 @@ function closeMenu() {
   background: var(--white);
 }
 
+/* ---- Acciones (login / registro) en esquina ---- */
 .topbar__actions {
   display: flex;
   gap: 10px;
   align-items: center;
   flex: 0 0 auto;
+  margin-left: auto;
 }
-
-/* Botones del mismo tamaño en PC */
 .topbar__login,
 .topbar__cta {
   flex: 0 0 auto;
-  width: 150px;
+  width: 140px;
   text-align: center;
-  padding: 10px 18px;
+  padding: 10px 14px;
   border-radius: var(--radius-full);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: background var(--transition), border-color var(--transition),
@@ -196,7 +327,6 @@ function closeMenu() {
   gap: 5px;
   width: 42px;
   height: 42px;
-  margin-left: auto;
   padding: 0 10px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-full);
@@ -223,6 +353,9 @@ function closeMenu() {
 
 /* ---- Móvil: colapsa en menú desplegable ---- */
 @media (max-width: 820px) {
+  .topbar__inner {
+    position: relative;
+  }
   .topbar__brand {
     position: absolute;
     left: 50%;
@@ -245,7 +378,7 @@ function closeMenu() {
     right: 0;
     flex-direction: column;
     align-items: stretch;
-    gap: 14px;
+    gap: 12px;
     padding: 20px;
     background: var(--white);
     border-bottom: 1px solid var(--line);
@@ -254,17 +387,40 @@ function closeMenu() {
   .topbar__collapse.is-open {
     display: flex;
   }
+  .topbar__nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    width: 100%;
+  }
+  .topbar__nav > li > a,
+  .topbar__sub-toggle {
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 14px;
+  }
+  .topbar__sub {
+    position: static;
+    display: none;
+    margin-top: 2px;
+    padding-left: 12px;
+    box-shadow: none;
+    border: none;
+  }
+  .topbar__sub.is-open {
+    display: block;
+  }
   .topbar__search {
     max-width: 100%;
   }
   .topbar__actions {
     flex-direction: column;
     width: 100%;
+    margin-left: 0;
   }
   .topbar__login,
   .topbar__cta {
     width: 100%;
-    min-width: 0;
   }
 }
 </style>
