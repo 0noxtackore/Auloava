@@ -150,13 +150,14 @@ function closeMenu() {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex: 0 0 auto;
 }
 
 /* Botones del mismo tamaño en PC */
 .topbar__login,
 .topbar__cta {
-  flex: 1 1 0;
-  min-width: 130px;
+  flex: 0 0 auto;
+  width: 150px;
   text-align: center;
   padding: 10px 18px;
   border-radius: var(--radius-full);
@@ -222,8 +223,19 @@ function closeMenu() {
 
 /* ---- Móvil: colapsa en menú desplegable ---- */
 @media (max-width: 820px) {
+  .topbar__brand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
   .topbar__toggle {
     display: inline-flex;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
   }
   .topbar__collapse {
     display: none;
