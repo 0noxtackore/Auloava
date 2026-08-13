@@ -50,7 +50,23 @@ function toggleSub() {
       </button>
 
       <div class="topbar__collapse" :class="{ 'is-open': open }">
+        <form class="topbar__search" @submit.prevent="goSearch">
+          <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          </svg>
+          <input
+            v-model="search"
+            type="search"
+            placeholder="Buscar ofertas…"
+            aria-label="Buscar ofertas"
+          />
+        </form>
+
         <ul class="topbar__nav">
+          <li>
+            <RouterLink :to="{ name: 'catalog' }" @click="closeMenu">Más vendidos</RouterLink>
+          </li>
           <li class="topbar__has-sub">
             <button
               class="topbar__sub-toggle"
@@ -79,19 +95,6 @@ function toggleSub() {
             </ul>
           </li>
         </ul>
-
-        <form class="topbar__search" @submit.prevent="goSearch">
-          <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" />
-            <line x1="16.5" y1="16.5" x2="21" y2="21" />
-          </svg>
-          <input
-            v-model="search"
-            type="search"
-            placeholder="Buscar ofertas…"
-            aria-label="Buscar ofertas"
-          />
-        </form>
 
         <div class="topbar__actions">
           <RouterLink
