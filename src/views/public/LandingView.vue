@@ -94,9 +94,13 @@ onMounted(() => {
           <a href="#how">Cómo funciona</a>
         </div>
 
+        <RouterLink class="topbar__login" :to="{ name: 'admin-login' }">
+          Iniciar sesión
+        </RouterLink>
+
           <button class="topbar__cta" @click="router.push({ name: 'catalog' })">
             Explorar ofertas
-        </button>
+          </button>
       </nav>
     </header>
 
@@ -370,8 +374,26 @@ onMounted(() => {
   color: var(--green-600);
 }
 
-.topbar__cta {
+.topbar__login {
   margin-left: auto;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--green-200);
+  background: var(--white);
+  color: var(--green-700);
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: background var(--transition), border-color var(--transition),
+    transform var(--transition);
+}
+.topbar__login:hover {
+  background: var(--green-50);
+  border-color: var(--green-500);
+  transform: translateY(-1px);
+}
+
+.topbar__cta {
+  margin-left: 0;
   padding: 10px 22px;
   border-radius: var(--radius-full);
   background: linear-gradient(135deg, var(--green-600), var(--green-500));

@@ -5,6 +5,7 @@
 // ============================================================
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '@/components/layout/MainLayout.vue'
+import { auth, authReady } from '@/services/auth'
 
 const routes = [
   {
@@ -55,6 +56,14 @@ const routes = [
     ],
   },
 
+  // ===== Login oculto de administrador (sin enlaces en la UI) =====
+  {
+    path: '/login',
+    name: 'admin-login',
+    component: () => import('@/views/AdminLoginView.vue'),
+    meta: { title: 'Iniciar sesión' },
+  },
+
   // ===== 404 =====
   {
     path: '/:pathMatch(.*)*',
@@ -73,6 +82,25 @@ const router = createRouter({
 // Actualiza el título del documento en cada navegación
 router.afterEach((to) => {
   document.title = to.meta.title ? `${to.meta.title} · Auloava` : 'Auloava'
+})
+
+// Guard: el área privada (/app) exige sesión de administrador.
+// Si no hay sesión, redirige al login oculto (/admin).
+router.beforeEach(async (to) => {
+  const requiresAuth = to.path.startsWith('/app')
+  const isLogin = to.name === 'admin-login'
+
+  // Espera a que Firebase restaure la sesión antes de decidir
+  await authReady
+
+  if (requiresAuth && !auth.currentUser) {
+    return { name: 'admin-login', query: { redirect: to.fullPath } }
+  }
+
+  // Si ya está logueado y entra al login, lo mandamos al panel
+  if (isLogin && auth.currentUser) {
+    return { name: 'dashboard' }
+  }
 })
 
 export default router

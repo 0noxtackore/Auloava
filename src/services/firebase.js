@@ -7,6 +7,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
 import { getDatabase } from 'firebase/database'
+import { getAuth } from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA7KLOOq17gxZoTt77VScDO9YHw3SCVqxc',
@@ -23,6 +24,9 @@ export const app = initializeApp(firebaseConfig)
 
 // Realtime Database: base de datos del catálogo de productos
 export const db = getDatabase(app)
+
+// Authentication: sesión del administrador (Email/Password)
+export const auth = getAuth(app)
 
 // Analytics solo en el navegador (no en build/SSR)
 export const analytics =

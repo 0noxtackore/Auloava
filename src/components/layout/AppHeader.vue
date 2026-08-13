@@ -4,7 +4,17 @@
 // Incluye: menú hamburguesa (móvil), búsqueda, notificaciones
 // y enlace de vuelta a la página pública.
 // ============================================================
+import { useRouter } from 'vue-router'
+import { logout } from '@/services/auth'
+
 defineEmits(['toggle-sidebar'])
+
+const router = useRouter()
+
+async function onLogout() {
+  await logout()
+  router.push({ name: 'admin-login' })
+}
 </script>
 
 <template>
@@ -28,6 +38,10 @@ defineEmits(['toggle-sidebar'])
       <button class="header__bell" aria-label="Notificaciones">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>
         <span class="header__dot" />
+      </button>
+
+      <button class="header__logout" type="button" @click="onLogout">
+        Salir
       </button>
 
       <RouterLink :to="{ name: 'landing' }" class="header__home">
@@ -141,6 +155,22 @@ defineEmits(['toggle-sidebar'])
 .header__home:hover {
   background: var(--green-700);
   transform: translateY(-1px);
+}
+
+.header__logout {
+  padding: 10px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--green-900);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.header__logout:hover {
+  background: var(--green-50);
+  border-color: var(--green-500);
 }
 
 @media (max-width: 900px) {
