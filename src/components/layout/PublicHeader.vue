@@ -232,7 +232,7 @@ function closeMenu() {
   .topbar__toggle {
     display: inline-flex;
     position: absolute;
-    right: 0;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     margin-left: 0;
