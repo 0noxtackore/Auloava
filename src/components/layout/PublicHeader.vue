@@ -1,7 +1,8 @@
 <script setup>
 // ============================================================
 // PublicHeader · Menubar compartido (landing + catálogo)
-// Logo, enlaces de sección, "Iniciar sesión" y CTA.
+// Logo, buscador, "Iniciar sesión" y CTA "Regístrese".
+// En móvil todo se colapsa en un menú desplegable.
 // ============================================================
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -9,10 +10,19 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const base = import.meta.env.BASE_URL
 const search = ref('')
+const open = ref(false)
 
 function goSearch() {
   const q = search.value.trim()
   router.push({ name: 'catalog', query: q ? { q } : {} })
+  open.value = false
+}
+function goRegister() {
+  router.push({ name: 'register' })
+  open.value = false
+}
+function closeMenu() {
+  open.value = false
 }
 </script>
 
@@ -23,26 +33,44 @@ function goSearch() {
         <img class="topbar__logo-img" :src="`${base}images/logo.png`" alt="Auloava" />
       </RouterLink>
 
-      <form class="topbar__search" @submit.prevent="goSearch">
-        <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="7" />
-          <line x1="16.5" y1="16.5" x2="21" y2="21" />
-        </svg>
-        <input
-          v-model="search"
-          type="search"
-          placeholder="Buscar ofertas…"
-          aria-label="Buscar ofertas"
-        />
-      </form>
-
-      <RouterLink class="topbar__login" :to="{ name: 'admin-login' }">
-        Iniciar sesión
-      </RouterLink>
-
-      <button class="topbar__cta" @click="router.push({ name: 'register' })">
-        Regístrese
+      <button
+        class="topbar__toggle"
+        :class="{ 'is-active': open }"
+        type="button"
+        :aria-expanded="open"
+        aria-label="Abrir menú"
+        @click="open = !open"
+      >
+        <span></span><span></span><span></span>
       </button>
+
+      <div class="topbar__collapse" :class="{ 'is-open': open }">
+        <form class="topbar__search" @submit.prevent="goSearch">
+          <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          </svg>
+          <input
+            v-model="search"
+            type="search"
+            placeholder="Buscar ofertas…"
+            aria-label="Buscar ofertas"
+          />
+        </form>
+
+        <div class="topbar__actions">
+          <RouterLink
+            class="topbar__login"
+            :to="{ name: 'admin-login' }"
+            @click="closeMenu"
+          >
+            Iniciar sesión
+          </RouterLink>
+          <button class="topbar__cta" type="button" @click="goRegister">
+            Regístrese
+          </button>
+        </div>
+      </div>
     </nav>
   </header>
 </template>
@@ -76,11 +104,19 @@ function goSearch() {
   object-fit: contain;
 }
 
+/* ---- Collapse (PC: fila; móvil: panel) ---- */
+.topbar__collapse {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  margin-left: 12px;
+}
+
 .topbar__search {
   position: relative;
   flex: 1;
-  max-width: 420px;
-  margin-left: 12px;
+  max-width: 460px;
 }
 .topbar__search-icon {
   position: absolute;
@@ -110,57 +146,113 @@ function goSearch() {
   background: var(--white);
 }
 
-.topbar__login {
-  margin-left: auto;
-  padding: 10px 20px;
+.topbar__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Botones del mismo tamaño en PC */
+.topbar__login,
+.topbar__cta {
+  flex: 1 1 0;
+  min-width: 130px;
+  text-align: center;
+  padding: 10px 18px;
   border-radius: var(--radius-full);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition),
+    transform var(--transition), box-shadow var(--transition);
+}
+.topbar__login {
   border: 1.5px solid var(--green-200);
   background: var(--white);
   color: var(--green-700);
-  font-size: 0.92rem;
-  font-weight: 600;
-  transition: background var(--transition), border-color var(--transition),
-    transform var(--transition);
 }
 .topbar__login:hover {
   background: var(--green-50);
   border-color: var(--green-500);
   transform: translateY(-1px);
 }
-
 .topbar__cta {
-  margin-left: 0;
-  padding: 10px 22px;
-  border-radius: var(--radius-full);
+  border: 1.5px solid transparent;
   background: linear-gradient(135deg, var(--green-600), var(--green-500));
   color: var(--white);
-  font-size: 0.92rem;
-  font-weight: 600;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition), box-shadow var(--transition);
 }
 .topbar__cta:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow);
 }
 
-@media (max-width: 560px) {
-  .topbar__search {
-    display: none;
-  }
-  .topbar__login {
-    padding: 8px 14px;
-    font-size: 0.82rem;
-  }
-  .topbar__cta {
-    padding: 8px 14px;
-    font-size: 0.82rem;
-  }
+/* ---- Hamburguesa (oculta en PC) ---- */
+.topbar__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  margin-left: auto;
+  padding: 0 10px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  cursor: pointer;
 }
-@media (max-width: 480px) {
+.topbar__toggle span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform var(--transition), opacity var(--transition);
+}
+.topbar__toggle.is-active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.topbar__toggle.is-active span:nth-child(2) {
+  opacity: 0;
+}
+.topbar__toggle.is-active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---- Móvil: colapsa en menú desplegable ---- */
+@media (max-width: 820px) {
+  .topbar__toggle {
+    display: inline-flex;
+  }
+  .topbar__collapse {
+    display: none;
+    position: absolute;
+    top: 66px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 20px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .topbar__collapse.is-open {
+    display: flex;
+  }
+  .topbar__search {
+    max-width: 100%;
+  }
+  .topbar__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .topbar__login,
   .topbar__cta {
-    padding: 9px 16px;
-    font-size: 0.85rem;
+    width: 100%;
+    min-width: 0;
   }
 }
 </style>
