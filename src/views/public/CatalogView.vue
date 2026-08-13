@@ -72,6 +72,11 @@ const products = computed(() => {
   width: min(560px, 100%);
   margin: 0 auto 28px;
 }
+@media (min-width: 561px) {
+  .catalog-search {
+    display: none;
+  }
+}
 .catalog-search input {
   width: 100%;
   padding: 10px 18px;

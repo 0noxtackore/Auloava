@@ -24,6 +24,10 @@ function goSearch() {
       </RouterLink>
 
       <form class="topbar__search" @submit.prevent="goSearch">
+        <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <line x1="16.5" y1="16.5" x2="21" y2="21" />
+        </svg>
         <input
           v-model="search"
           type="search"
@@ -73,13 +77,27 @@ function goSearch() {
 }
 
 .topbar__search {
+  position: relative;
   flex: 1;
   max-width: 420px;
   margin-left: 12px;
 }
+.topbar__search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  pointer-events: none;
+}
 .topbar__search input {
   width: 100%;
-  padding: 9px 18px;
+  padding: 9px 18px 9px 40px;
   border: 1px solid var(--line);
   border-radius: var(--radius-full);
   background: var(--off-white);
@@ -129,6 +147,14 @@ function goSearch() {
 @media (max-width: 560px) {
   .topbar__search {
     display: none;
+  }
+  .topbar__login {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+  .topbar__cta {
+    padding: 8px 14px;
+    font-size: 0.82rem;
   }
 }
 @media (max-width: 480px) {
