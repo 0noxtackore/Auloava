@@ -514,7 +514,6 @@ async function onSubmit() {
   .login__panel {
     min-height: auto;
     padding: 24px 16px 32px;
-    overflow-y: auto;
   }
 }
 
