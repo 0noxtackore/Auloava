@@ -13,6 +13,7 @@ import { formatPercent } from '@/utils/formatters'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
+import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 
 const router = useRouter()
 const productStore = useProductStore()
@@ -299,6 +300,13 @@ onMounted(() => {
           <button class="cta__btn" @click="router.push({ name: 'catalog' })">
             Explorar catálogo
           </button>
+        </div>
+      </section>
+
+      <!-- ============ MEDIDOR ADSENSE ============ -->
+      <section class="section">
+        <div class="container">
+          <EarningsMeter />
         </div>
       </section>
     </main>

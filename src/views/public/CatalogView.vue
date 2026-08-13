@@ -10,6 +10,7 @@ import { useProductStore } from '@/store/products'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
+import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 
 const productStore = useProductStore()
 const route = useRoute()
@@ -56,6 +57,8 @@ const products = computed(() => {
       <p v-else class="catalog-empty">
         No encontramos ofertas para “{{ query }}”.
       </p>
+
+      <EarningsMeter />
     </main>
 
     <TheFooter />
