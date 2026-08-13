@@ -51,37 +51,6 @@ function toggleSub() {
 
       <div class="topbar__collapse" :class="{ 'is-open': open }">
         <ul class="topbar__nav">
-          <li>
-            <RouterLink :to="{ name: 'landing' }" @click="closeMenu">Inicio</RouterLink>
-          </li>
-          <li>
-            <RouterLink :to="{ name: 'catalog' }" @click="closeMenu">Catálogo</RouterLink>
-          </li>
-          <li>
-            <RouterLink :to="{ name: 'landing', hash: '#how' }" @click="closeMenu">
-              Cómo funciona
-            </RouterLink>
-          </li>
-          <li>
-            <RouterLink :to="{ name: 'landing', hash: '#nav' }" @click="closeMenu">
-              Navegación
-            </RouterLink>
-          </li>
-          <li>
-            <a href="https://www.aliexpress.com" target="_blank" rel="noopener noreferrer">
-              AliExpress
-            </a>
-          </li>
-          <li>
-            <a href="https://www.amazon.com" target="_blank" rel="noopener noreferrer">
-              Amazon
-            </a>
-          </li>
-          <li>
-            <a href="https://www.alibaba.com" target="_blank" rel="noopener noreferrer">
-              Alibaba
-            </a>
-          </li>
           <li class="topbar__has-sub">
             <button
               class="topbar__sub-toggle"
