@@ -181,7 +181,7 @@ async function onSubmit() {
           {{ loading ? 'Entrando…' : 'Iniciar sesión' }}
         </button>
 
-        <p class="login__switch">
+        <p v-if="variant !== 'admin'" class="login__switch">
           ¿No tienes cuenta?
           <RouterLink :to="{ name: 'register' }">Regístrate</RouterLink>
         </p>
