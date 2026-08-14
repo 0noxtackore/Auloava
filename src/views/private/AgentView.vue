@@ -29,15 +29,25 @@ async function callAgent(action) {
     const data = await res.json()
     status.value = data
     if (!res.ok) {
-      message.value = data.error || 'Error del agente'
+      const diag = data?.diagnostic
+      if (diag) {
+        message.value =
+          `No autorizado. ` +
+          `Servidor tiene AGENT_API_KEY: ${diag.agentKeySet ? 'sí' : 'NO'}. ` +
+          `Cliente envió clave: ${diag.keyProvided ? 'sí' : 'NO'}. ` +
+          `Define ambas (igual valor) en Netlify y reconstruye.`
+      } else {
+        message.value = data.error || 'Error del agente'
+      }
     } else if (action === 'import-products') {
       message.value = data.ok
         ? `Importados ${data.count} productos. ${data.saved ? 'Guardados en el catálogo real (Firebase).' : 'No se guardaron: falta FIREBASE_SERVICE_ACCOUNT en el servidor.'}`
         : data.error || 'Error al importar productos.'
     } else {
-      message.value = data.configured
-        ? 'Agente configurado (credenciales presentes en el servidor).'
-        : 'Faltan credenciales de AliExpress en el servidor.'
+      message.value =
+        `Clave del agente en servidor: ${data.agentKeySet ? 'sí' : 'NO'}. ` +
+        `API AliExpress: ${data.apiConfigured ? 'sí' : 'NO'}. ` +
+        `Firebase: ${data.firebase ? 'sí' : 'NO'}.`
     }
   } catch (err) {
     message.value = err?.message || 'No se pudo contactar con el agente'

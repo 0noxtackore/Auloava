@@ -41,7 +41,15 @@ export const handler = async (event) => {
 
   const key = event.headers['x-agent-key'] || event.headers['X-Agent-Key'] || ''
   if (!AGENT_KEY || key !== AGENT_KEY) {
-    return { statusCode: 401, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'No autorizado' }) }
+    return {
+      statusCode: 401,
+      headers: HEADERS,
+      body: JSON.stringify({
+        ok: false,
+        error: 'No autorizado',
+        diagnostic: { agentKeySet: Boolean(AGENT_KEY), keyProvided: Boolean(key) },
+      }),
+    }
   }
 
   let payload = {}
@@ -62,6 +70,7 @@ export const handler = async (event) => {
           ok: true,
           apiConfigured: Boolean(APP_KEY && APP_SECRET && TRACKING_ID),
           firebase: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),
+          agentKeySet: Boolean(AGENT_KEY),
         }),
       }
     }
