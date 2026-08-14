@@ -30,10 +30,6 @@ async function callAgent(action) {
     status.value = data
     if (!res.ok) {
       message.value = data.error || 'Error del agente'
-    } else if (action === 'login') {
-      message.value = data.ok
-        ? 'Sesión iniciada en AliExpress correctamente.'
-        : data.error || 'No se pudo iniciar sesión.'
     } else if (action === 'import-products') {
       message.value = data.ok
         ? `Importados ${data.count} productos. ${data.saved ? 'Guardados en el catálogo real (Firebase).' : 'No se guardaron: falta FIREBASE_SERVICE_ACCOUNT en el servidor.'}`
@@ -64,9 +60,6 @@ async function callAgent(action) {
     <div class="agent__actions">
       <button class="agent__btn" type="button" :disabled="loading" @click="callAgent('ping')">
         Comprobar configuración
-      </button>
-      <button class="agent__btn" type="button" :disabled="loading" @click="callAgent('login')">
-        Iniciar sesión
       </button>
       <button class="agent__btn agent__btn--primary" type="button" :disabled="loading" @click="callAgent('import-products')">
         {{ loading ? 'Importando…' : 'Importar productos reales' }}
