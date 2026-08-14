@@ -71,25 +71,25 @@ async function onSubmit() {
 
       <div class="login__brand-inner">
         <img class="login__logo" src="/images/logo.png" alt="Auloava" />
-        <h1 class="login__claim">Tu tienda de afiliados,<br />en un solo lugar.</h1>
-        <p class="login__lead">Explora el catálogo curado de AliExpress, Amazon y Alibaba en un solo sitio.</p>
+        <h1 class="login__claim">Panel de administración<br />de Auloava</h1>
+        <p class="login__lead">Gestiona el catálogo, precios y publicaciones de tu tienda de afiliados desde un solo lugar.</p>
 
         <ul class="login__features">
           <li>
             <span class="login__check" />
-            Compara precios, valoraciones y comisiones
+            Añade y edita productos
           </li>
           <li>
             <span class="login__check" />
-            Catálogo curado y verificado
+            Publicación automática en el sitio
           </li>
           <li>
             <span class="login__check" />
-            Publicación automática en GitHub Pages
+            Acceso exclusivo del administrador
           </li>
         </ul>
 
-        <p class="login__sign">Auloava · Affiliate Store</p>
+        <p class="login__sign">Auloava · Admin</p>
       </div>
     </aside>
 
