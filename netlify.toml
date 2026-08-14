@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  VITE_BASE = "/"
   VITE_USE_FIREBASE = "true"
 
 # SPA: redirige cualquier ruta al index.html (history mode de Vue Router)

@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue'
 
 // Configuración de Vite: plugin de Vue + alias "@" hacia la carpeta src
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/Auloava/' : '/',
+  base: process.env.VITE_BASE || (process.env.NODE_ENV === 'production' ? '/Auloava/' : '/'),
   plugins: [vue()],
   resolve: {
     alias: {
