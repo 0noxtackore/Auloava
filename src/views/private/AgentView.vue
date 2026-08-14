@@ -35,7 +35,8 @@ async function callAgent(action) {
           `No autorizado. ` +
           `Servidor tiene AGENT_API_KEY: ${diag.agentKeySet ? 'sí' : 'NO'}. ` +
           `Cliente envió clave: ${diag.keyProvided ? 'sí' : 'NO'}. ` +
-          `Define ambas (igual valor) en Netlify y reconstruye.`
+          `Vars AGENT* presentes en el servidor: [${diag.envAgentKeys?.join(', ') || 'ninguna'}]. ` +
+          `Define AGENT_API_KEY y VITE_AGENT_KEY (mismo valor) en Netlify, asegúrate de que AGENT_API_KEY tiene alcance a Functions, y reconstruye.`
       } else {
         message.value = data.error || 'Error del agente'
       }

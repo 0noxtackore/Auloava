@@ -47,7 +47,13 @@ export const handler = async (event) => {
       body: JSON.stringify({
         ok: false,
         error: 'No autorizado',
-        diagnostic: { agentKeySet: Boolean(AGENT_KEY), keyProvided: Boolean(key) },
+        diagnostic: {
+          agentKeySet: Boolean(AGENT_KEY),
+          keyProvided: Boolean(key),
+          envAgentKeys: Object.keys(process.env)
+            .filter((k) => k.toUpperCase().includes('AGENT'))
+            .sort(),
+        },
       }),
     }
   }
