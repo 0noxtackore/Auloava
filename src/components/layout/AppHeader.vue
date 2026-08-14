@@ -5,13 +5,15 @@
 // y enlace de vuelta a la página pública.
 // ============================================================
 import { useRouter } from 'vue-router'
-import { logout } from '@/services/auth'
 
 defineEmits(['toggle-sidebar'])
 
 const router = useRouter()
 
+// logout se importa de forma diferida para no cargar Firebase en la
+// cabecera pública (sólo se necesita al pulsar "Cerrar sesión").
 async function onLogout() {
+  const { logout } = await import('@/services/auth')
   await logout()
   router.push({ name: 'admin-login' })
 }

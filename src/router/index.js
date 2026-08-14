@@ -5,7 +5,6 @@
 // ============================================================
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '@/components/layout/MainLayout.vue'
-import { auth, authReady } from '@/services/auth'
 
 const routes = [
   {
@@ -98,21 +97,27 @@ router.afterEach((to) => {
 })
 
 // Guard: el área privada (/app) exige sesión de administrador.
-// Si no hay sesión, redirige al login oculto (/admin).
+// Si no hay sesión, redirige al login oculto (/login).
+// Firebase sólo se carga al entrar al área privada o al login,
+// para no penalizar la carga de las páginas públicas.
 router.beforeEach(async (to) => {
   const requiresAuth = to.path.startsWith('/app')
-  const isLogin = to.name === 'admin-login'
 
-  // Espera a que Firebase restaure la sesión antes de decidir
-  await authReady
-
-  if (requiresAuth && !auth.currentUser) {
-    return { name: 'admin-login', query: { redirect: to.fullPath } }
+  if (requiresAuth) {
+    const { auth, authReady } = await import('@/services/auth')
+    await authReady
+    if (!auth.currentUser) {
+      return { name: 'admin-login', query: { redirect: to.fullPath } }
+    }
   }
 
   // Si ya está logueado y entra al login, lo mandamos al panel
-  if (isLogin && auth.currentUser) {
-    return { name: 'dashboard' }
+  if (to.name === 'admin-login') {
+    const { auth, authReady } = await import('@/services/auth')
+    await authReady
+    if (auth.currentUser) {
+      return { name: 'dashboard' }
+    }
   }
 })
 

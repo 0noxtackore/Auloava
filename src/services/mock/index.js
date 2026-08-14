@@ -59,7 +59,7 @@ function seedProducts() {
     commission,
     stock,
     clicks,
-    image: `https://picsum.photos/seed/auloava-${i + 1}/640/420`,
+    image: `https://picsum.photos/seed/auloava-${i + 1}/480/320`,
     affiliateUrl: `https://www.${platform}.com/auloava/${i + 1}`,
     createdAt: new Date(Date.now() - i * 86400000).toISOString(),
     updatedAt: new Date(Date.now() - i * 86400000).toISOString(),
@@ -94,7 +94,7 @@ const productHandlers = {
     const now = new Date().toISOString()
     const product = {
       id: ids.next(),
-      image: `https://picsum.photos/seed/auloava-${ids.next()}/640/420`,
+      image: `https://picsum.photos/seed/auloava-${ids.next()}/480/320`,
       clicks: 0,
       createdAt: now,
       updatedAt: now,

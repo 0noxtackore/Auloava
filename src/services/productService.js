@@ -5,7 +5,6 @@
 // ============================================================
 import api from './api'
 import { productHandlers, MOCK_ENABLED } from './mock'
-import { firebaseProducts } from './firebase/products'
 
 const USE_FIREBASE = import.meta.env.VITE_USE_FIREBASE === 'true'
 
@@ -27,23 +26,37 @@ const mockBackend = {
   remove: productHandlers.remove,
 }
 
-const backend = USE_FIREBASE ? firebaseProducts : MOCK_ENABLED ? mockBackend : restBackend
+// Firebase se importa de forma diferida para que su SDK no forme parte
+// del bundle inicial de las páginas públicas (sólo se carga con
+// VITE_USE_FIREBASE=true o al entrar al área privada).
+let backendPromise = null
+function getBackend() {
+  if (backendPromise) return backendPromise
+  if (USE_FIREBASE) {
+    backendPromise = import('./firebase/products').then((m) => m.firebaseProducts)
+  } else if (MOCK_ENABLED) {
+    backendPromise = Promise.resolve(mockBackend)
+  } else {
+    backendPromise = Promise.resolve(restBackend)
+  }
+  return backendPromise
+}
 
 export const productService = {
   /** Lista todos los productos */
-  getAll: () => backend.getAll(),
+  getAll: async () => (await getBackend()).getAll(),
 
   /** Obtiene un producto por id */
-  getById: (id) => backend.getById(id),
+  getById: async (id) => (await getBackend()).getById(id),
 
   /** Crea un producto nuevo */
-  create: (payload) => backend.create(payload),
+  create: async (payload) => (await getBackend()).create(payload),
 
   /** Actualiza un producto existente */
-  update: (id, payload) => backend.update(id, payload),
+  update: async (id, payload) => (await getBackend()).update(id, payload),
 
   /** Elimina un producto */
-  remove: (id) => backend.remove(id),
+  remove: async (id) => (await getBackend()).remove(id),
 }
 
 export { USE_FIREBASE }

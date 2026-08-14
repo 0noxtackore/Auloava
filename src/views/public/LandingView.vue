@@ -28,13 +28,13 @@ const platformLogos = {
 }
 const logoFor = (id) => platformLogos[id] || ''
 
-const stepImage = (i) => `https://picsum.photos/seed/auloava-step-${i + 1}/600/600`
+const stepImage = (i) => `https://picsum.photos/seed/auloava-step-${i + 1}/400/400`
 
 // Mosaico de pines para el hero estilo Pinterest (datos reales del store)
 const heroPins = computed(() => {
   const p = productStore.products
   if (!p.length) return []
-  return [...p, ...p, ...p].slice(0, 24)
+  return [...p, ...p].slice(0, 12)
 })
 
 const pinHeights = [210, 280, 180, 250, 200, 300, 230, 260, 190, 270, 220, 240]
