@@ -8,6 +8,10 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { login } from '@/services/auth'
 
+const props = defineProps({
+  variant: { type: String, default: 'admin' }, // 'admin' (invertido) | 'public' (original)
+})
+
 const router = useRouter()
 const route = useRoute()
 
@@ -23,6 +27,35 @@ const emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.
 
 // Aviso cuando un usuario logueado (no admin) intenta entrar al panel
 const denied = computed(() => route.query.denied === '1')
+
+// Texto y logos de la marca según la variante
+const brand = computed(() =>
+  props.variant === 'admin'
+    ? {
+        logo: '/images/logo.png',
+        cardLogo: '/images/logo-white.png',
+        claim: 'Tu panel de<br />administración.',
+        lead: 'Gestiona el catálogo curado de AliExpress, Amazon y Alibaba en un solo lugar.',
+        features: [
+          'Añade y edita productos del catálogo',
+          'Controla precios, valoraciones y comisiones',
+          'Publicación automática en GitHub Pages',
+        ],
+        sign: 'Auloava · Admin',
+      }
+    : {
+        logo: '/images/logo-white.png',
+        cardLogo: '/images/logo.png',
+        claim: 'Tu tienda de afiliados,<br />en un solo lugar.',
+        lead: 'Explora el catálogo curado de AliExpress, Amazon y Alibaba en un solo sitio.',
+        features: [
+          'Compara precios, valoraciones y comisiones',
+          'Catálogo curado y verificado',
+          'Publicación automática en GitHub Pages',
+        ],
+        sign: 'Auloava · Affiliate Store',
+      },
+)
 
 const ERROR_MESSAGES = {
   'auth/invalid-credential': 'Email o contraseña incorrectos.',
@@ -52,7 +85,13 @@ async function onSubmit() {
   try {
     await login(email.value.trim(), password.value)
     const redirect = route.query.redirect
-    router.push(redirect ? { path: redirect } : { name: 'dashboard' })
+    if (redirect) {
+      router.push({ path: redirect })
+    } else if (props.variant === 'admin') {
+      router.push({ name: 'dashboard' })
+    } else {
+      router.push({ path: '/' })
+    }
   } catch (err) {
     error.value = ERROR_MESSAGES[err?.code] || err?.message || 'No se pudo iniciar sesión'
   } finally {
@@ -62,7 +101,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="login">
+  <div class="login" :class="{ 'login--admin': variant === 'admin' }">
     <!-- Panel de marca -->
     <aside class="login__brand">
       <span class="login__aura login__aura--1" />
@@ -70,33 +109,25 @@ async function onSubmit() {
       <span class="login__aura login__aura--3" />
 
         <div class="login__brand-inner">
-          <img class="login__logo" src="/images/logo.png" alt="Auloava" />
-          <h1 class="login__claim">Tu panel de<br />administración.</h1>
-          <p class="login__lead">Gestiona el catálogo curado de AliExpress, Amazon y Alibaba en un solo lugar.</p>
+          <img class="login__logo" :src="brand.logo" alt="Auloava" />
+          <h1 class="login__claim" v-html="brand.claim" />
+          <p class="login__lead">{{ brand.lead }}</p>
 
           <ul class="login__features">
-            <li>
+            <li v-for="f in brand.features" :key="f">
               <span class="login__check" />
-              Añade y edita productos del catálogo
-            </li>
-            <li>
-              <span class="login__check" />
-              Controla precios, valoraciones y comisiones
-            </li>
-            <li>
-              <span class="login__check" />
-              Publicación automática en GitHub Pages
+              {{ f }}
             </li>
           </ul>
 
-          <p class="login__sign">Auloava · Admin</p>
+          <p class="login__sign">{{ brand.sign }}</p>
         </div>
     </aside>
 
     <!-- Panel de formulario -->
     <main class="login__panel">
       <form class="login__card" @submit.prevent="onSubmit" novalidate>
-        <img class="login__card-logo" src="/images/logo-white.png" alt="Auloava" />
+        <img class="login__card-logo" :src="brand.cardLogo" alt="Auloava" />
 
         <h2 class="login__title">Inicia sesión</h2>
         <p class="login__subtitle">Accede a tu cuenta de Auloava</p>
@@ -168,7 +199,7 @@ async function onSubmit() {
   grid-template-columns: 1.05fr 1fr;
 }
 
-/* ===== Panel de marca (invertido: claro) ===== */
+/* ===== Base: diseño original (marca verde, formulario claro) ===== */
 .login__brand {
   position: relative;
   overflow: hidden;
@@ -176,9 +207,8 @@ async function onSubmit() {
   align-items: center;
   justify-content: center;
   padding: 48px;
-  color: var(--green-900);
-  background: var(--off-white);
-  border-right: 1px solid var(--line);
+  color: var(--white);
+  background: linear-gradient(140deg, #0c3527 0%, #14663f 48%, #1c7a4f 100%);
 }
 
 .login__aura {
@@ -238,13 +268,13 @@ async function onSubmit() {
   font-weight: 800;
   letter-spacing: -0.02em;
   margin: 0 0 16px;
-  color: var(--green-900);
+  color: var(--white);
 }
 
 .login__lead {
   font-size: 1rem;
   line-height: 1.6;
-  color: rgba(16, 35, 26, 0.72);
+  color: rgba(255, 255, 255, 0.82);
   margin: 0 0 28px;
 }
 
@@ -262,7 +292,7 @@ async function onSubmit() {
   align-items: center;
   gap: 12px;
   font-size: 0.95rem;
-  color: rgba(16, 35, 26, 0.85);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .login__check {
@@ -270,7 +300,7 @@ async function onSubmit() {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(20, 99, 63, 0.12);
+  background: rgba(255, 255, 255, 0.16);
   position: relative;
 }
 .login__check::after {
@@ -280,7 +310,7 @@ async function onSubmit() {
   top: 4px;
   width: 6px;
   height: 11px;
-  border: solid var(--green-600);
+  border: solid #bfffe0;
   border-width: 0 2.5px 2.5px 0;
   transform: rotate(45deg);
 }
@@ -290,25 +320,24 @@ async function onSubmit() {
   font-size: 0.8rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(16, 35, 26, 0.5);
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* ===== Panel de formulario (invertido: verde) ===== */
 .login__panel {
   display: grid;
   place-items: center;
   padding: 32px;
-  background: linear-gradient(140deg, #0c3527 0%, #14663f 48%, #1c7a4f 100%);
+  background: var(--off-white);
 }
 
 .login__card {
   width: 100%;
   max-width: 400px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid var(--line);
   border-radius: 22px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  box-shadow: var(--shadow-md);
   padding: 40px 36px;
   display: flex;
   flex-direction: column;
@@ -332,13 +361,13 @@ async function onSubmit() {
 .login__title {
   font-size: 1.4rem;
   margin: 4px 0 0;
-  color: var(--white);
+  color: var(--green-900);
 }
 
 .login__subtitle {
   margin: 0 0 8px;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--muted);
 }
 
 .login__field {
@@ -347,33 +376,28 @@ async function onSubmit() {
   gap: 6px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--white);
+  color: var(--green-900);
 }
 
 .login__field input {
   padding: 12px 14px;
-  border: 1.5px solid transparent;
+  border: 1.5px solid var(--line);
   border-radius: var(--radius);
   font-size: 0.95rem;
   font-weight: 400;
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--green-900);
+  background: var(--white);
   transition: border-color var(--transition), box-shadow var(--transition);
-}
-
-.login__field input::placeholder {
-  color: rgba(16, 35, 26, 0.45);
 }
 
 .login__field input:focus {
   outline: none;
-  border-color: var(--white);
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 4px var(--green-100);
 }
 
 .login__field.is-invalid input {
   border-color: var(--danger);
-  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.28);
+  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.12);
 }
 
 .login__password {
@@ -397,13 +421,13 @@ async function onSubmit() {
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
 }
 .login__toggle:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--white);
+  background: var(--green-50);
+  color: var(--green-700);
 }
 
 .login__error {
@@ -411,8 +435,8 @@ async function onSubmit() {
   padding: 10px 12px;
   font-size: 0.82rem;
   font-weight: 500;
-  color: #ffd9de;
-  background: rgba(220, 53, 69, 0.28);
+  color: var(--danger);
+  background: rgba(220, 53, 69, 0.08);
   border-radius: var(--radius);
 }
 
@@ -434,17 +458,17 @@ async function onSubmit() {
   padding: 13px;
   border: none;
   border-radius: var(--radius-full);
-  background: var(--white);
-  color: var(--green-800);
+  background: linear-gradient(135deg, var(--green-600), var(--green-700));
+  color: var(--white);
   font-size: 0.97rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 10px 24px rgba(20, 99, 63, 0.28);
   transition: transform var(--transition), box-shadow var(--transition);
 }
 .login__submit:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 14px 30px rgba(20, 99, 63, 0.34);
 }
 .login__submit:disabled {
   opacity: 0.75;
@@ -454,8 +478,8 @@ async function onSubmit() {
 .login__spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(20, 99, 63, 0.3);
-  border-top-color: var(--green-700);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: var(--white);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -467,22 +491,112 @@ async function onSubmit() {
   margin: 6px 0 0;
   text-align: center;
   font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
 }
 
 .login__switch {
   margin: 4px 0 0;
   text-align: center;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--muted);
 }
 .login__switch a {
-  color: var(--white);
+  color: var(--green-700);
   font-weight: 600;
   text-decoration: none;
 }
 .login__switch a:hover {
   text-decoration: underline;
+}
+
+/* ===== Variante admin: colores y logos invertidos ===== */
+.login--admin .login__brand {
+  color: var(--green-900);
+  background: var(--off-white);
+  border-right: 1px solid var(--line);
+}
+.login--admin .login__claim {
+  color: var(--green-900);
+}
+.login--admin .login__lead {
+  color: rgba(16, 35, 26, 0.72);
+}
+.login--admin .login__features li {
+  color: rgba(16, 35, 26, 0.85);
+}
+.login--admin .login__check {
+  background: rgba(20, 99, 63, 0.12);
+}
+.login--admin .login__check::after {
+  border-color: var(--green-600);
+}
+.login--admin .login__sign {
+  color: rgba(16, 35, 26, 0.5);
+}
+.login--admin .login__panel {
+  background: linear-gradient(140deg, #0c3527 0%, #14663f 48%, #1c7a4f 100%);
+}
+.login--admin .login__card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+.login--admin .login__title {
+  color: var(--white);
+}
+.login--admin .login__subtitle {
+  color: rgba(255, 255, 255, 0.78);
+}
+.login--admin .login__field {
+  color: var(--white);
+}
+.login--admin .login__field input {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--green-900);
+}
+.login--admin .login__field input::placeholder {
+  color: rgba(16, 35, 26, 0.45);
+}
+.login--admin .login__field input:focus {
+  border-color: var(--white);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
+}
+.login--admin .login__field.is-invalid input {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.28);
+}
+.login--admin .login__toggle {
+  color: rgba(255, 255, 255, 0.72);
+}
+.login--admin .login__toggle:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--white);
+}
+.login--admin .login__error {
+  color: #ffd9de;
+  background: rgba(220, 53, 69, 0.28);
+}
+.login--admin .login__submit {
+  background: var(--white);
+  color: var(--green-800);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+.login--admin .login__submit:hover:not(:disabled) {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+}
+.login--admin .login__spinner {
+  border: 2px solid rgba(20, 99, 63, 0.3);
+  border-top-color: var(--green-700);
+}
+.login--admin .login__foot {
+  color: rgba(255, 255, 255, 0.7);
+}
+.login--admin .login__switch {
+  color: rgba(255, 255, 255, 0.8);
+}
+.login--admin .login__switch a {
+  color: var(--white);
 }
 
 /* ===== Responsive ===== */

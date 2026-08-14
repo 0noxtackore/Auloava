@@ -55,7 +55,7 @@ const routes = [
     ],
   },
 
-  // ===== Login dedicado del administrador (bajo /admin) =====
+  // ===== Login dedicado del administrador (bajo /admin, invertido) =====
   {
     path: '/admin/login',
     name: 'admin-login',
@@ -63,8 +63,14 @@ const routes = [
     meta: { title: 'Admin · Iniciar sesión' },
   },
 
-  // El antiguo /login redirige al login de administrador
-  { path: '/login', redirect: '/admin/login' },
+  // ===== Login original (público, /login, diseño original) =====
+  {
+    path: '/login',
+    name: 'public-login',
+    component: () => import('@/views/AdminLoginView.vue'),
+    props: { variant: 'public' },
+    meta: { title: 'Iniciar sesión' },
+  },
 
   // ===== Registro de nuevos usuarios =====
   {
