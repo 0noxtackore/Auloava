@@ -69,28 +69,28 @@ async function onSubmit() {
       <span class="login__aura login__aura--2" />
       <span class="login__aura login__aura--3" />
 
-      <div class="login__brand-inner">
-        <img class="login__logo" src="/images/logo.png" alt="Auloava" />
-        <h1 class="login__claim">Panel de administración<br />de Auloava</h1>
-        <p class="login__lead">Gestiona el catálogo, precios y publicaciones de tu tienda de afiliados desde un solo lugar.</p>
+        <div class="login__brand-inner">
+          <img class="login__logo" src="/images/logo.png" alt="Auloava" />
+          <h1 class="login__claim">Tu panel de<br />administración.</h1>
+          <p class="login__lead">Gestiona el catálogo curado de AliExpress, Amazon y Alibaba en un solo lugar.</p>
 
-        <ul class="login__features">
-          <li>
-            <span class="login__check" />
-            Añade y edita productos
-          </li>
-          <li>
-            <span class="login__check" />
-            Publicación automática en el sitio
-          </li>
-          <li>
-            <span class="login__check" />
-            Acceso exclusivo del administrador
-          </li>
-        </ul>
+          <ul class="login__features">
+            <li>
+              <span class="login__check" />
+              Añade y edita productos del catálogo
+            </li>
+            <li>
+              <span class="login__check" />
+              Controla precios, valoraciones y comisiones
+            </li>
+            <li>
+              <span class="login__check" />
+              Publicación automática en GitHub Pages
+            </li>
+          </ul>
 
-        <p class="login__sign">Auloava · Admin</p>
-      </div>
+          <p class="login__sign">Auloava · Admin</p>
+        </div>
     </aside>
 
     <!-- Panel de formulario -->
