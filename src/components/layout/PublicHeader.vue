@@ -153,7 +153,7 @@ onMounted(detectLocation)
         <div class="topbar__actions">
           <RouterLink
             class="topbar__login"
-            :to="{ name: 'admin-login' }"
+            :to="{ name: 'public-login' }"
             @click="closeMenu"
           >
             Iniciar sesión

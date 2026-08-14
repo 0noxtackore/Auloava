@@ -51,7 +51,7 @@ async function onSubmit() {
   try {
     await register(email.value.trim(), password.value)
     const redirect = route.query.redirect
-    router.push(redirect ? { path: redirect } : { name: 'dashboard' })
+    router.push(redirect ? { path: redirect } : { path: '/' })
   } catch (err) {
     error.value = ERROR_MESSAGES[err?.code] || err?.message || 'No se pudo crear la cuenta'
   } finally {
@@ -157,7 +157,7 @@ async function onSubmit() {
 
         <p class="login__switch">
           ¿Ya tienes cuenta?
-          <RouterLink :to="{ name: 'admin-login' }">Inicia sesión</RouterLink>
+          <RouterLink :to="{ name: 'public-login' }">Inicia sesión</RouterLink>
         </p>
 
         <p class="login__foot">Conexión segura · Auloava</p>
