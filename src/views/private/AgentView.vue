@@ -34,6 +34,10 @@ async function callAgent(action) {
       message.value = data.ok
         ? 'Sesión iniciada en AliExpress correctamente.'
         : data.error || 'No se pudo iniciar sesión.'
+    } else if (action === 'import-products') {
+      message.value = data.ok
+        ? `Importados ${data.count} productos. ${data.saved ? 'Guardados en el catálogo real (Firebase).' : 'No se guardaron: falta FIREBASE_SERVICE_ACCOUNT en el servidor.'}`
+        : data.error || 'Error al importar productos.'
     } else {
       message.value = data.configured
         ? 'Agente configurado (credenciales presentes en el servidor).'
@@ -61,8 +65,11 @@ async function callAgent(action) {
       <button class="agent__btn" type="button" :disabled="loading" @click="callAgent('ping')">
         Comprobar configuración
       </button>
-      <button class="agent__btn agent__btn--primary" type="button" :disabled="loading" @click="callAgent('login')">
-        {{ loading ? 'Ejecutando…' : 'Iniciar sesión en AliExpress' }}
+      <button class="agent__btn" type="button" :disabled="loading" @click="callAgent('login')">
+        Iniciar sesión
+      </button>
+      <button class="agent__btn agent__btn--primary" type="button" :disabled="loading" @click="callAgent('import-products')">
+        {{ loading ? 'Importando…' : 'Importar productos reales' }}
       </button>
     </div>
 
@@ -70,6 +77,15 @@ async function callAgent(action) {
       <p v-if="message" class="agent__msg" :class="{ 'agent__msg--ok': status && status.ok, 'agent__msg--err': !status || !status.ok }">
         {{ message }}
       </p>
+    </Transition>
+
+    <Transition name="fade">
+      <ul v-if="status && status.sample" class="agent__sample">
+        <li v-for="(s, i) in status.sample" :key="i">
+          <span>{{ s.title }}</span>
+          <a :href="s.affiliateUrl" target="_blank" rel="noopener">ver enlace</a>
+        </li>
+      </ul>
     </Transition>
 
     <p class="agent__hint">
@@ -142,6 +158,31 @@ async function callAgent(action) {
   margin-top: 14px;
   font-size: 0.82rem;
   color: var(--muted);
+}
+.agent__sample {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.agent__sample li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--off-white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+}
+.agent__sample a {
+  color: var(--green-700);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
 }
 .fade-enter-active,
 .fade-leave-active {
