@@ -70,7 +70,7 @@ async function onSubmit() {
       <span class="login__aura login__aura--3" />
 
       <div class="login__brand-inner">
-        <img class="login__logo" src="/images/logo-white.png" alt="Auloava" />
+        <img class="login__logo" src="/images/logo.png" alt="Auloava" />
         <h1 class="login__claim">Tu tienda de afiliados,<br />en un solo lugar.</h1>
         <p class="login__lead">Explora el catálogo curado de AliExpress, Amazon y Alibaba en un solo sitio.</p>
 
@@ -96,7 +96,7 @@ async function onSubmit() {
     <!-- Panel de formulario -->
     <main class="login__panel">
       <form class="login__card" @submit.prevent="onSubmit" novalidate>
-        <img class="login__card-logo" src="/images/logo.png" alt="Auloava" />
+        <img class="login__card-logo" src="/images/logo-white.png" alt="Auloava" />
 
         <h2 class="login__title">Inicia sesión</h2>
         <p class="login__subtitle">Accede a tu cuenta de Auloava</p>
@@ -116,7 +116,7 @@ async function onSubmit() {
             autocomplete="username"
             inputmode="email"
             spellcheck="false"
-            placeholder="admin@auloava.com"
+              placeholder="ejemplo@correo.com"
           />
         </label>
 
@@ -168,7 +168,7 @@ async function onSubmit() {
   grid-template-columns: 1.05fr 1fr;
 }
 
-/* ===== Panel de marca ===== */
+/* ===== Panel de marca (invertido: claro) ===== */
 .login__brand {
   position: relative;
   overflow: hidden;
@@ -176,8 +176,9 @@ async function onSubmit() {
   align-items: center;
   justify-content: center;
   padding: 48px;
-  color: var(--white);
-  background: linear-gradient(140deg, #0c3527 0%, #14633f 48%, #1c7a4f 100%);
+  color: var(--green-900);
+  background: var(--off-white);
+  border-right: 1px solid var(--line);
 }
 
 .login__aura {
@@ -237,12 +238,13 @@ async function onSubmit() {
   font-weight: 800;
   letter-spacing: -0.02em;
   margin: 0 0 16px;
+  color: var(--green-900);
 }
 
 .login__lead {
   font-size: 1rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(16, 35, 26, 0.72);
   margin: 0 0 28px;
 }
 
@@ -260,7 +262,7 @@ async function onSubmit() {
   align-items: center;
   gap: 12px;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(16, 35, 26, 0.85);
 }
 
 .login__check {
@@ -268,7 +270,7 @@ async function onSubmit() {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(20, 99, 63, 0.12);
   position: relative;
 }
 .login__check::after {
@@ -278,7 +280,7 @@ async function onSubmit() {
   top: 4px;
   width: 6px;
   height: 11px;
-  border: solid #bfffe0;
+  border: solid var(--green-600);
   border-width: 0 2.5px 2.5px 0;
   transform: rotate(45deg);
 }
@@ -288,25 +290,25 @@ async function onSubmit() {
   font-size: 0.8rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(16, 35, 26, 0.5);
 }
 
-/* ===== Panel de formulario ===== */
+/* ===== Panel de formulario (invertido: verde) ===== */
 .login__panel {
   display: grid;
   place-items: center;
   padding: 32px;
-  background: var(--off-white);
+  background: linear-gradient(140deg, #0c3527 0%, #14663f 48%, #1c7a4f 100%);
 }
 
 .login__card {
   width: 100%;
   max-width: 400px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(14px);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 22px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
   padding: 40px 36px;
   display: flex;
   flex-direction: column;
@@ -324,18 +326,19 @@ async function onSubmit() {
   width: 116px;
   height: auto;
   margin: 0 auto 6px;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.25));
 }
 
 .login__title {
   font-size: 1.4rem;
   margin: 4px 0 0;
-  color: var(--green-900);
+  color: var(--white);
 }
 
 .login__subtitle {
   margin: 0 0 8px;
   font-size: 0.88rem;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .login__field {
@@ -344,28 +347,33 @@ async function onSubmit() {
   gap: 6px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--green-900);
+  color: var(--white);
 }
 
 .login__field input {
   padding: 12px 14px;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid transparent;
   border-radius: var(--radius);
   font-size: 0.95rem;
   font-weight: 400;
-  background: var(--white);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--green-900);
   transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.login__field input::placeholder {
+  color: rgba(16, 35, 26, 0.45);
 }
 
 .login__field input:focus {
   outline: none;
-  border-color: var(--green-500);
-  box-shadow: 0 0 0 4px var(--green-100);
+  border-color: var(--white);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
 }
 
 .login__field.is-invalid input {
   border-color: var(--danger);
-  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.12);
+  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.28);
 }
 
 .login__password {
@@ -389,13 +397,13 @@ async function onSubmit() {
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.72);
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
 }
 .login__toggle:hover {
-  background: var(--green-50);
-  color: var(--green-700);
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--white);
 }
 
 .login__error {
@@ -403,8 +411,8 @@ async function onSubmit() {
   padding: 10px 12px;
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--danger);
-  background: rgba(220, 53, 69, 0.08);
+  color: #ffd9de;
+  background: rgba(220, 53, 69, 0.28);
   border-radius: var(--radius);
 }
 
@@ -426,17 +434,17 @@ async function onSubmit() {
   padding: 13px;
   border: none;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--green-600), var(--green-700));
-  color: var(--white);
+  background: var(--white);
+  color: var(--green-800);
   font-size: 0.97rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(20, 99, 63, 0.28);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
   transition: transform var(--transition), box-shadow var(--transition);
 }
 .login__submit:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(20, 99, 63, 0.34);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
 }
 .login__submit:disabled {
   opacity: 0.75;
@@ -446,8 +454,8 @@ async function onSubmit() {
 .login__spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: var(--white);
+  border: 2px solid rgba(20, 99, 63, 0.3);
+  border-top-color: var(--green-700);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -459,17 +467,17 @@ async function onSubmit() {
   margin: 6px 0 0;
   text-align: center;
   font-size: 0.74rem;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .login__switch {
   margin: 4px 0 0;
   text-align: center;
   font-size: 0.88rem;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.8);
 }
 .login__switch a {
-  color: var(--green-700);
+  color: var(--white);
   font-weight: 600;
   text-decoration: none;
 }

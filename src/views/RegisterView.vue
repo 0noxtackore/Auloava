@@ -109,7 +109,7 @@ async function onSubmit() {
             autocomplete="username"
             inputmode="email"
             spellcheck="false"
-            placeholder="admin@auloava.com"
+              placeholder="ejemplo@correo.com"
           />
         </label>
 
