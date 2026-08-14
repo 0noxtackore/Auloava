@@ -44,6 +44,10 @@ async function callAgent(action) {
       message.value = data.ok
         ? `Importados ${data.count} productos. ${data.saved ? 'Guardados en el catálogo real (Firebase).' : 'No se guardaron: falta FIREBASE_SERVICE_ACCOUNT en el servidor.'}`
         : data.error || 'Error al importar productos.'
+    } else if (action === 'generate') {
+      message.value = data.ok
+        ? `Generados ${data.created} borradores (80% IA). Revísalos en "Aprobación" antes de publicar.`
+        : data.error || 'Error al generar borradores.'
     } else {
       message.value =
         `Clave del agente en servidor: ${data.agentKeySet ? 'sí' : 'NO'}. ` +
@@ -74,6 +78,9 @@ async function callAgent(action) {
       </button>
       <button class="agent__btn agent__btn--primary" type="button" :disabled="loading" @click="callAgent('import-products')">
         {{ loading ? 'Importando…' : 'Importar productos reales' }}
+      </button>
+      <button class="agent__btn" type="button" :disabled="loading" @click="callAgent('generate')">
+        {{ loading ? 'Generando…' : 'Generar borradores IA' }}
       </button>
     </div>
 
