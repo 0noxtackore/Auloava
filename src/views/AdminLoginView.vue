@@ -1,6 +1,6 @@
 <script setup>
 // ============================================================
-// AdminLoginView · Login oculto del administrador (ruta /admin)
+// AdminLoginView · Login dedicado del administrador (ruta /admin/login)
 // Pantalla dividida: panel de marca (logo) + formulario glass.
 // No aparece en ningún menú: solo se accede escribiendo la URL.
 // ============================================================

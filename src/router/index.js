@@ -55,13 +55,16 @@ const routes = [
     ],
   },
 
-  // ===== Login oculto de administrador (sin enlaces en la UI) =====
+  // ===== Login dedicado del administrador (bajo /admin) =====
   {
-    path: '/login',
+    path: '/admin/login',
     name: 'admin-login',
     component: () => import('@/views/AdminLoginView.vue'),
-    meta: { title: 'Iniciar sesión' },
+    meta: { title: 'Admin · Iniciar sesión' },
   },
+
+  // El antiguo /login redirige al login de administrador
+  { path: '/login', redirect: '/admin/login' },
 
   // ===== Registro de nuevos usuarios =====
   {
@@ -109,12 +112,12 @@ const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAIL || '')
 const isAdmin = (user) =>
   !!user && (!ADMIN_EMAILS.length || ADMIN_EMAILS.includes((user.email || '').toLowerCase()))
 
-// Guard: el área privada (/admin) exige sesión de administrador.
-// Si no hay sesión o no es admin, redirige al login oculto (/login).
-// Firebase sólo se carga al entrar al área privada o al login,
-// para no penalizar la carga de las páginas públicas.
+// Guard: el área privada (/admin, excepto /admin/login) exige sesión
+// de administrador. Si no hay sesión o no es admin, redirige al login
+// dedicado (/admin/login). Firebase sólo se carga al entrar al área
+// privada o al login, para no penalizar la carga de las páginas públicas.
 router.beforeEach(async (to) => {
-  const requiresAuth = to.path.startsWith('/admin')
+  const requiresAuth = to.path.startsWith('/admin') && to.name !== 'admin-login'
 
   if (requiresAuth) {
     const { auth, authReady } = await import('@/services/auth')
