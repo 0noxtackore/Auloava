@@ -1,0 +1,154 @@
+<script setup>
+// ============================================================
+// AgentView · Sección del agente de AliExpress (área de admin)
+// El navegador solo dispara la Netlify Function; las credenciales
+// de AliExpress viven en el servidor (variables de entorno).
+// ============================================================
+import { ref } from 'vue'
+
+const AGENT_KEY = import.meta.env.VITE_AGENT_KEY || ''
+const endpoint = `${import.meta.env.BASE_URL}.netlify/functions/agent`
+
+const loading = ref(false)
+const status = ref(null) // { ok, ... }
+const message = ref('')
+
+async function callAgent(action) {
+  loading.value = true
+  status.value = null
+  message.value = ''
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-agent-key': AGENT_KEY,
+      },
+      body: JSON.stringify({ action }),
+    })
+    const data = await res.json()
+    status.value = data
+    if (!res.ok) {
+      message.value = data.error || 'Error del agente'
+    } else if (action === 'login') {
+      message.value = data.ok
+        ? 'Sesión iniciada en AliExpress correctamente.'
+        : data.error || 'No se pudo iniciar sesión.'
+    } else {
+      message.value = data.configured
+        ? 'Agente configurado (credenciales presentes en el servidor).'
+        : 'Faltan credenciales de AliExpress en el servidor.'
+    }
+  } catch (err) {
+    message.value = err?.message || 'No se pudo contactar con el agente'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
+<template>
+  <section class="agent">
+    <header class="agent__head">
+      <h1 class="agent__title">Agente de AliExpress</h1>
+      <p class="agent__lead">
+        Ejecuta tareas automatizadas contra tu cuenta de AliExpress. Las credenciales
+        se guardan solo en el servidor y nunca se envían al navegador.
+      </p>
+    </header>
+
+    <div class="agent__actions">
+      <button class="agent__btn" type="button" :disabled="loading" @click="callAgent('ping')">
+        Comprobar configuración
+      </button>
+      <button class="agent__btn agent__btn--primary" type="button" :disabled="loading" @click="callAgent('login')">
+        {{ loading ? 'Ejecutando…' : 'Iniciar sesión en AliExpress' }}
+      </button>
+    </div>
+
+    <Transition name="fade">
+      <p v-if="message" class="agent__msg" :class="{ 'agent__msg--ok': status && status.ok, 'agent__msg--err': !status || !status.ok }">
+        {{ message }}
+      </p>
+    </Transition>
+
+    <p class="agent__hint">
+      Más acciones del agente se añadirán según lo que definas a continuación.
+    </p>
+  </section>
+</template>
+
+<style scoped>
+.agent {
+  max-width: 680px;
+}
+.agent__head {
+  margin-bottom: 24px;
+}
+.agent__title {
+  font-size: 1.6rem;
+  margin: 0 0 8px;
+  color: var(--green-900);
+}
+.agent__lead {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.agent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.agent__btn {
+  padding: 12px 18px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--green-900);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.agent__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.agent__btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+.agent__btn--primary {
+  background: linear-gradient(135deg, var(--green-600), var(--green-700));
+  color: var(--white);
+  border-color: transparent;
+}
+.agent__msg {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.agent__msg--ok {
+  color: var(--green-700);
+  background: var(--green-50);
+}
+.agent__msg--err {
+  color: var(--danger);
+  background: rgba(220, 53, 69, 0.08);
+}
+.agent__hint {
+  margin-top: 14px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

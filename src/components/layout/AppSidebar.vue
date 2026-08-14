@@ -16,6 +16,7 @@ defineEmits(['close'])
 const navItems = [
   { to: { name: 'dashboard' }, label: 'Dashboard', icon: 'dashboard' },
   { to: { name: 'products' }, label: 'Explorar', icon: 'box' },
+  { to: { name: 'agent' }, label: 'Agente', icon: 'bot' },
 ]
 
 // Iconos SVG inline por nombre
@@ -23,6 +24,7 @@ const icons = {
   dashboard:
     'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z',
   box: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM12 22V12M3.3 7 12 12l8.7-5',
+  bot: 'M12 8V4m0 0h-1m1 0h1M12 8a4 4 0 0 1 4 4v4a4 4 0 0 1-4 4 4 4 0 0 1-4-4v-4a4 4 0 0 1 4-4zM7 14h-2m15 0h-2M2 20h20',
 }
 </script>
 

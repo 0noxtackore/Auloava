@@ -52,6 +52,12 @@ const routes = [
         component: () => import('@/views/private/ProductFormView.vue'),
         meta: { title: 'Editar producto' },
       },
+      {
+        path: 'agente',
+        name: 'agent',
+        component: () => import('@/views/private/AgentView.vue'),
+        meta: { title: 'Agente' },
+      },
     ],
   },
 

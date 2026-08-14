@@ -7,6 +7,10 @@
   VITE_BASE = "/"
   VITE_USE_FIREBASE = "false"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # SPA: redirige cualquier ruta al index.html (history mode de Vue Router)
 [[redirects]]
   from = "/*"
