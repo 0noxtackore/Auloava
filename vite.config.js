@@ -14,5 +14,13 @@ export default defineConfig({
   server: {
     port: 5173,
     open: false,
+    // En dev, las Netlify Functions no existen en Vite: redirige al sitio
+    // desplegado para poder probar el agente. En producción esto no aplica.
+    proxy: {
+      '/.netlify/functions': {
+        target: 'https://auloava.netlify.app',
+        changeOrigin: true,
+      },
+    },
   },
 })
