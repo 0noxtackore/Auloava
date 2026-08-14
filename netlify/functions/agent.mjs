@@ -106,7 +106,7 @@ async function callApi(method, params) {
     method,
     app_key: APP_KEY,
     sign_method: 'md5',
-    timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    timestamp: new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 19).replace('T', ' '),
     format: 'json',
     v: '2.0',
     ...params,
