@@ -22,9 +22,9 @@ const routes = [
     meta: { title: 'Catálogo' },
   },
 
-  // ===== Área principal =====
+  // ===== Área de administrador =====
   {
-    path: '/app',
+    path: '/admin',
     component: MainLayout,
     children: [
       { path: '', redirect: { name: 'dashboard' } },
@@ -80,6 +80,9 @@ const routes = [
   },
 ]
 
+// Redirige el área privada anterior (/app) a la nueva (/admin)
+routes.unshift({ path: '/app/:pathMatch(.*)*', redirect: '/admin' })
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
@@ -96,26 +99,40 @@ router.afterEach((to) => {
   document.title = to.meta.title ? `${to.meta.title} · Auloava` : 'Auloava'
 })
 
-// Guard: el área privada (/app) exige sesión de administrador.
-// Si no hay sesión, redirige al login oculto (/login).
+// Solo estos emails (VITE_ADMIN_EMAIL, separados por comas) pueden entrar
+// al panel. Si está vacío, cualquier sesión válida tiene acceso.
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAIL || '')
+  .split(',')
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean)
+
+const isAdmin = (user) =>
+  !ADMIN_EMAILS.length || ADMIN_EMAILS.includes((user?.email || '').toLowerCase())
+
+// Guard: el área privada (/admin) exige sesión de administrador.
+// Si no hay sesión o no es admin, redirige al login oculto (/login).
 // Firebase sólo se carga al entrar al área privada o al login,
 // para no penalizar la carga de las páginas públicas.
 router.beforeEach(async (to) => {
-  const requiresAuth = to.path.startsWith('/app')
+  const requiresAuth = to.path.startsWith('/admin')
 
   if (requiresAuth) {
     const { auth, authReady } = await import('@/services/auth')
     await authReady
-    if (!auth.currentUser) {
+    const user = auth.currentUser
+    if (!user) {
       return { name: 'admin-login', query: { redirect: to.fullPath } }
+    }
+    if (!isAdmin(user)) {
+      return { name: 'admin-login', query: { denied: '1' } }
     }
   }
 
-  // Si ya está logueado y entra al login, lo mandamos al panel
+  // Si ya está logueado (y es admin) y entra al login, lo mandamos al panel
   if (to.name === 'admin-login') {
     const { auth, authReady } = await import('@/services/auth')
     await authReady
-    if (auth.currentUser) {
+    if (isAdmin(auth.currentUser)) {
       return { name: 'dashboard' }
     }
   }

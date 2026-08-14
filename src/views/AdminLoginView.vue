@@ -21,6 +21,9 @@ const emailInput = ref(null)
 
 const emailValid = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()))
 
+// Aviso cuando un usuario logueado (no admin) intenta entrar al panel
+const denied = computed(() => route.query.denied === '1')
+
 const ERROR_MESSAGES = {
   'auth/invalid-credential': 'Email o contraseña incorrectos.',
   'auth/wrong-password': 'Email o contraseña incorrectos.',
@@ -97,6 +100,12 @@ async function onSubmit() {
 
         <h2 class="login__title">Inicia sesión</h2>
         <p class="login__subtitle">Accede a tu cuenta de Auloava</p>
+
+        <Transition name="fade">
+          <p v-if="denied" class="login__error">
+            No tienes permiso de administrador. Accede con la cuenta autorizada.
+          </p>
+        </Transition>
 
         <label class="login__field" :class="{ 'is-invalid': error && !emailValid }">
           <span>Email</span>
