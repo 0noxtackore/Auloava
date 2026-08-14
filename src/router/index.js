@@ -107,7 +107,7 @@ const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAIL || '')
   .filter(Boolean)
 
 const isAdmin = (user) =>
-  !ADMIN_EMAILS.length || ADMIN_EMAILS.includes((user?.email || '').toLowerCase())
+  !!user && (!ADMIN_EMAILS.length || ADMIN_EMAILS.includes((user.email || '').toLowerCase()))
 
 // Guard: el área privada (/admin) exige sesión de administrador.
 // Si no hay sesión o no es admin, redirige al login oculto (/login).
