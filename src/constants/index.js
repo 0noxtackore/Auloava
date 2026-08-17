@@ -30,11 +30,18 @@ export const PLATFORM_LIST = Object.values(PLATFORMS)
 /** Categorías de productos */
 export const CATEGORIES = [
   'Electrónica',
+  'Tecnología',
   'Hogar',
   'Moda',
   'Belleza',
-  'Tecnología',
+  'Juguetes',
+  'Papelería y Oficina',
+  'Deportes',
+  'Salud',
+  'Alimentos',
+  'Mascotas',
   'Accesorios',
+  'Automotriz',
   'Mayorista',
   'Otros',
 ]

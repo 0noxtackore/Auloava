@@ -31,11 +31,18 @@ const AI_MODEL = process.env.AI_MODEL || ''
 
 const CATEGORY_LIST = [
   'Electrónica',
+  'Tecnología',
   'Hogar',
   'Moda',
   'Belleza',
-  'Tecnología',
+  'Juguetes',
+  'Papelería y Oficina',
+  'Deportes',
+  'Salud',
+  'Alimentos',
+  'Mascotas',
   'Accesorios',
+  'Automotriz',
   'Mayorista',
   'Otros',
 ]
@@ -406,8 +413,9 @@ async function scrapeProduct(rawUrl) {
     try {
       const raw = await callAI(
         'Eres un clasificador de productos de ecommerce. Responde SOLO con el nombre de UNA categoría, sin comillas ni texto extra.',
-        `Elige UNA categoría de esta lista: ${CATEGORY_LIST.join(', ')}.\n` +
-          `Título: ${title}\nDescripción: ${description}\nSi no encaja, responde "Otros".`,
+        `Elige la categoría MÁS cercana de esta lista: ${CATEGORY_LIST.join(', ')}.\n` +
+          `Título: ${title}\nDescripción: ${description}\n` +
+          `Si el producto no encaja en ninguna, responde "Otros".`,
       )
       const cleaned = raw.replace(/["']/g, '').trim()
       if (cleaned) category = cleaned
