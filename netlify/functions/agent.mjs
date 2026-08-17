@@ -397,13 +397,56 @@ async function scrapeProduct(rawUrl) {
     return m2 ? m2[1] : ''
   }
   const titleTag = html.match(/<title[^>]*>([^<]*)<\/title>/i)
-  const title = (meta('og:title') || meta('twitter:title') || (titleTag && titleTag[1]) || '').trim()
-  const image = (meta('og:image') || meta('twitter:image') || '').trim()
-  const description = (meta('og:description') || meta('twitter:description') || meta('description') || '').trim()
+  let title = (meta('og:title') || meta('twitter:title') || (titleTag && titleTag[1]) || '').trim()
+  const ptMatch = html.match(/id="productTitle"[^>]*>([^<]+)</i)
+  if (ptMatch) title = ptMatch[1].trim()
+  title = title.replace(/^amazon\.com[^:]*:\s*/i, '').trim()
+
+  let image = (meta('og:image') || meta('twitter:image') || '').trim()
+  if (!image) {
+    const li = html.match(/id="landingImage"[^>]*\ssrc="([^"]+)"/i) || html.match(/id="landingImage"[^>]*\sdata-old-hires="([^"]+)"/i)
+    if (li) image = li[1]
+    if (!image) {
+      const dyn = html.match(/data-a-dynamic-image="([^"]+)"/i)
+      if (dyn) {
+        try {
+          const obj = JSON.parse(dyn[1].replace(/&quot;/g, '"'))
+          const first = Object.keys(obj)[0]
+          if (first) image = first
+        } catch {
+          /* ignora */
+        }
+      }
+    }
+  }
+
+  let description = ''
+  const fb = html.match(/id="feature-bullets"[^>]*>([\s\S]*?)<\/ul>/i)
+  if (fb) {
+    description = fb[1]
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/Acerca de este artículo/i, '')
+      .replace(/Sobre este artículo/i, '')
+      .trim()
+  }
+  if (!description) {
+    description = (meta('og:description') || meta('twitter:description') || meta('description') || '').trim()
+  }
 
   let priceText = ''
-  const pm = html.match(/(?:"price"|precio)[^0-9]{0,20}([0-9][0-9.,]*)/i) || html.match(/[$€£]\s?([0-9][0-9.,]*)/)
-  if (pm) priceText = pm[1]
+  const whole = html.match(/a-price-whole[^>]*>([0-9.,]+)/i)
+  const frac = html.match(/a-price-fraction[^>]*>([0-9]+)/i)
+  if (whole) {
+    priceText = '$' + whole[1] + (frac ? '.' + frac[1] : '')
+  } else {
+    const off = html.match(/a-offscreen">\s*\$([0-9.,]+)/i)
+    if (off) priceText = '$' + off[1]
+    else {
+      const pm = html.match(/(?:"price"|precio)[^0-9]{0,20}([0-9][0-9.,]*)/i) || html.match(/[$€£]\s?([0-9][0-9.,]*)/)
+      if (pm) priceText = pm[1]
+    }
+  }
 
   const platform = detectPlatform(rawUrl)
 
