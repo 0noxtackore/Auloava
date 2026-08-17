@@ -14,6 +14,9 @@ import BaseInput from '@/components/ui/BaseInput.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseLoader from '@/components/ui/BaseLoader.vue'
 
+const AGENT_KEY = import.meta.env.VITE_AGENT_KEY || ''
+const endpoint = `${import.meta.env.BASE_URL}.netlify/functions/agent`
+
 const route = useRoute()
 const router = useRouter()
 const store = useProductStore()
@@ -25,6 +28,7 @@ const form = reactive({
   description: '',
   platform: 'aliexpress',
   category: 'Electrónica',
+  image: '',
   price: '',
   originalPrice: '',
   commission: 10,
@@ -44,6 +48,40 @@ const errors = reactive({
 const loadingProduct = ref(false)
 const formError = ref('')
 const saved = ref(false)
+
+// Auto-relleno desde un solo enlace (scraper server-side vía agente)
+const pasteUrl = ref('')
+const scraping = ref(false)
+const scrapeMsg = ref('')
+
+async function loadFromUrl() {
+  scrapeMsg.value = ''
+  if (!pasteUrl.value.trim()) return
+  scraping.value = true
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-agent-key': AGENT_KEY },
+      body: JSON.stringify({ action: 'scrape', url: pasteUrl.value.trim() }),
+    })
+    const data = await res.json()
+    if (!res.ok || !data.ok) {
+      scrapeMsg.value = data.error || 'No se pudo leer el enlace.'
+      return
+    }
+    if (data.title) form.title = data.title
+    if (data.image) form.image = data.image
+    if (data.description) form.description = data.description
+    if (data.priceText) form.price = data.priceText.replace(',', '.')
+    if (data.platform) form.platform = data.platform
+    if (data.url) form.affiliateUrl = data.url
+    scrapeMsg.value = data.note || 'Datos cargados. Revisa y completa lo que falte.'
+  } catch {
+    scrapeMsg.value = 'Error al contactar con el agente.'
+  } finally {
+    scraping.value = false
+  }
+}
 
 /** Valida el formulario antes de enviar */
 function validateForm() {
@@ -109,6 +147,7 @@ onMounted(async () => {
       description: product.description || '',
       platform: product.platform,
       category: product.category,
+      image: product.image || '',
       price: product.price,
       originalPrice: product.originalPrice || '',
       commission: product.commission,
@@ -146,6 +185,28 @@ onMounted(async () => {
       <div v-if="saved" class="pform__alert pform__alert--success" role="status">
         ✔ Producto guardado correctamente. Redirigiendo...
       </div>
+
+      <!-- ===== Pega solo el enlace ===== -->
+      <section class="pform__section">
+        <h2>¿Tienes el enlace del producto?</h2>
+        <p class="pform__hint">
+          Pega el enlace de Amazon, AliExpress o Alibaba y se rellena solo.
+        </p>
+        <div class="pform__grid">
+          <BaseInput
+            v-model="pasteUrl"
+            label="Enlace del producto"
+            name="pasteUrl"
+            placeholder="https://www.amazon.com/... o https://es.aliexpress.com/..."
+          />
+          <div class="pform__field pform__field--btn">
+            <BaseButton type="button" :loading="scraping" :disabled="scraping" @click="loadFromUrl">
+              {{ scraping ? 'Leyendo…' : 'Cargar datos' }}
+            </BaseButton>
+          </div>
+        </div>
+        <p v-if="scrapeMsg" class="pform__scrape-msg">{{ scrapeMsg }}</p>
+      </section>
 
       <!-- ===== Datos básicos ===== -->
       <section class="pform__section">
@@ -268,6 +329,13 @@ onMounted(async () => {
             placeholder="https://..."
             :error="errors.affiliateUrl"
           />
+
+          <BaseInput
+            v-model="form.image"
+            label="URL de la imagen"
+            name="image"
+            placeholder="https://..."
+          />
         </div>
       </section>
 
@@ -354,6 +422,24 @@ onMounted(async () => {
 
 .pform__req {
   color: var(--danger);
+}
+
+.pform__hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: -8px;
+}
+
+.pform__field--btn {
+  justify-content: flex-end;
+}
+
+.pform__scrape-msg {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--green-50);
+  color: var(--green-700);
+  font-size: 0.88rem;
 }
 
 .pform__select,

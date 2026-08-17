@@ -108,6 +108,11 @@ export const handler = async (event) => {
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify(result) }
     }
 
+    if (action === 'scrape') {
+      const result = await scrapeProduct(payload.url)
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(result) }
+    }
+
     return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Acción no soportada' }) }
   } catch (err) {
     return { statusCode: 500, headers: HEADERS, body: JSON.stringify({ ok: false, error: String(err?.message || err) }) }
@@ -338,4 +343,58 @@ async function saveDraft(draft) {
   const db = getDatabase(_adminApp)
   const now = new Date().toISOString()
   await db.ref('socialDrafts').push({ ...draft, createdAt: now, updatedAt: now })
+}
+
+// ---------- Scraper ligero (sin navegador) para auto-rellenar desde URL ----------
+function detectPlatform(url) {
+  const u = (url || '').toLowerCase()
+  if (u.includes('amazon.')) return 'amazon'
+  if (u.includes('aliexpress')) return 'aliexpress'
+  if (u.includes('alibaba')) return 'alibaba'
+  return 'aliexpress'
+}
+
+async function scrapeProduct(rawUrl) {
+  if (!rawUrl) return { ok: false, error: 'Falta la URL del producto.' }
+  const res = await axios.get(rawUrl, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36',
+      'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+    },
+    timeout: 20000,
+    maxRedirects: 5,
+    responseType: 'text',
+  })
+  const html = res.data || ''
+  const meta = (name) => {
+    const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const m1 = html.match(
+      new RegExp(`<meta[^>]+(?:property|name)=["']${esc}["'][^>]*content=["']([^"']*)["']`, 'i'),
+    )
+    if (m1) return m1[1]
+    const m2 = html.match(
+      new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]*(?:property|name)=["']${esc}["']`, 'i'),
+    )
+    return m2 ? m2[1] : ''
+  }
+  const titleTag = html.match(/<title[^>]*>([^<]*)<\/title>/i)
+  const title = (meta('og:title') || meta('twitter:title') || (titleTag && titleTag[1]) || '').trim()
+  const image = (meta('og:image') || meta('twitter:image') || '').trim()
+  const description = (meta('og:description') || meta('twitter:description') || meta('description') || '').trim()
+
+  let priceText = ''
+  const pm = html.match(/(?:"price"|precio)[^0-9]{0,20}([0-9][0-9.,]*)/i) || html.match(/[$€£]\s?([0-9][0-9.,]*)/)
+  if (pm) priceText = pm[1]
+
+  return {
+    ok: true,
+    title,
+    image,
+    description,
+    priceText,
+    platform: detectPlatform(rawUrl),
+    url: rawUrl,
+    note: 'Si faltan datos (p. ej. Amazon bloquea bots), complétalos a mano.',
+  }
 }
