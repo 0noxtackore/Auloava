@@ -7,7 +7,7 @@
 import { onMounted, reactive, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
-import { PLATFORMS, CATEGORIES } from '@/constants'
+import { PLATFORMS } from '@/constants'
 import { validate, validators } from '@/utils/validators'
 import { formatPrice } from '@/utils/formatters'
 import BaseInput from '@/components/ui/BaseInput.vue'
@@ -27,13 +27,12 @@ const form = reactive({
   title: '',
   description: '',
   platform: 'aliexpress',
-  category: 'Electrónica',
+  category: '',
   image: '',
   price: '',
   originalPrice: '',
   commission: 10,
   rating: 4.5,
-  stock: 0,
   affiliateUrl: '',
 })
 
@@ -74,6 +73,7 @@ async function loadFromUrl() {
     if (data.description) form.description = data.description
     if (data.priceText) form.price = data.priceText.replace(',', '.')
     if (data.platform) form.platform = data.platform
+    if (data.category) form.category = data.category
     if (data.affiliateUrl) form.affiliateUrl = data.affiliateUrl
     else if (data.url) form.affiliateUrl = data.url
     scrapeMsg.value = data.note || 'Datos cargados. Revisa y completa lo que falte.'
@@ -122,7 +122,6 @@ async function handleSubmit() {
     originalPrice: form.originalPrice === '' ? null : Number(form.originalPrice),
     commission: Number(form.commission),
     rating: Number(form.rating),
-    stock: Number(form.stock),
   }
 
   try {
@@ -147,13 +146,12 @@ onMounted(async () => {
       title: product.title,
       description: product.description || '',
       platform: product.platform,
-      category: product.category,
+      category: product.category || '',
       image: product.image || '',
       price: product.price,
       originalPrice: product.originalPrice || '',
       commission: product.commission,
       rating: product.rating,
-      stock: product.stock,
       affiliateUrl: product.affiliateUrl || '',
     })
   } catch (error) {
@@ -230,12 +228,12 @@ onMounted(async () => {
             </select>
           </div>
 
-          <div class="pform__field">
-            <label class="pform__label" for="category">Categoría <span class="pform__req">*</span></label>
-            <select id="category" v-model="form.category" class="pform__select">
-              <option v-for="c in CATEGORIES" :key="c" :value="c">{{ c }}</option>
-            </select>
-          </div>
+          <BaseInput
+            v-model="form.category"
+            label="Categoría (la asigna la IA al pegar el enlace)"
+            name="category"
+            placeholder="Se rellena solo con IA; puedes editarlo"
+          />
         </div>
 
         <label class="pform__label" for="description">Descripción</label>
@@ -313,16 +311,6 @@ onMounted(async () => {
         <h2>Inventario y enlace</h2>
 
         <div class="pform__grid">
-          <BaseInput
-            v-model="form.stock"
-            label="Stock disponible"
-            name="stock"
-            type="number"
-            min="0"
-            step="1"
-            placeholder="0"
-          />
-
           <BaseInput
             v-model="form.affiliateUrl"
             label="URL de afiliado"

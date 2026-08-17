@@ -29,6 +29,17 @@ const AI_PROVIDER = (process.env.AI_PROVIDER || 'openai').toLowerCase()
 const AI_API_KEY = process.env.AI_API_KEY || ''
 const AI_MODEL = process.env.AI_MODEL || ''
 
+const CATEGORY_LIST = [
+  'Electrónica',
+  'Hogar',
+  'Moda',
+  'Belleza',
+  'Tecnología',
+  'Accesorios',
+  'Mayorista',
+  'Otros',
+]
+
 // AliExpress
 // Amazon (PA-API 5.0)
 const AMZ_PARTNER_TAG = process.env.AMAZON_PARTNER_TAG || ''
@@ -388,6 +399,22 @@ async function scrapeProduct(rawUrl) {
   if (pm) priceText = pm[1]
 
   const platform = detectPlatform(rawUrl)
+
+  // Clasificación de categoría por IA (si hay IA configurada)
+  let category = ''
+  if (AI_API_KEY && (title || description)) {
+    try {
+      category = await callAI(
+        'Eres un clasificador de productos de ecommerce. Responde SOLO con el nombre de UNA categoría, sin comillas ni texto extra.',
+        `Elige UNA categoría de esta lista: ${CATEGORY_LIST.join(', ')}.\n` +
+          `Título: ${title}\nDescripción: ${description}\nSi no encaja, responde "Otros".`,
+      )
+      category = category.replace(/["']/g, '').trim()
+    } catch {
+      category = ''
+    }
+  }
+
   return {
     ok: true,
     title,
@@ -395,6 +422,7 @@ async function scrapeProduct(rawUrl) {
     description,
     priceText,
     platform,
+    category,
     url: rawUrl,
     affiliateUrl: injectAffiliateTag(rawUrl, platform),
     note: 'Si faltan datos (p. ej. Amazon bloquea bots), complétalos a mano.',
