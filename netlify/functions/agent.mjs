@@ -448,6 +448,53 @@ async function scrapeProduct(rawUrl) {
     }
   }
 
+  // Valoración y nº de reseñas
+  let rating = 0
+  let ratingCount = 0
+  const rMatch =
+    html.match(/a-icon-alt[^>]*>([0-9.]+)\s*(?:out of|de)\s*5/i) ||
+    html.match(/acrPopover[^>]*title="([0-9.]+)\s*de\s*5/i)
+  if (rMatch) rating = Number(rMatch[1])
+  const rcMatch = html.match(/acrCustomerReviewText[^>]*>([^<]+)</i)
+  if (rcMatch) ratingCount = Number(rcMatch[1].replace(/[^0-9]/g, '')) || 0
+
+  // Precio original / recomendado (tachado)
+  let originalPrice = 0
+  const opMatch =
+    html.match(/a-text-strike[^>]*>\s*\$?([0-9.,]+)/i) ||
+    html.match(/precio recomendado:\s*US\$([0-9.,]+)/i) ||
+    html.match(/list price:\s*\$?([0-9.,]+)/i)
+  if (opMatch) originalPrice = Number(opMatch[1].replace(/[^0-9.]/g, '')) || 0
+
+  // Atributos (marca, color, etc.) desde la tabla de detalles
+  let attrs = ''
+  const details =
+    html.match(/id="productDetails[^"]*"[\s\S]*?<\/table>/i) ||
+    html.match(/id="productDetails_techSpec[^"]*"[\s\S]*?<\/table>/i)
+  if (details) {
+    const rows = details[0].matchAll(
+      /<th[^>]*>([\s\S]*?)<\/th>\s*<td[^>]*>([\s\S]*?)<\/td>/gi,
+    )
+    const parts = []
+    for (const m of rows) {
+      const k = m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+      const v = m[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+      if (k && v) parts.push(`${k}: ${v}`)
+    }
+    if (parts.length) attrs = parts.join(' · ')
+  }
+
+  // Enriquecer descripción con valoración y atributos
+  const metaBits = []
+  if (rating) metaBits.push(`Valoración: ${rating} de 5`)
+  if (ratingCount) metaBits.push(`${ratingCount} reseñas`)
+  if (metaBits.length) {
+    description = (description ? description + '\n' : '') + metaBits.join(' · ')
+  }
+  if (attrs) {
+    description = (description ? description + '\n' : '') + attrs
+  }
+
   const platform = detectPlatform(rawUrl)
 
   return {
@@ -457,6 +504,9 @@ async function scrapeProduct(rawUrl) {
     description,
     priceText,
     price: Number(String(priceText).replace(/[^0-9.]/g, '')) || 0,
+    originalPrice,
+    rating,
+    ratingCount,
     platform,
     url: rawUrl,
     affiliateUrl: injectAffiliateTag(rawUrl, platform),

@@ -73,6 +73,8 @@ async function loadFromUrl() {
     if (data.description) form.description = data.description
     if (typeof data.price === 'number' && data.price) form.price = data.price
     else if (data.priceText) form.price = Number(String(data.priceText).replace(/[^0-9.]/g, '')) || ''
+    if (typeof data.originalPrice === 'number' && data.originalPrice) form.originalPrice = data.originalPrice
+    if (typeof data.rating === 'number' && data.rating) form.rating = data.rating
     if (data.platform) form.platform = data.platform
     if (data.category) form.category = data.category
     if (data.affiliateUrl) form.affiliateUrl = data.affiliateUrl
