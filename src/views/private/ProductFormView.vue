@@ -68,7 +68,7 @@ async function loadFromUrl() {
       scrapeMsg.value = data.error || 'No se pudo leer el enlace.'
       return
     }
-    if (data.title) form.title = data.title.slice(0, 200)
+    if (data.title) form.title = data.title.slice(0, 300)
     if (data.image) form.image = data.image
     if (data.description) form.description = data.description
     if (typeof data.price === 'number' && data.price) form.price = data.price
@@ -93,7 +93,7 @@ function validateForm() {
     validate([
       { fn: validators.required, value: form.title },
       { fn: validators.minLength, value: form.title, arg: 4 },
-      { fn: validators.maxLength, value: form.title, arg: 200 },
+      { fn: validators.maxLength, value: form.title, arg: 300 },
     ]) || ''
   errors.price =
     validate([
@@ -158,6 +158,7 @@ onMounted(async () => {
       rating: product.rating,
       affiliateUrl: product.affiliateUrl || '',
     })
+    pasteUrl.value = product.url || product.affiliateUrl || ''
   } catch (error) {
     formError.value = error?.response?.data?.message || 'No se pudo cargar el producto'
     router.replace({ name: 'products' })
