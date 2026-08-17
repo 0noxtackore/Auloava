@@ -29,6 +29,14 @@ const AI_PROVIDER = (process.env.AI_PROVIDER || 'openai').toLowerCase()
 const AI_API_KEY = process.env.AI_API_KEY || ''
 const AI_MODEL = process.env.AI_MODEL || ''
 
+// AliExpress
+// Amazon (PA-API 5.0)
+const AMZ_PARTNER_TAG = process.env.AMAZON_PARTNER_TAG || ''
+const AMZ_ACCESS_KEY = process.env.AMAZON_ACCESS_KEY || ''
+const AMZ_SECRET_KEY = process.env.AMAZON_SECRET_KEY || ''
+const AMZ_HOST = process.env.AMAZON_HOST || 'webservices.amazon.com'
+const AMZ_REGION = process.env.AMAZON_REGION || 'us-east-1'
+
 const HEADERS = {
   'Content-Type': 'application/json',
   'Access-Control-Allow-Origin': '*',
@@ -81,6 +89,11 @@ export const handler = async (event) => {
           firebase: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),
           agentKeySet: Boolean(AGENT_KEY),
           aiConfigured: Boolean(AI_API_KEY),
+          aliExpress: { api: Boolean(APP_KEY && APP_SECRET && TRACKING_ID), trackingId: TRACKING_ID || null },
+          amazon: {
+            config: Boolean(AMZ_ACCESS_KEY && AMZ_SECRET_KEY && AMZ_PARTNER_TAG),
+            partnerTag: AMZ_PARTNER_TAG || null,
+          },
         }),
       }
     }

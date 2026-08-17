@@ -50,9 +50,11 @@ async function callAgent(action) {
         : data.error || 'Error al generar borradores.'
     } else {
       message.value =
-        `Clave del agente en servidor: ${data.agentKeySet ? 'sí' : 'NO'}. ` +
-        `API AliExpress: ${data.apiConfigured ? 'sí' : 'NO'}. ` +
-        `Firebase: ${data.firebase ? 'sí' : 'NO'}.`
+        `Clave agente: ${data.agentKeySet ? 'sí' : 'NO'} · ` +
+        `AliExpress API: ${data.aliExpress?.api ? 'sí' : 'NO'} (tracking: ${data.aliExpress?.trackingId || '—'}) · ` +
+        `Amazon PA-API: ${data.amazon?.config ? 'sí' : 'NO'} (tag: ${data.amazon?.partnerTag || '—'}) · ` +
+        `Firebase: ${data.firebase ? 'sí' : 'NO'} · ` +
+        `IA: ${data.aiConfigured ? 'sí' : 'NO'}.`
     }
   } catch (err) {
     message.value = err?.message || 'No se pudo contactar con el agente'
