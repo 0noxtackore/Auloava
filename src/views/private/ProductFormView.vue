@@ -69,7 +69,7 @@ async function loadFromUrl() {
       scrapeMsg.value = data.error || 'No se pudo leer el enlace.'
       return
     }
-    if (data.title) form.title = data.title
+    if (data.title) form.title = data.title.slice(0, 200)
     if (data.image) form.image = data.image
     if (data.description) form.description = data.description
     if (data.priceText) form.price = data.priceText.replace(',', '.')
@@ -90,7 +90,7 @@ function validateForm() {
     validate([
       { fn: validators.required, value: form.title },
       { fn: validators.minLength, value: form.title, arg: 4 },
-      { fn: validators.maxLength, value: form.title, arg: 80 },
+      { fn: validators.maxLength, value: form.title, arg: 200 },
     ]) || ''
   errors.price =
     validate([

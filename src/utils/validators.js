@@ -34,8 +34,9 @@ export const validators = {
     String(value ?? '').trim().length <= length ||
     `No debe exceder ${length} caracteres`,
 
-  /** Número dentro de un rango */
+  /** Número dentro de un rango (arg puede ser [min, max]) */
   between: (value, min, max) => {
+    if (Array.isArray(min)) [min, max] = min
     const n = Number(value)
     if (value === '' || value === null || Number.isNaN(n)) return true
     return n >= min && n <= max ? true : `Debe estar entre ${min} y ${max}`
