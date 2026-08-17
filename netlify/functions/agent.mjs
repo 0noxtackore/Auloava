@@ -18,6 +18,8 @@
 
 import crypto from 'node:crypto'
 import axios from 'axios'
+import admin from 'firebase-admin'
+import { getDatabase, ref, push, set, update, remove } from 'firebase-admin/database'
 
 const AGENT_KEY = process.env.AGENT_API_KEY || ''
 const APP_KEY = process.env.ALIEXPRESS_APP_KEY || ''
@@ -129,6 +131,48 @@ export const handler = async (event) => {
     if (action === 'scrape') {
       const result = await scrapeProduct(payload.url)
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify(result) }
+    }
+
+    // ---------- CRUD de productos (persistencia real en Firebase) ----------
+    if (action === 'list-products') {
+      const db = ensureAdmin()
+      const snap = await get(ref(db, 'products'))
+      if (!snap.exists()) return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, products: [] }) }
+      const obj = snap.val()
+      return {
+        statusCode: 200,
+        headers: HEADERS,
+        body: JSON.stringify({ ok: true, products: Object.entries(obj).map(([id, d]) => ({ id, ...d })) }),
+      }
+    }
+
+    if (action === 'get-product') {
+      const db = ensureAdmin()
+      const snap = await get(ref(db, `products/${payload.id}`))
+      if (!snap.exists()) return { statusCode: 404, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Producto no encontrado' }) }
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: payload.id, ...snap.val() } }) }
+    }
+
+    if (action === 'create-product') {
+      const db = ensureAdmin()
+      const now = new Date().toISOString()
+      const product = { clicks: 0, createdAt: now, updatedAt: now, ...(payload.product || {}) }
+      const newRef = push(ref(db, 'products'))
+      await set(newRef, product)
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: newRef.key, ...product } }) }
+    }
+
+    if (action === 'update-product') {
+      const db = ensureAdmin()
+      const updated = { ...(payload.product || {}), updatedAt: new Date().toISOString() }
+      await update(ref(db, `products/${payload.id}`), updated)
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: payload.id, ...payload.product } }) }
+    }
+
+    if (action === 'delete-product') {
+      const db = ensureAdmin()
+      await remove(ref(db, `products/${payload.id}`))
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
     }
 
     return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Acción no soportada' }) }
@@ -348,17 +392,19 @@ async function generateDrafts() {
   return { ok: true, created, note: 'Borradores en cola de aprobación (80% IA / 20% humano).' }
 }
 
-async function saveDraft(draft) {
+function ensureAdmin() {
   if (!_adminApp) {
-    const admin = await import('firebase-admin')
     const svc = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
     _adminApp = admin.initializeApp({
       credential: admin.credential.cert(svc),
       databaseURL: process.env.FIREBASE_DATABASE_URL,
     })
   }
-  const { getDatabase } = await import('firebase-admin/database')
-  const db = getDatabase(_adminApp)
+  return getDatabase(_adminApp)
+}
+
+async function saveDraft(draft) {
+  const db = ensureAdmin()
   const now = new Date().toISOString()
   await db.ref('socialDrafts').push({ ...draft, createdAt: now, updatedAt: now })
 }

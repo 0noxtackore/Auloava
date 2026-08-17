@@ -5,7 +5,7 @@
 [build.environment]
   NODE_VERSION = "20"
   VITE_BASE = "/"
-  VITE_USE_FIREBASE = "false"
+  VITE_USE_FIREBASE = "true"
 
 [functions]
   directory = "netlify/functions"

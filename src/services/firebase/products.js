@@ -1,56 +1,85 @@
 // ============================================================
-// AULOAVA · Productos en Realtime Database (backend Firebase)
-// Implementa la misma interfaz que el mock/REST:
-//   getAll, getById, create, update, remove
-// Estructura: /products/{pushId}
+// AULOAVA · Productos (vía Agente / Firebase)
+// El cliente delega en la Netlify Function (agente), que usa la
+// cuenta de servicio (admin SDK) y persiste en Realtime Database
+// sin depender de reglas ni de auth del cliente.
+// Si el agente/Firebase no está disponible, cae a localStorage
+// (mock) para no romper el sitio.
+// Interfaz: getAll, getById, create, update, remove
 // ============================================================
-import { ref, get, push, set, update, remove } from 'firebase/database'
-import { db } from '../firebase'
+import { productHandlers } from '../mock'
 
-const PATH = 'products'
+const AGENT_KEY = import.meta.env.VITE_AGENT_KEY || ''
+const endpoint = `${import.meta.env.BASE_URL}.netlify/functions/agent`
 
-/** Lanza un error con la misma forma que axios (reutiliza el manejo de errores) */
-function apiError(message, status = 400) {
-  const error = new Error(message)
-  error.response = { status, data: { message } }
-  return error
+let warned = false
+function warnFallback() {
+  if (!warned) {
+    warned = true
+    console.warn('[Auloava] Firebase/agente no disponible: usando almacenamiento local (no es BD compartida).')
+  }
+}
+
+async function call(action, body = {}) {
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-agent-key': AGENT_KEY },
+    body: JSON.stringify({ action, ...body }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok || !data.ok) throw new Error(data.error || 'Error del agente')
+  return data
 }
 
 export const firebaseProducts = {
-  /** Lista todos los productos */
   async getAll() {
-    const snapshot = await get(ref(db, PATH))
-    if (!snapshot.exists()) return []
-    const obj = snapshot.val()
-    return Object.entries(obj).map(([id, data]) => ({ id, ...data }))
+    try {
+      const d = await call('list-products')
+      return d.products || []
+    } catch {
+      warnFallback()
+      return productHandlers.list()
+    }
   },
 
-  /** Obtiene un producto por id */
   async getById(id) {
-    const snapshot = await get(ref(db, `${PATH}/${id}`))
-    if (!snapshot.exists()) throw apiError('Producto no encontrado', 404)
-    return { id, ...snapshot.val() }
+    try {
+      const d = await call('get-product', { id })
+      if (d.product) return d.product
+      throw new Error('missing')
+    } catch {
+      warnFallback()
+      return productHandlers.get(id)
+    }
   },
 
-  /** Crea un producto nuevo (id autogenerado por push) */
   async create(payload) {
-    const now = new Date().toISOString()
-    const product = { clicks: 0, createdAt: now, updatedAt: now, ...payload }
-    const newRef = push(ref(db, PATH))
-    await set(newRef, product)
-    return { id: newRef.key, ...product }
+    try {
+      const d = await call('create-product', { product: payload })
+      return d.product
+    } catch {
+      warnFallback()
+      return productHandlers.create(payload)
+    }
   },
 
-  /** Actualiza un producto existente */
   async update(id, payload) {
-    const updated = { ...payload, updatedAt: new Date().toISOString() }
-    await update(ref(db, `${PATH}/${id}`), updated)
-    return { id, ...payload }
+    try {
+      const d = await call('update-product', { id, product: payload })
+      return d.product
+    } catch {
+      warnFallback()
+      return productHandlers.update(id, payload)
+    }
   },
 
-  /** Elimina un producto */
   async remove(id) {
-    await remove(ref(db, `${PATH}/${id}`))
-    return { ok: true }
+    try {
+      await call('delete-product', { id })
+      return { ok: true }
+    } catch {
+      warnFallback()
+      return productHandlers.remove(id)
+    }
   },
 }
