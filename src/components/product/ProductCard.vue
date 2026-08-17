@@ -12,15 +12,6 @@ const props = defineProps({
   product: { type: Object, required: true },
 })
 
-// Altura variable según el id del producto (efecto masonry)
-const aspect = computed(() => {
-  const hash = String(props.product.id)
-    .split('')
-    .reduce((acc, c) => acc + c.charCodeAt(0), 0)
-  const ratios = ['pin--tall', 'pin--tall', 'pin--med', 'pin--med', 'pin--short', 'pin--short']
-  return ratios[hash % ratios.length]
-})
-
 // Descuento respecto al precio original
 const discount = computed(() => {
   const { price, originalPrice } = props.product
@@ -32,7 +23,7 @@ const platform = computed(() => PLATFORMS[props.product.platform])
 </script>
 
 <template>
-  <article class="pin" :class="aspect" v-reveal>
+  <article class="pin" v-reveal>
     <a
       class="pin__media"
       :href="product.affiliateUrl"
@@ -94,17 +85,6 @@ const platform = computed(() => PLATFORMS[props.product.platform])
   transform: scale(1.02);
 }
 
-/* Distintas alturas para el efecto masonry */
-.pin--tall .pin__media {
-  aspect-ratio: 3 / 4.2;
-}
-.pin--med .pin__media {
-  aspect-ratio: 1 / 1.15;
-}
-.pin--short .pin__media {
-  aspect-ratio: 16 / 11;
-}
-
 .pin__media {
   position: relative;
   display: block;
@@ -114,8 +94,9 @@ const platform = computed(() => PLATFORMS[props.product.platform])
 }
 
 .pin__img {
+  display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
   transition: transform 0.4s ease;
 }
