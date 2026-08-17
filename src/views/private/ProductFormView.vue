@@ -71,7 +71,8 @@ async function loadFromUrl() {
     if (data.title) form.title = data.title.slice(0, 200)
     if (data.image) form.image = data.image
     if (data.description) form.description = data.description
-    if (data.priceText) form.price = data.priceText.replace(',', '.')
+    if (typeof data.price === 'number' && data.price) form.price = data.price
+    else if (data.priceText) form.price = Number(String(data.priceText).replace(/[^0-9.]/g, '')) || ''
     if (data.platform) form.platform = data.platform
     if (data.category) form.category = data.category
     if (data.affiliateUrl) form.affiliateUrl = data.affiliateUrl
@@ -231,9 +232,9 @@ onMounted(async () => {
 
           <BaseInput
             v-model="form.category"
-            label="Categoría (la asigna la IA al pegar el enlace)"
+            label="Categoría (escríbela tú)"
             name="category"
-            placeholder="Se rellena solo con IA; puedes editarlo"
+            placeholder="Ej. Juguetes, Papelería y Oficina"
           />
         </div>
 

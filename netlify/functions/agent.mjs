@@ -456,6 +456,7 @@ async function scrapeProduct(rawUrl) {
     image,
     description,
     priceText,
+    price: Number(String(priceText).replace(/[^0-9.]/g, '')) || 0,
     platform,
     url: rawUrl,
     affiliateUrl: injectAffiliateTag(rawUrl, platform),
