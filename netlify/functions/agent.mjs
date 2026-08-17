@@ -401,17 +401,18 @@ async function scrapeProduct(rawUrl) {
   const platform = detectPlatform(rawUrl)
 
   // Clasificación de categoría por IA (si hay IA configurada)
-  let category = ''
+  let category = 'Otros'
   if (AI_API_KEY && (title || description)) {
     try {
-      category = await callAI(
+      const raw = await callAI(
         'Eres un clasificador de productos de ecommerce. Responde SOLO con el nombre de UNA categoría, sin comillas ni texto extra.',
         `Elige UNA categoría de esta lista: ${CATEGORY_LIST.join(', ')}.\n` +
           `Título: ${title}\nDescripción: ${description}\nSi no encaja, responde "Otros".`,
       )
-      category = category.replace(/["']/g, '').trim()
+      const cleaned = raw.replace(/["']/g, '').trim()
+      if (cleaned) category = cleaned
     } catch {
-      category = ''
+      category = 'Otros'
     }
   }
 

@@ -26,12 +26,13 @@ export const useProductStore = defineStore('products', {
     filteredProducts: (state) => {
       const q = state.filters.search.trim().toLowerCase()
       return state.products.filter((p) => {
-        const matchSearch =
-          !q || p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+        const cat = (p.category || '').toLowerCase()
+        const title = (p.title || '').toLowerCase()
+        const matchSearch = !q || title.includes(q) || cat.includes(q)
         const matchPlatform =
           state.filters.platform === 'all' || p.platform === state.filters.platform
         const matchCategory =
-          state.filters.category === 'all' || p.category === state.filters.category
+          state.filters.category === 'all' || cat === state.filters.category
         return matchSearch && matchPlatform && matchCategory
       })
     },

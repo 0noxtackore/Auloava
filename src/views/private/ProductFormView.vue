@@ -118,6 +118,7 @@ async function handleSubmit() {
 
   const payload = {
     ...form,
+    category: form.category.trim() || 'Otros',
     price: Number(form.price),
     originalPrice: form.originalPrice === '' ? null : Number(form.originalPrice),
     commission: Number(form.commission),
