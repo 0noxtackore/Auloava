@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "products": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "categories": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "socialDrafts": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
