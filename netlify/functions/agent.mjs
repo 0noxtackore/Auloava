@@ -387,14 +387,37 @@ async function scrapeProduct(rawUrl) {
   const pm = html.match(/(?:"price"|precio)[^0-9]{0,20}([0-9][0-9.,]*)/i) || html.match(/[$€£]\s?([0-9][0-9.,]*)/)
   if (pm) priceText = pm[1]
 
+  const platform = detectPlatform(rawUrl)
   return {
     ok: true,
     title,
     image,
     description,
     priceText,
-    platform: detectPlatform(rawUrl),
+    platform,
     url: rawUrl,
+    affiliateUrl: injectAffiliateTag(rawUrl, platform),
     note: 'Si faltan datos (p. ej. Amazon bloquea bots), complétalos a mano.',
+  }
+}
+
+// Inyecta/normaliza el tag de afiliado en la URL según la plataforma.
+function injectAffiliateTag(url, platform) {
+  try {
+    if (platform === 'amazon') {
+      const u = new URL(url)
+      const tag = AMZ_PARTNER_TAG || 'auloava-20'
+      u.searchParams.set('tag', tag)
+      return u.toString()
+    }
+    if (platform === 'aliexpress') {
+      const u = new URL(url)
+      const tid = TRACKING_ID || 'auloava'
+      u.searchParams.set('trackingId', tid)
+      return u.toString()
+    }
+    return url
+  } catch {
+    return url
   }
 }

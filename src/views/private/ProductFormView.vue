@@ -74,7 +74,8 @@ async function loadFromUrl() {
     if (data.description) form.description = data.description
     if (data.priceText) form.price = data.priceText.replace(',', '.')
     if (data.platform) form.platform = data.platform
-    if (data.url) form.affiliateUrl = data.url
+    if (data.affiliateUrl) form.affiliateUrl = data.affiliateUrl
+    else if (data.url) form.affiliateUrl = data.url
     scrapeMsg.value = data.note || 'Datos cargados. Revisa y completa lo que falte.'
   } catch {
     scrapeMsg.value = 'Error al contactar con el agente.'
