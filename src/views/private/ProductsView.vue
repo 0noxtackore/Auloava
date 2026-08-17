@@ -4,7 +4,7 @@
 // Rejilla masonry de pines con acciones de editar/eliminar
 // al hacer hover. Incluye búsqueda, filtros y confirmación.
 // ============================================================
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { PLATFORMS, CATEGORIES } from '@/constants'
@@ -17,6 +17,16 @@ import ProductCard from '@/components/product/ProductCard.vue'
 
 const router = useRouter()
 const store = useProductStore()
+
+// Categorías dinámicas: las que realmente uses en tus productos.
+const usedCategories = computed(() => {
+  const set = new Set()
+  for (const p of store.products) {
+    const c = (p.category || '').trim()
+    if (c) set.add(c)
+  }
+  return Array.from(set).sort()
+})
 
 // Modal de confirmación de borrado
 const showDeleteModal = ref(false)
@@ -91,7 +101,7 @@ onMounted(() => {
 
       <select v-model="store.filters.category" class="products__select" aria-label="Filtrar por categoría">
         <option value="all">Categorías</option>
-        <option v-for="c in CATEGORIES" :key="c" :value="c">{{ c }}</option>
+        <option v-for="c in (usedCategories.length ? usedCategories : CATEGORIES)" :key="c" :value="c">{{ c }}</option>
       </select>
 
       <button
