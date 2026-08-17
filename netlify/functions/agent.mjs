@@ -415,10 +415,11 @@ async function scrapeProduct(rawUrl) {
         'Eres un clasificador de productos de ecommerce. Responde SOLO con el nombre de UNA categoría, sin comillas ni texto extra.',
         `Elige la categoría MÁS cercana de esta lista: ${CATEGORY_LIST.join(', ')}.\n` +
           `Título: ${title}\nDescripción: ${description}\n` +
-          `Si el producto no encaja en ninguna, responde "Otros".`,
+          `Reglas: "Juguetes y Juegos" cuenta como Juguetes; "Papelería", "Escolar" o "Oficina" cuentan como Papelería y Oficina; ` +
+          `"Ropa" cuenta como Moda. Si no encaja en ninguna, responde "Otros".`,
       )
       const cleaned = raw.replace(/["']/g, '').trim()
-      if (cleaned) category = cleaned
+      if (cleaned) category = normalizeCategory(cleaned)
     } catch {
       category = 'Otros'
     }
@@ -436,6 +437,34 @@ async function scrapeProduct(rawUrl) {
     affiliateUrl: injectAffiliateTag(rawUrl, platform),
     note: 'Si faltan datos (p. ej. Amazon bloquea bots), complétalos a mano.',
   }
+}
+
+// Normaliza la categoría devuelta por la IA a una de CATEGORY_LIST.
+function normalizeCategory(raw) {
+  const r = (raw || '').trim().toLowerCase()
+  if (!r) return 'Otros'
+  if (r === 'otros') return 'Otros'
+  for (const c of CATEGORY_LIST) {
+    const cl = c.toLowerCase()
+    if (r === cl || r.includes(cl) || cl.includes(r)) return c
+  }
+  const synonyms = [
+    [/juguet|toy|game|juego/, 'Juguetes'],
+    [/papel|school|ofic|escolar|office|suministro/, 'Papelería y Oficina'],
+    [/ropa|cloth|apparel|vestimenta|fashion/, 'Moda'],
+    [/belleza|cosmet|makeup|maquill/, 'Belleza'],
+    [/salud|health|medic|vitamin/, 'Salud'],
+    [/deporte|sport|fitness|gym/, 'Deportes'],
+    [/mascota|pet|dog|cat/, 'Mascotas'],
+    [/auto|carro|coche|vehic/, 'Automotriz'],
+    [/comida|food|aliment|bebida|grocery/, 'Alimentos'],
+    [/electronic|gadget|computer|phone|celular|smartphone|tv/, 'Electrónica'],
+    [/tech|software|smart/, 'Tecnología'],
+    [/hogar|home|kitchen|cocina|mueble/, 'Hogar'],
+    [/accesor/, 'Accesorios'],
+  ]
+  for (const [re, cat] of synonyms) if (re.test(r)) return cat
+  return 'Otros'
 }
 
 // Inyecta/normaliza el tag de afiliado en la URL según la plataforma.
