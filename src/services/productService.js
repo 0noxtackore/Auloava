@@ -1,62 +1,27 @@
 // ============================================================
 // AULOAVA · Servicio de productos (CRUD)
-// Orquesta el backend: Firebase (VITE_USE_FIREBASE=true) >
-// mock (VITE_MOCK_API != 'false') > API REST real.
+// Única fuente de verdad: Firebase (vía la Netlify Function
+// agente, que usa la cuenta de servicio / admin SDK).
+// No hay mock ni localStorage: si Firebase no está disponible,
+// la operación falla visiblemente en vez de guardar en falso.
 // ============================================================
-import api from './api'
-import { productHandlers, MOCK_ENABLED } from './mock'
-
-const USE_FIREBASE = import.meta.env.VITE_USE_FIREBASE === 'true'
-
-/** Backend REST real (axios) adaptado a la interfaz del servicio */
-const restBackend = {
-  getAll: async () => (await api.get('/products')).data,
-  getById: async (id) => (await api.get(`/products/${id}`)).data,
-  create: async (payload) => (await api.post('/products', payload)).data,
-  update: async (id, payload) => (await api.put(`/products/${id}`, payload)).data,
-  remove: async (id) => (await api.delete(`/products/${id}`)).data,
-}
-
-/** Backend mock adaptado a la misma interfaz */
-const mockBackend = {
-  getAll: productHandlers.list,
-  getById: productHandlers.get,
-  create: productHandlers.create,
-  update: productHandlers.update,
-  remove: productHandlers.remove,
-}
-
-// Firebase se importa de forma diferida para que su SDK no forme parte
-// del bundle inicial de las páginas públicas (sólo se carga con
-// VITE_USE_FIREBASE=true o al entrar al área privada).
-let backendPromise = null
-function getBackend() {
-  if (backendPromise) return backendPromise
-  if (USE_FIREBASE) {
-    backendPromise = import('./firebase/products').then((m) => m.firebaseProducts)
-  } else if (MOCK_ENABLED) {
-    backendPromise = Promise.resolve(mockBackend)
-  } else {
-    backendPromise = Promise.resolve(restBackend)
-  }
-  return backendPromise
-}
+import { firebaseProducts } from './firebase/products'
 
 export const productService = {
   /** Lista todos los productos */
-  getAll: async () => (await getBackend()).getAll(),
+  getAll: (...args) => firebaseProducts.getAll(...args),
 
   /** Obtiene un producto por id */
-  getById: async (id) => (await getBackend()).getById(id),
+  getById: (...args) => firebaseProducts.getById(...args),
 
   /** Crea un producto nuevo */
-  create: async (payload) => (await getBackend()).create(payload),
+  create: (...args) => firebaseProducts.create(...args),
 
   /** Actualiza un producto existente */
-  update: async (id, payload) => (await getBackend()).update(id, payload),
+  update: (...args) => firebaseProducts.update(...args),
 
   /** Elimina un producto */
-  remove: async (id) => (await getBackend()).remove(id),
+  remove: (...args) => firebaseProducts.remove(...args),
 }
 
-export { USE_FIREBASE }
+export const USE_FIREBASE = true
