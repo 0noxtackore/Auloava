@@ -434,27 +434,29 @@ async function scrapeProduct(rawUrl) {
 // Asi la categoria es igual a la del enlace, sin IA ni escritura manual.
 function extractCategory(html, url) {
   const clean = (s) => (s || '').replace(/\s+/g, ' ').trim()
-  // 1) Amazon: contenedor de breadcrumbs
-  const wb = html.match(/id="wayfinding-breadcrumbs_feature_div"[\s\S]*?<\/div>\s*<\/div>/i)
-  if (wb) {
-    const links = [...wb[0].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map((m) => clean(m[1])).filter(Boolean)
-    if (links.length) return links[links.length - 1].slice(0, 60)
+  const fromLinks = (block) => {
+    if (!block) return ''
+    const links = [...block.matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map((m) => clean(m[1])).filter(Boolean)
+    return links.length ? links[links.length - 1] : ''
   }
+  // 1) Amazon: contenedor de breadcrumbs
+  const wb = html.match(/id="wayfinding-breadcrumbs_feature_div"[\s\S]*?<\/div>/i)
+  const c1 = fromLinks(wb && wb[0])
+  if (c1) return c1.slice(0, 60)
   // 2) Breadcrumbs genericos (ul/ol o nav con clase breadcrumb)
   const bc =
     html.match(/(?:breadcrumbs?|bread-crumb)[^>]*>([\s\S]*?)<\/ul>/i) ||
     html.match(/(?:breadcrumbs?|bread-crumb)[^>]*>([\s\S]*?)<\/nav>/i) ||
     html.match(/class="[^"]*breadcrumb[^"]*"[^>]*>([\s\S]*?)<\/div>/i)
-  if (bc) {
-    const links = [...bc[1].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map((m) => clean(m[1])).filter(Boolean)
-    if (links.length) return links[links.length - 1].slice(0, 60)
-  }
-  // 3) Fallback: ultimo segmento util del path de la URL
+  const c2 = fromLinks(bc && bc[1])
+  if (c2) return c2.slice(0, 60)
+  // 3) Fallback: ultimo segmento util del path (evita IDs, .html, ASIN)
   try {
     const u = new URL(url)
+    const ignore = /^(dp|gp|product|item|store|s|p|c|html|htm|search|category)$/i
     const seg = u.pathname
       .split('/')
-      .filter((s) => s && !/^(dp|gp|product|item|store|s|p|c|html|search|category)$/i.test(s))
+      .filter((s) => s && !ignore.test(s) && !/\.html?$/i.test(s) && !/^\d+$/.test(s) && !/^B0[A-Z0-9]{8}$/i.test(s))
     if (seg.length) return decodeURIComponent(seg[seg.length - 1]).replace(/[-_]/g, ' ').slice(0, 60)
   } catch {}
   return ''
