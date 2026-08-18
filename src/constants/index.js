@@ -8,18 +8,21 @@ export const PLATFORMS = {
     id: 'aliexpress',
     name: 'AliExpress',
     color: '#E6422A',
+    logo: 'images/platforms/aliexpress.svg',
     tagline: 'Ofertas globales',
   },
   amazon: {
     id: 'amazon',
     name: 'Amazon',
     color: '#146EB4',
+    logo: 'images/platforms/amazon.svg',
     tagline: 'Envío rápido',
   },
   alibaba: {
     id: 'alibaba',
     name: 'Alibaba',
     color: '#FF6A00',
+    logo: 'images/platforms/alibaba.svg',
     tagline: 'Mayorista B2B',
   },
 }

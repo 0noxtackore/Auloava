@@ -20,6 +20,7 @@ const discount = computed(() => {
 })
 
 const platform = computed(() => PLATFORMS[props.product.platform])
+const BASE_URL = import.meta.env.BASE_URL
 
 // Color del avatar variado y determinista por producto (misma marca, distintos tonos)
 const PLATFORM_PALETTE = {
@@ -72,7 +73,13 @@ const avatarColor = computed(() => {
             class="pin__avatar"
             :style="{ background: avatarColor }"
           >
-            {{ product.platform[0].toUpperCase() }}
+            <img
+              v-if="platform && platform.logo"
+              class="pin__avatar-img"
+              :src="BASE_URL + platform.logo"
+              :alt="platform.name"
+            />
+            <template v-else>{{ product.platform[0].toUpperCase() }}</template>
           </span>
           <span class="pin__rating">
             {{ formatRating(product.rating) }} ★
@@ -223,6 +230,13 @@ const avatarColor = computed(() => {
   font-size: 0.78rem;
   font-weight: 700;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.pin__avatar-img {
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
 }
 
 .pin__rating {
