@@ -20,6 +20,23 @@ const discount = computed(() => {
 })
 
 const platform = computed(() => PLATFORMS[props.product.platform])
+
+// Color del avatar variado y determinista por producto (misma marca, distintos tonos)
+const PLATFORM_PALETTE = {
+  amazon: ['#FF9900', '#232F3E', '#146EB4', '#C7511F', '#007185'],
+  aliexpress: ['#E6422A', '#FF6A00', '#C0392B', '#E67E22'],
+  alibaba: ['#FF6A00', '#D4380D', '#FA8C16', '#FF9C2C'],
+}
+function hashStr(s) {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
+  return h
+}
+const avatarColor = computed(() => {
+  const key = props.product.id || props.product.title || props.product.platform || ''
+  const pal = PLATFORM_PALETTE[props.product.platform] || ['#888']
+  return pal[hashStr(String(key)) % pal.length]
+})
 </script>
 
 <template>
@@ -53,7 +70,7 @@ const platform = computed(() => PLATFORMS[props.product.platform])
         <span class="pin__publisher">
           <span
             class="pin__avatar"
-            :style="{ background: platform?.color || '#888' }"
+            :style="{ background: avatarColor }"
           >
             {{ product.platform[0].toUpperCase() }}
           </span>
