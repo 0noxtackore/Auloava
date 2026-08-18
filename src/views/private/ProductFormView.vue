@@ -232,9 +232,9 @@ onMounted(async () => {
 
           <BaseInput
             v-model="form.category"
-            label="Categoría (escríbela tú)"
+            label="Categoría (se rellena desde el enlace)"
             name="category"
-            placeholder="Ej. Juguetes, Papelería y Oficina"
+            placeholder="Se autocompleta al cargar el enlace"
           />
         </div>
       </section>

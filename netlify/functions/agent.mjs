@@ -422,10 +422,42 @@ async function scrapeProduct(rawUrl) {
     rating,
     ratingCount,
     platform,
+    category: extractCategory(html, rawUrl),
     url: rawUrl,
     affiliateUrl: injectAffiliateTag(rawUrl, platform),
     note: 'Si faltan datos (p. ej. Amazon bloquea bots), complétalos a mano.',
   }
+}
+
+// Extrae la categoria desde las migas de pan (breadcrumbs) de la pagina del
+// producto; si no hay, cae al ultimo segmento util del path de la URL.
+// Asi la categoria es igual a la del enlace, sin IA ni escritura manual.
+function extractCategory(html, url) {
+  const clean = (s) => (s || '').replace(/\s+/g, ' ').trim()
+  // 1) Amazon: contenedor de breadcrumbs
+  const wb = html.match(/id="wayfinding-breadcrumbs_feature_div"[\s\S]*?<\/div>\s*<\/div>/i)
+  if (wb) {
+    const links = [...wb[0].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map((m) => clean(m[1])).filter(Boolean)
+    if (links.length) return links[links.length - 1].slice(0, 60)
+  }
+  // 2) Breadcrumbs genericos (ul/ol o nav con clase breadcrumb)
+  const bc =
+    html.match(/(?:breadcrumbs?|bread-crumb)[^>]*>([\s\S]*?)<\/ul>/i) ||
+    html.match(/(?:breadcrumbs?|bread-crumb)[^>]*>([\s\S]*?)<\/nav>/i) ||
+    html.match(/class="[^"]*breadcrumb[^"]*"[^>]*>([\s\S]*?)<\/div>/i)
+  if (bc) {
+    const links = [...bc[1].matchAll(/<a[^>]*>([^<]+)<\/a>/gi)].map((m) => clean(m[1])).filter(Boolean)
+    if (links.length) return links[links.length - 1].slice(0, 60)
+  }
+  // 3) Fallback: ultimo segmento util del path de la URL
+  try {
+    const u = new URL(url)
+    const seg = u.pathname
+      .split('/')
+      .filter((s) => s && !/^(dp|gp|product|item|store|s|p|c|html|search|category)$/i.test(s))
+    if (seg.length) return decodeURIComponent(seg[seg.length - 1]).replace(/[-_]/g, ' ').slice(0, 60)
+  } catch {}
+  return ''
 }
 
 // Inyecta/normaliza el tag de afiliado en la URL según la plataforma.
