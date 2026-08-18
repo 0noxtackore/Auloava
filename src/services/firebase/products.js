@@ -48,4 +48,13 @@ export const firebaseProducts = {
     await call('delete-product', { id })
     return { ok: true }
   },
+
+  /** Registra un click en el producto (acumulador +1 en Firebase) */
+  async registerClick(id) {
+    try {
+      await call('click-product', { id })
+    } catch {
+      /* silencioso: un fallo al contar no debe romper la navegación */
+    }
+  },
 }

@@ -7,10 +7,21 @@
 import { computed } from 'vue'
 import { PLATFORMS } from '@/constants'
 import { formatPrice, formatRating, formatPercent } from '@/utils/formatters'
+import { useProductStore } from '@/store/products'
 
 const props = defineProps({
   product: { type: Object, required: true },
 })
+
+const productStore = useProductStore()
+
+// Al hacer clic en el enlace de afiliado: contabiliza el click (+1) y
+// luego abre la URL de Amazon en una pestaña nueva.
+function onAffiliateClick(e) {
+  e.preventDefault()
+  if (props.product?.id) productStore.registerClick(props.product.id)
+  window.open(props.product.affiliateUrl, '_blank', 'noopener,noreferrer')
+}
 
 // Descuento respecto al precio original
 const discount = computed(() => {
@@ -47,6 +58,7 @@ const avatarColor = computed(() => {
       :href="product.affiliateUrl"
       target="_blank"
       rel="noopener noreferrer nofollow"
+      @click="onAffiliateClick"
     >
       <img
         class="pin__img"

@@ -166,6 +166,23 @@ export const useProductStore = defineStore('products', {
       this.products = this.products.filter((p) => p.id !== id)
     },
 
+    /**
+     * Registra un click en un producto: incrementa el contador de forma
+     * optimista en el estado local y lo persiste (+1 atómico) en Firebase.
+     */
+    async registerClick(id) {
+      const index = this.products.findIndex((p) => p.id === id)
+      if (index !== -1) {
+        const current = Number(this.products[index].clicks) || 0
+        this.products[index].clicks = current + 1
+      }
+      try {
+        await productService.registerClick(id)
+      } catch {
+        /* el contador local ya se actualizó de forma optimista */
+      }
+    },
+
     /** Reinicia los filtros */
     resetFilters() {
       this.filters.search = ''

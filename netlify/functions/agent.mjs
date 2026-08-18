@@ -152,6 +152,18 @@ export const handler = async (event) => {
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
     }
 
+    // Acumulador de clicks: suma +1 al contador del producto (atómico)
+    if (action === 'click-product') {
+      const db = ensureAdmin()
+      const ref = db.ref(`products/${payload.id}`)
+      const snap = await ref.get()
+      if (!snap.exists()) {
+        return { statusCode: 404, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Producto no encontrado' }) }
+      }
+      await ref.update({ clicks: admin.database.ServerValue.increment(1) })
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
+    }
+
     return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Acción no soportada' }) }
   } catch (err) {
     return { statusCode: 500, headers: HEADERS, body: JSON.stringify({ ok: false, error: String(err?.message || err) }) }

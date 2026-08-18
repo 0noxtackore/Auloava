@@ -7,6 +7,9 @@ node_modules
 dist
 dist-ssr
 
+# Netlify deploy cache
+.netlify
+
 # Entorno local
 .env
 .env.local
