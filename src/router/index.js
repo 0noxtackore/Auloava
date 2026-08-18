@@ -58,12 +58,6 @@ const routes = [
         component: () => import('@/views/private/AgentView.vue'),
         meta: { title: 'Agente' },
       },
-      {
-        path: 'aprobacion',
-        name: 'approval',
-        component: () => import('@/views/private/AprobacionView.vue'),
-        meta: { title: 'Aprobación de publicaciones' },
-      },
     ],
   },
 

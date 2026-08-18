@@ -27,27 +27,6 @@ const APP_SECRET = process.env.ALIEXPRESS_APP_SECRET || ''
 const TRACKING_ID = process.env.ALIEXPRESS_TRACKING_ID || ''
 const SEARCH = process.env.AGENT_SEARCH || 'gadgets'
 const COUNT = Math.max(1, parseInt(process.env.AGENT_COUNT || '12', 10))
-const AI_PROVIDER = (process.env.AI_PROVIDER || 'openai').toLowerCase()
-const AI_API_KEY = process.env.AI_API_KEY || ''
-const AI_MODEL = process.env.AI_MODEL || ''
-
-const CATEGORY_LIST = [
-  'Electrónica',
-  'Tecnología',
-  'Hogar',
-  'Moda',
-  'Belleza',
-  'Juguetes',
-  'Papelería y Oficina',
-  'Deportes',
-  'Salud',
-  'Alimentos',
-  'Mascotas',
-  'Accesorios',
-  'Automotriz',
-  'Mayorista',
-  'Otros',
-]
 
 // AliExpress
 // Amazon (PA-API 5.0)
@@ -108,7 +87,6 @@ export const handler = async (event) => {
           apiConfigured: Boolean(APP_KEY && APP_SECRET && TRACKING_ID),
           firebase: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),
           agentKeySet: Boolean(AGENT_KEY),
-          aiConfigured: Boolean(AI_API_KEY),
           aliExpress: { api: Boolean(APP_KEY && APP_SECRET && TRACKING_ID), trackingId: TRACKING_ID || null },
           amazon: {
             config: Boolean(AMZ_ACCESS_KEY && AMZ_SECRET_KEY && AMZ_PARTNER_TAG),
@@ -120,11 +98,6 @@ export const handler = async (event) => {
 
     if (action === 'import-products') {
       const result = await importProducts()
-      return { statusCode: 200, headers: HEADERS, body: JSON.stringify(result) }
-    }
-
-    if (action === 'generate') {
-      const result = await generateDrafts()
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify(result) }
     }
 
@@ -293,105 +266,6 @@ async function saveToStore(products) {
   await db.ref('products').set(products)
 }
 
-async function loadProducts() {
-  if (!_adminApp) {
-    const admin = await import('firebase-admin')
-    const svc = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    _adminApp = admin.initializeApp({
-      credential: admin.credential.cert(svc),
-      databaseURL: process.env.FIREBASE_DATABASE_URL,
-    })
-  }
-  const { getDatabase } = await import('firebase-admin/database')
-  const db = getDatabase(_adminApp)
-  const snap = await db.ref('products').get()
-  if (!snap.exists()) return []
-  const obj = snap.val()
-  return Object.entries(obj).map(([id, d]) => ({ id, ...d }))
-}
-
-// ---------- Capa de IA (OpenAI / Claude) ----------
-async function callAI(system, prompt) {
-  if (!AI_API_KEY) throw new Error('Falta AI_API_KEY (define AI_PROVIDER y AI_API_KEY en el servidor).')
-  if (AI_PROVIDER === 'openai') {
-    const r = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: AI_MODEL || 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: prompt },
-        ],
-        temperature: 0.7,
-      },
-      { headers: { Authorization: `Bearer ${AI_API_KEY}`, 'Content-Type': 'application/json' }, timeout: 30000 },
-    )
-    return r.data.choices[0].message.content.trim()
-  }
-  if (AI_PROVIDER === 'claude') {
-    const r = await axios.post(
-      'https://api.anthropic.com/v1/messages',
-      {
-        model: AI_MODEL || 'claude-3-5-sonnet-latest',
-        max_tokens: 600,
-        system,
-        messages: [{ role: 'user', content: prompt }],
-      },
-      {
-        headers: { 'x-api-key': AI_API_KEY, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' },
-        timeout: 30000,
-      },
-    )
-    return r.data.content[0].text.trim()
-  }
-  throw new Error(`AI_PROVIDER no soportado: ${AI_PROVIDER}`)
-}
-
-// ---------- Generación de borradores sociales (80% IA) ----------
-async function generateDrafts() {
-  if (!AI_API_KEY) {
-    return { ok: false, error: 'Falta la IA: define AI_PROVIDER y AI_API_KEY en el servidor.' }
-  }
-  if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-    return { ok: false, error: 'Falta FIREBASE_SERVICE_ACCOUNT para leer productos y guardar borradores.' }
-  }
-
-  const products = await loadProducts()
-  if (!products.length) {
-    return { ok: false, error: 'No hay productos en la BD. Importa productos primero.' }
-  }
-
-  const networks = ['tiktok', 'reddit', 'facebook']
-  const system =
-    'Eres un redactor de afiliados experto. Escribes posts cortos y persuasivos para promocionar ' +
-    'productos de AliExpress/Amazon/Alibaba. Nunca inventes enlaces; usa el que se te da. ' +
-    'Tono acorde a cada red. Responde SOLO con el texto del post, sin explicaciones.'
-
-  let created = 0
-  for (const p of products.slice(0, COUNT)) {
-    for (const net of networks) {
-      const prompt =
-        `Producto: ${p.title}\nPrecio: ${p.priceText || 'ver enlace'}\nEnlace afiliado: ${p.affiliateUrl || p.url || ''}\n` +
-        `Red: ${net}. Escribe un post atractivo (con 2-4 hashtags y un CTA). Máx 220 palabras.`
-      let copy = ''
-      try {
-        copy = await callAI(system, prompt)
-      } catch (e) {
-        copy = `[borrador pendiente] ${p.title} — ${p.affiliateUrl || p.url || ''}`
-      }
-      await saveDraft({
-        productId: p.id,
-        network: net,
-        copy,
-        status: 'pending',
-      })
-      created++
-    }
-  }
-
-  return { ok: true, created, note: 'Borradores en cola de aprobación (80% IA / 20% humano).' }
-}
-
 function ensureAdmin() {
   if (!_adminApp) {
     const svc = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
@@ -401,12 +275,6 @@ function ensureAdmin() {
     })
   }
   return getDatabase(_adminApp)
-}
-
-async function saveDraft(draft) {
-  const db = ensureAdmin()
-  const now = new Date().toISOString()
-  await db.ref('socialDrafts').push({ ...draft, createdAt: now, updatedAt: now })
 }
 
 // ---------- Scraper ligero (sin navegador) para auto-rellenar desde URL ----------
