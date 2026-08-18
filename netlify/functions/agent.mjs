@@ -130,6 +130,8 @@ export const handler = async (event) => {
       const db = ensureAdmin()
       const now = new Date().toISOString()
       const product = { clicks: 0, createdAt: now, updatedAt: now, ...(payload.product || {}) }
+      if (!product.affiliateUrl && product.url) product.affiliateUrl = product.url
+      product.affiliateUrl = injectAffiliateTag(product.affiliateUrl || '', product.platform)
       const newRef = db.ref('products').push()
       await newRef.set(product)
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: newRef.key, ...product } }) }
@@ -138,8 +140,10 @@ export const handler = async (event) => {
     if (action === 'update-product') {
       const db = ensureAdmin()
       const updated = { ...(payload.product || {}), updatedAt: new Date().toISOString() }
+      if (!updated.affiliateUrl && updated.url) updated.affiliateUrl = updated.url
+      updated.affiliateUrl = injectAffiliateTag(updated.affiliateUrl || '', updated.platform)
       await db.ref(`products/${payload.id}`).update(updated)
-      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: payload.id, ...payload.product } }) }
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: payload.id, ...updated } }) }
     }
 
     if (action === 'delete-product') {
