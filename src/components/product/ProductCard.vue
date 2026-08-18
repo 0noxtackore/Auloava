@@ -43,7 +43,7 @@ const platform = computed(() => PLATFORMS[props.product.platform])
         <span class="pin__save">Guardar</span>
       </div>
 
-      <span v-if="platform" class="pin__platform">{{ platform.name }}</span>
+      <span v-if="platform" class="pin__platform">{{ product.category || platform.name }}</span>
     </a>
 
     <div class="pin__body">
