@@ -19,7 +19,7 @@
 import crypto from 'node:crypto'
 import axios from 'axios'
 import admin from 'firebase-admin'
-import { getDatabase, ref, push, set, update, remove } from 'firebase-admin/database'
+import { getDatabase } from 'firebase-admin/database'
 
 const AGENT_KEY = process.env.AGENT_API_KEY || ''
 const APP_KEY = process.env.ALIEXPRESS_APP_KEY || ''
@@ -109,7 +109,7 @@ export const handler = async (event) => {
     // ---------- CRUD de productos (persistencia real en Firebase) ----------
     if (action === 'list-products') {
       const db = ensureAdmin()
-      const snap = await get(ref(db, 'products'))
+      const snap = await db.ref('products').get()
       if (!snap.exists()) return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, products: [] }) }
       const obj = snap.val()
       return {
@@ -121,7 +121,7 @@ export const handler = async (event) => {
 
     if (action === 'get-product') {
       const db = ensureAdmin()
-      const snap = await get(ref(db, `products/${payload.id}`))
+      const snap = await db.ref(`products/${payload.id}`).get()
       if (!snap.exists()) return { statusCode: 404, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Producto no encontrado' }) }
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: payload.id, ...snap.val() } }) }
     }
@@ -130,21 +130,21 @@ export const handler = async (event) => {
       const db = ensureAdmin()
       const now = new Date().toISOString()
       const product = { clicks: 0, createdAt: now, updatedAt: now, ...(payload.product || {}) }
-      const newRef = push(ref(db, 'products'))
-      await set(newRef, product)
+      const newRef = db.ref('products').push()
+      await newRef.set(product)
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: newRef.key, ...product } }) }
     }
 
     if (action === 'update-product') {
       const db = ensureAdmin()
       const updated = { ...(payload.product || {}), updatedAt: new Date().toISOString() }
-      await update(ref(db, `products/${payload.id}`), updated)
+      await db.ref(`products/${payload.id}`).update(updated)
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: payload.id, ...payload.product } }) }
     }
 
     if (action === 'delete-product') {
       const db = ensureAdmin()
-      await remove(ref(db, `products/${payload.id}`))
+      await db.ref(`products/${payload.id}`).remove()
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
     }
 
