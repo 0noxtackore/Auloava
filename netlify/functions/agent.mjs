@@ -271,7 +271,7 @@ async function importProducts() {
 async function saveToStore(products) {
   if (!_adminApp) {
     const admin = await import('firebase-admin')
-    const svc = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+    const svc = parseServiceAccount()
     _adminApp = admin.initializeApp({
       credential: admin.credential.cert(svc),
       databaseURL: process.env.FIREBASE_DATABASE_URL,
@@ -282,9 +282,24 @@ async function saveToStore(products) {
   await db.ref('products').set(products)
 }
 
+// Parsea la cuenta de servicio de Firebase. Soporta el valor en base64
+// (recomendado en Netlify para evitar problemas con los "\n" del PEM) y
+// normaliza el private_key por si llega con saltos de línea literales.
+function parseServiceAccount() {
+  let raw = (process.env.FIREBASE_SERVICE_ACCOUNT || '').trim()
+  if (/^[A-Za-z0-9+/=]+$/.test(raw)) {
+    raw = Buffer.from(raw, 'base64').toString('utf8')
+  }
+  const svc = JSON.parse(raw)
+  if (svc.private_key && svc.private_key.includes('\\n')) {
+    svc.private_key = svc.private_key.replace(/\\n/g, '\n')
+  }
+  return svc
+}
+
 function ensureAdmin() {
   if (!_adminApp) {
-    const svc = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+    const svc = parseServiceAccount()
     _adminApp = admin.initializeApp({
       credential: admin.credential.cert(svc),
       databaseURL: process.env.FIREBASE_DATABASE_URL,
