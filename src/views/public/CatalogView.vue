@@ -4,7 +4,7 @@
 // Pensado para que cualquier visitante navegue y compare
 // productos, sin entrar al área de administración.
 // ============================================================
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import ProductCard from '@/components/product/ProductCard.vue'
@@ -15,6 +15,10 @@ import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 const productStore = useProductStore()
 const route = useRoute()
 const query = ref(String(route.query.q || ''))
+
+onMounted(() => {
+  if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
+})
 
 const products = computed(() => {
   const q = query.value.trim().toLowerCase()
