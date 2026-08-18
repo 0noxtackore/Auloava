@@ -57,9 +57,9 @@ export const firebaseProducts = {
     try {
       const d = await call('create-product', { product: payload })
       return d.product
-    } catch {
-      warnFallback()
-      return productHandlers.create(payload)
+    } catch (e) {
+      console.error('[Auloava] No se pudo guardar en Firebase:', e.message)
+      throw e
     }
   },
 
@@ -67,9 +67,9 @@ export const firebaseProducts = {
     try {
       const d = await call('update-product', { id, product: payload })
       return d.product
-    } catch {
-      warnFallback()
-      return productHandlers.update(id, payload)
+    } catch (e) {
+      console.error('[Auloava] No se pudo actualizar en Firebase:', e.message)
+      throw e
     }
   },
 
@@ -77,9 +77,9 @@ export const firebaseProducts = {
     try {
       await call('delete-product', { id })
       return { ok: true }
-    } catch {
-      warnFallback()
-      return productHandlers.remove(id)
+    } catch (e) {
+      console.error('[Auloava] No se pudo eliminar en Firebase:', e.message)
+      throw e
     }
   },
 }

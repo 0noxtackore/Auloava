@@ -25,7 +25,6 @@ const isEdit = computed(() => Boolean(route.params.id))
 
 const form = reactive({
   title: '',
-  description: '',
   platform: 'aliexpress',
   category: '',
   image: '',
@@ -70,7 +69,6 @@ async function loadFromUrl() {
     }
     if (data.title) form.title = data.title.slice(0, 300)
     if (data.image) form.image = data.image
-    if (data.description) form.description = data.description
     if (typeof data.price === 'number' && data.price) form.price = data.price
     else if (data.priceText) form.price = Number(String(data.priceText).replace(/[^0-9.]/g, '')) || ''
     if (typeof data.originalPrice === 'number' && data.originalPrice) form.originalPrice = data.originalPrice
@@ -148,7 +146,6 @@ onMounted(async () => {
     const product = await store.fetchProduct(route.params.id)
     Object.assign(form, {
       title: product.title,
-      description: product.description || '',
       platform: product.platform,
       category: product.category || '',
       image: product.image || '',
@@ -240,15 +237,6 @@ onMounted(async () => {
             placeholder="Ej. Juguetes, Papelería y Oficina"
           />
         </div>
-
-        <label class="pform__label" for="description">Descripción</label>
-        <textarea
-          id="description"
-          v-model="form.description"
-          class="pform__textarea"
-          rows="3"
-          placeholder="Breve descripción del producto (opcional)"
-        />
       </section>
 
       <!-- ===== Precio y comisión ===== -->
