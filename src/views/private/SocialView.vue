@@ -11,7 +11,6 @@ import { optimizeProductImage } from '@/utils/images'
 
 const store = useProductStore()
 const query = ref('')
-const platform = ref('tiktok')
 const copiedId = ref('')
 
 const products = computed(() => {
@@ -36,7 +35,7 @@ async function generate(p) {
   const id = p.id
   drafts[id] = { loading: true, draft: drafts[id]?.draft || '', error: '' }
   try {
-    const draft = await socialService.generatePost(p, platform.value)
+    const draft = await socialService.generatePost(p, 'tiktok')
     drafts[id] = { loading: false, draft, error: '' }
   } catch (e) {
     drafts[id] = {
@@ -63,21 +62,14 @@ async function copy(id, text) {
 <template>
   <div class="social">
     <header class="social__head">
-      <span class="social__tag">Redes</span>
+      <span class="social__tag">TikTok</span>
       <h1 class="social__title">Generador de borradores</h1>
       <p class="social__lead">
-        Elige un producto y la IA crea un post original para redes (estilo
-        TikTok, sin plagiar). Copia y pega.
+        Elige un producto y la IA crea un post original para TikTok (sin
+        plagiar). Copia y pega.
       </p>
 
       <div class="social__controls">
-        <label class="social__field">
-          <span>Plataforma</span>
-          <select v-model="platform">
-            <option value="tiktok">TikTok</option>
-            <option value="instagram">Instagram</option>
-          </select>
-        </label>
         <input
           v-model="query"
           class="social__search"
