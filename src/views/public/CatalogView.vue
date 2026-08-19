@@ -5,7 +5,7 @@
 // productos, sin entrar al área de administración.
 // ============================================================
 import { computed, ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
@@ -14,6 +14,7 @@ import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 
 const productStore = useProductStore()
 const route = useRoute()
+const router = useRouter()
 const query = ref(String(route.query.q || ''))
 const PAGE = 24
 const visible = ref(PAGE)
@@ -36,6 +37,17 @@ const hasMore = computed(() => visible.value < products.value.length)
 
 function loadMore() {
   visible.value = Math.min(visible.value + PAGE, products.value.length)
+}
+
+// Cargar más exige login: si no hay sesión, manda al login y vuelve aquí.
+async function onLoadMore() {
+  const { auth, authReady } = await import('@/services/auth')
+  await authReady
+  if (!auth.currentUser) {
+    router.push({ name: 'public-login', query: { redirect: route.fullPath } })
+    return
+  }
+  loadMore()
 }
 
 // Reinicia la paginación al cambiar la búsqueda
@@ -83,7 +95,7 @@ watch(query, () => {
       </p>
 
       <div v-if="hasMore" class="catalog-more">
-        <button class="catalog-more__btn" type="button" @click="loadMore">
+        <button class="catalog-more__btn" type="button" @click="onLoadMore">
           Cargar más ({{ products.length - visible }} restantes)
         </button>
       </div>
