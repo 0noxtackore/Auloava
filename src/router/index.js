@@ -58,6 +58,12 @@ const routes = [
         component: () => import('@/views/private/AgentView.vue'),
         meta: { title: 'Agente' },
       },
+      {
+        path: 'social',
+        name: 'social',
+        component: () => import('@/views/private/SocialView.vue'),
+        meta: { title: 'Redes' },
+      },
     ],
   },
 

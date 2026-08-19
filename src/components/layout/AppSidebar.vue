@@ -17,6 +17,7 @@ const navItems = [
   { to: { name: 'dashboard' }, label: 'Dashboard', icon: 'dashboard' },
   { to: { name: 'products' }, label: 'Explorar', icon: 'box' },
   { to: { name: 'agent' }, label: 'Agente', icon: 'bot' },
+  { to: { name: 'social' }, label: 'Redes', icon: 'share' },
   { to: { name: 'approval' }, label: 'Aprobación', icon: 'check' },
 ]
 
@@ -27,6 +28,8 @@ const icons = {
   box: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM12 22V12M3.3 7 12 12l8.7-5',
   bot: 'M12 8V4m0 0h-1m1 0h1M12 8a4 4 0 0 1 4 4v4a4 4 0 0 1-4 4 4 4 0 0 1-4-4v-4a4 4 0 0 1 4-4zM7 14h-2m15 0h-2M2 20h20',
   check: 'M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z',
+  share:
+    'M18 8a3 3 0 1 0-2.8-4H15a3 3 0 0 0 .2 1.1L8.9 8.7a3 3 0 1 0 0 6.6l6.3 3.6A3 3 0 1 0 18 16a3 3 0 0 0-2.1.9L9.6 13.3a3 3 0 0 0 0-2.6l6.3-3.6A3 3 0 0 0 18 8z',
 }
 </script>
 

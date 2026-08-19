@@ -164,6 +164,16 @@ export const handler = async (event) => {
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
     }
 
+    // Genera un borrador de post para redes (TikTok/IG) con IA (OpenRouter)
+    if (action === 'generate-post') {
+      const result = await generateSocialPost(payload.product || {}, payload.platform || 'tiktok')
+      return {
+        statusCode: result.ok ? 200 : 502,
+        headers: HEADERS,
+        body: JSON.stringify({ ok: result.ok, draft: result.draft || '', error: result.error || null }),
+      }
+    }
+
     return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Acción no soportada' }) }
   } catch (err) {
     return { statusCode: 500, headers: HEADERS, body: JSON.stringify({ ok: false, error: String(err?.message || err) }) }
@@ -491,6 +501,71 @@ function extractCategory(html, url) {
     if (seg.length) return decodeURIComponent(seg[seg.length - 1]).replace(/[-_]/g, ' ').slice(0, 60)
   } catch {}
   return ''
+}
+
+// ---------- Generador de borradores para redes sociales (OpenRouter) ----------
+// OpenRouter es compatible con la API de OpenAI: usamos el mismo formato
+// de chat completions. Genera una descripción ORIGINAL (sin plagiar) para
+// un producto, tipo "reference" de TikTok, con hashtags.
+async function generateSocialPost(product, platform = 'tiktok') {
+  const key = process.env.OPENROUTER_API_KEY
+  if (!key) return { ok: false, error: 'OpenRouter no está configurado (OPENROUTER_API_KEY).' }
+  const model = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini'
+
+  const title = product.title || ''
+  const description = product.description || ''
+  const category = product.category || ''
+
+  const system = [
+    `Eres un redactor de contenido para redes sociales, experto en marketing de afiliados.`,
+    `Crea un borrador ORIGINAL de post para ${platform} a partir de la información de un producto.`,
+    `REGLAS:`,
+    `1) No copies ni plagies descripciones ajenas; escribe con tus propias palabras.`,
+    `2) Estilo cercano, entusiasta y breve, adecuado a ${platform} (frases cortas, gancho inicial).`,
+    `3) Incluye al final entre 5 y 10 hashtags relevantes y populares.`,
+    `4) Devuelve SOLO el texto del post (caption + hashtags). Sin explicaciones ni comillas.`,
+    `Referencia de estilo (NO copiar, sólo inspirarse): "Clean and protect virtually all of your interior surfaces with Total Interior Cleaner & Protectant! #detailing #springcleaning #cars #truck #clean #interior #beforeandafter #easy #simple #protect"`,
+  ].join(' ')
+
+  const user = [
+    `Producto: ${title}`,
+    `Categoría: ${category}`,
+    `Descripción original (sólo referencia, NO copiar): ${description}`,
+    `Plataforma: ${platform}`,
+    ``,
+    `Crea el borrador.`,
+  ].join('\n')
+
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${key}`,
+        'HTTP-Referer': 'https://auloava.app',
+        'X-Title': 'Auloava',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user },
+        ],
+        temperature: 0.9,
+        max_tokens: 300,
+      }),
+    })
+    if (!res.ok) {
+      const txt = await res.text().catch(() => '')
+      return { ok: false, error: `OpenRouter ${res.status}: ${txt.slice(0, 300)}` }
+    }
+    const data = await res.json()
+    const draft = data?.choices?.[0]?.message?.content?.trim() || ''
+    if (!draft) return { ok: false, error: 'La IA no devolvió texto.' }
+    return { ok: true, draft }
+  } catch (err) {
+    return { ok: false, error: String(err?.message || err) }
+  }
 }
 
 // Inyecta/normaliza el tag de afiliado en la URL según la plataforma.

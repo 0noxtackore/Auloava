@@ -10,6 +10,9 @@ dist-ssr
 # Netlify deploy cache
 .netlify
 
+# Salida de borradores generados en lote
+scripts/posts-drafts.md
+
 # Entorno local
 .env
 .env.local
