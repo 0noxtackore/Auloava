@@ -58,12 +58,22 @@ const optimizedImage = computed(() => optimizeProductImage(props.product.image, 
 // Enlace de afiliado canónico (ASIN limpio) para evitar la página
 // interstitial "Continue shopping" de Amazon.
 const affiliateHref = computed(() => cleanAffiliateUrl(props.product.affiliateUrl))
+
+// Tamaños variados (masonry): cada tarjeta reserva su propio aspect-ratio
+// de forma determinista segun el id, para que el layout no "salte" al
+// cargar las imagenes pero haya variedad de tamaños.
+const MEDIA_RATIOS = ['3 / 4', '1 / 1', '4 / 5', '5 / 4', '3 / 5', '4 / 3']
+const mediaAspect = computed(() => {
+  const key = String(props.product.id || props.product.title || '')
+  return MEDIA_RATIOS[hashStr(key) % MEDIA_RATIOS.length]
+})
 </script>
 
 <template>
   <article class="pin" v-reveal>
     <a
       class="pin__media"
+      :style="{ aspectRatio: mediaAspect }"
       :href="affiliateHref"
       target="_blank"
       rel="noopener noreferrer nofollow"
