@@ -132,12 +132,13 @@ const optimizedImage = computed(() => optimizeProductImage(props.product.image, 
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--off-white);
+  aspect-ratio: 1 / 1;
 }
 
 .pin__img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
 }
