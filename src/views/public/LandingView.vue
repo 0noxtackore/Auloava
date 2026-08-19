@@ -30,7 +30,17 @@ const platformLogos = {
 }
 const logoFor = (id) => platformLogos[id] || ''
 
-const stepImage = (i) => `https://picsum.photos/seed/auloava-step-${i + 1}/400/400`
+// Imágenes de la sección "Cómo funciona" (carpeta /steps en public)
+const STEP_IMG = {
+  Explora: 'Explora _ Photo.png',
+  Compara: 'Compara _ Photo.png',
+  Compra: 'Compra _ Photo.png',
+  Ahorra: 'Ahorra _ Photo.png',
+  'Recibe alertas': 'Recibe alertas _ Photo.png',
+  Comparte: 'Comparte _ Photo.png',
+}
+const stepImage = (step) =>
+  `${import.meta.env.BASE_URL}images/steps/${encodeURI(STEP_IMG[step.title] || 'Explora _ Photo.png')}`
 
 // Mosaico de pines para el hero estilo Pinterest (datos reales del store)
 const heroPins = computed(() => {
@@ -260,7 +270,7 @@ onMounted(() => {
           <div class="steps">
             <article v-for="(step, index) in landingData.steps" :key="step.title" class="step" v-reveal :style="{ transitionDelay: `${index * 80}ms` }">
               <div class="step__media">
-                <img class="step__img" :src="stepImage(index)" :alt="step.title" loading="lazy" />
+                <img class="step__img" :src="stepImage(step)" :alt="step.title" loading="lazy" />
                 <span class="step__num">0{{ index + 1 }}</span>
               </div>
               <div class="step__text">
