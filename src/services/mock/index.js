@@ -148,7 +148,7 @@ export const landingData = {
   ],
   testimonials: [
     { name: 'Lucía Fernández', role: 'Compradora frecuente', text: 'He ahorrado un 35% en mi última compra. La comparativa es clarísima.', avatar: 'https://i.pravatar.cc/96?img=47' },
-    { name: 'Marcos Vidal', role: 'Comprador exigente', text: 'Encontré la misma cámara 40€ más barata en otro marketplace. La comparativa es increíble.', avatar: 'https://i.pravatar.cc/96?img=12' },
+    { name: 'Lucía Fernández', role: 'Compradora exigente', text: 'Encontré la misma cámara 40€ más barata en otro marketplace. La comparativa es increíble.', avatar: 'https://i.pravatar.cc/96?img=12' },
     { name: 'Sofía Navarro', role: 'Community manager', text: 'Diseño impecable y ofertas reales de AliExpress. Lo recomiendo al 100%.', avatar: 'https://i.pravatar.cc/96?img=32' },
   ],
 }

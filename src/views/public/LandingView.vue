@@ -42,6 +42,18 @@ const STEP_IMG = {
 const stepImage = (step) =>
   `${import.meta.env.BASE_URL}images/steps/${STEP_IMG[step.title] || 'explora.webp'}`
 
+// Ir al catálogo, pero exigiendo login si el usuario no ha iniciado sesión.
+// Firebase sólo se carga al pulsar (no en la carga inicial de la landing).
+const goToCatalog = async () => {
+  const { auth, authReady } = await import('@/services/auth')
+  await authReady
+  if (auth.currentUser) {
+    router.push({ name: 'catalog' })
+  } else {
+    router.push({ name: 'public-login', query: { redirect: '/catalog' } })
+  }
+}
+
 // Mosaico de pines para el hero estilo Pinterest (datos reales del store)
 const heroPins = computed(() => {
   const p = productStore.products
@@ -130,7 +142,7 @@ onMounted(() => {
             relación precio-calidad. Y lo mejor: sin registros.
           </p>
 
-          <form class="hero__search" @submit.prevent="router.push({ name: 'catalog' })">
+            <form class="hero__search" @submit.prevent="goToCatalog">
             <svg class="hero__search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
             </svg>
@@ -191,7 +203,7 @@ onMounted(() => {
               y Alibaba. Mientras tanto, explora el catálogo para conocer cómo
               funcionará todo.
             </p>
-            <button class="empty-catalog__btn" @click="router.push({ name: 'catalog' })">
+            <button class="empty-catalog__btn" @click="goToCatalog">
               Explorar catálogo
             </button>
           </div>
@@ -203,7 +215,7 @@ onMounted(() => {
 
           <!-- Enlace al catálogo completo -->
           <div v-if="featured.length" class="featured-more">
-            <RouterLink :to="{ name: 'catalog' }" class="featured-more__btn">
+            <RouterLink :to="{ name: 'catalog' }" class="featured-more__btn" @click.prevent="goToCatalog">
               Ver catálogo completo ({{ productStore.products.length }} ofertas)
             </RouterLink>
           </div>
@@ -316,7 +328,7 @@ onMounted(() => {
             seleccionados a mano. Explora el catálogo y encuentra tu próxima
             compra inteligente.
           </p>
-          <button class="cta__btn" @click="router.push({ name: 'catalog' })">
+          <button class="cta__btn" @click="goToCatalog">
             Explorar catálogo
           </button>
         </div>
