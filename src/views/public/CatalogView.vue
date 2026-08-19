@@ -4,7 +4,7 @@
 // Pensado para que cualquier visitante navegue y compare
 // productos, sin entrar al área de administración.
 // ============================================================
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import ProductCard from '@/components/product/ProductCard.vue'
@@ -15,6 +15,8 @@ import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 const productStore = useProductStore()
 const route = useRoute()
 const query = ref(String(route.query.q || ''))
+const PAGE = 24
+const visible = ref(PAGE)
 
 onMounted(() => {
   if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
@@ -25,6 +27,20 @@ const products = computed(() => {
   const list = productStore.products
   if (!q) return list
   return list.filter((p) => p.title.toLowerCase().includes(q))
+})
+
+// Paginación: sólo se renderizan los primeros `visible` productos para
+// evitar cargar 130 imágenes de golpe (fuente principal del lag).
+const paged = computed(() => products.value.slice(0, visible.value))
+const hasMore = computed(() => visible.value < products.value.length)
+
+function loadMore() {
+  visible.value = Math.min(visible.value + PAGE, products.value.length)
+}
+
+// Reinicia la paginación al cambiar la búsqueda
+watch(query, () => {
+  visible.value = PAGE
 })
 </script>
 
@@ -55,9 +71,9 @@ const products = computed(() => {
         </p>
       </div>
 
-      <div v-if="products.length" class="pin-grid">
+      <div v-if="paged.length" class="pin-grid">
         <ProductCard
-          v-for="product in products"
+          v-for="product in paged"
           :key="product.id"
           :product="product"
         />
@@ -65,6 +81,12 @@ const products = computed(() => {
       <p v-else class="catalog-empty">
         No encontramos ofertas para “{{ query }}”.
       </p>
+
+      <div v-if="hasMore" class="catalog-more">
+        <button class="catalog-more__btn" type="button" @click="loadMore">
+          Cargar más ({{ products.length - visible }} restantes)
+        </button>
+      </div>
 
       <EarningsMeter />
     </main>
@@ -180,6 +202,30 @@ const products = computed(() => {
   color: var(--muted);
   padding: 60px 0;
   font-size: 1.05rem;
+}
+
+.catalog-more {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0 8px;
+}
+
+.catalog-more__btn {
+  padding: 12px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+}
+
+.catalog-more__btn:hover {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  transform: translateY(-1px);
 }
 
 .catalog-demo-banner {

@@ -7,6 +7,7 @@
 import { computed } from 'vue'
 import { PLATFORMS } from '@/constants'
 import { formatPrice, formatRating, formatPercent } from '@/utils/formatters'
+import { optimizeProductImage } from '@/utils/images'
 import { useProductStore } from '@/store/products'
 
 const props = defineProps({
@@ -49,6 +50,9 @@ const avatarColor = computed(() => {
   const pal = PLATFORM_PALETTE[props.product.platform] || ['#888']
   return pal[hashStr(String(key)) % pal.length]
 })
+
+// Imagen optimizada (tamaño menor en Amazon) para cargar más rápido
+const optimizedImage = computed(() => optimizeProductImage(props.product.image, 320))
 </script>
 
 <template>
@@ -62,9 +66,10 @@ const avatarColor = computed(() => {
     >
       <img
         class="pin__img"
-        :src="product.image"
+        :src="optimizedImage"
         :alt="product.title"
         loading="lazy"
+        decoding="async"
       />
 
       <!-- Overlay al hacer hover -->
