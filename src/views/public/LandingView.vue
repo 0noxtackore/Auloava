@@ -18,7 +18,9 @@ import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 const router = useRouter()
 const productStore = useProductStore()
 
-const featured = computed(() => productStore.products)
+// Ofertas destacadas: máximo 20 de los productos más recientes
+// (los últimos insertados en Firebase, que vienen en orden cronológico).
+const featured = computed(() => productStore.products.slice(-20))
 
 const assetsBase = import.meta.env.BASE_URL
 const platformLogos = {
@@ -187,6 +189,13 @@ onMounted(() => {
           <!-- Rejilla masonry real -->
           <div v-else class="pin-grid">
             <ProductCard v-for="product in featured" :key="product.id" :product="product" />
+          </div>
+
+          <!-- Enlace al catálogo completo -->
+          <div v-if="featured.length" class="featured-more">
+            <RouterLink :to="{ name: 'catalog' }" class="featured-more__btn">
+              Ver catálogo completo ({{ productStore.products.length }} ofertas)
+            </RouterLink>
           </div>
         </div>
       </section>
@@ -1166,6 +1175,29 @@ onMounted(() => {
 .cta__btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+/* Enlace a catálogo completo tras las ofertas destacadas */
+.featured-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+.featured-more__btn {
+  padding: 12px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+}
+.featured-more__btn:hover {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  transform: translateY(-1px);
 }
 
 </style>
