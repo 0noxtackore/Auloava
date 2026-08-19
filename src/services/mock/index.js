@@ -150,6 +150,7 @@ export const landingData = {
     { name: 'Lucía Fernández', role: 'Compradora frecuente', text: 'He ahorrado un 35% en mi última compra. La comparativa es clarísima.', avatar: 'https://i.pravatar.cc/96?img=47' },
     { name: 'Elena Ruiz', role: 'Compradora exigente', text: 'Encontré la misma cámara 40€ más barata en otro marketplace. La comparativa es increíble.', avatar: 'https://randomuser.me/api/portraits/women/68.jpg' },
     { name: 'Sofía Navarro', role: 'Community manager', text: 'Diseño impecable y ofertas reales de AliExpress. Lo recomiendo al 100%.', avatar: 'https://i.pravatar.cc/96?img=32' },
+    { name: 'Hugo Moreno', role: 'Comprador tech', text: 'Comparar los 3 marketplaces en una sola vista me ahorra un montón de tiempo. Top.', avatar: 'https://randomuser.me/api/portraits/men/52.jpg' },
   ],
 }
 
