@@ -497,8 +497,13 @@ function extractCategory(html, url) {
 function injectAffiliateTag(url, platform) {
   try {
     if (platform === 'amazon') {
-      const u = new URL(url)
+      // Canonicaliza a la forma limpia https://www.amazon.com/dp/<ASIN>?tag=...
+      // extrayendo el ASIN y descartando ref=/locale/session-id que provocan
+      // la página interstitial "Continue shopping" de Amazon.
+      const m = String(url).match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i)
       const tag = AMZ_PARTNER_TAG || 'auloava-20'
+      if (m) return `https://www.amazon.com/dp/${m[1].toUpperCase()}?tag=${tag}`
+      const u = new URL(url)
       u.searchParams.set('tag', tag)
       return u.toString()
     }

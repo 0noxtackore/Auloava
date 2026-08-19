@@ -8,6 +8,7 @@ import { computed } from 'vue'
 import { PLATFORMS } from '@/constants'
 import { formatPrice, formatRating, formatPercent } from '@/utils/formatters'
 import { optimizeProductImage } from '@/utils/images'
+import { cleanAffiliateUrl } from '@/utils/links'
 import { useProductStore } from '@/store/products'
 
 const props = defineProps({
@@ -21,7 +22,7 @@ const productStore = useProductStore()
 function onAffiliateClick(e) {
   e.preventDefault()
   if (props.product?.id) productStore.registerClick(props.product.id)
-  window.open(props.product.affiliateUrl, '_blank', 'noopener,noreferrer')
+  window.open(affiliateHref.value, '_blank', 'noopener,noreferrer')
 }
 
 // Descuento respecto al precio original
@@ -53,13 +54,17 @@ const avatarColor = computed(() => {
 
 // Imagen optimizada (tamaño menor en Amazon) para cargar más rápido
 const optimizedImage = computed(() => optimizeProductImage(props.product.image, 320))
+
+// Enlace de afiliado canónico (ASIN limpio) para evitar la página
+// interstitial "Continue shopping" de Amazon.
+const affiliateHref = computed(() => cleanAffiliateUrl(props.product.affiliateUrl))
 </script>
 
 <template>
   <article class="pin" v-reveal>
     <a
       class="pin__media"
-      :href="product.affiliateUrl"
+      :href="affiliateHref"
       target="_blank"
       rel="noopener noreferrer nofollow"
       @click="onAffiliateClick"
