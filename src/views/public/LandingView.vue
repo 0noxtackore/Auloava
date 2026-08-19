@@ -32,15 +32,15 @@ const logoFor = (id) => platformLogos[id] || ''
 
 // Imágenes de la sección "Cómo funciona" (carpeta /steps en public)
 const STEP_IMG = {
-  Explora: 'Explora _ Photo.png',
-  Compara: 'Compara _ Photo.png',
-  Compra: 'Compra _ Photo.png',
-  Ahorra: 'Ahorra _ Photo.png',
-  'Recibe alertas': 'Recibe alertas _ Photo.png',
-  Comparte: 'Comparte _ Photo.png',
+  Explora: 'explora.png',
+  Compara: 'compara.png',
+  Compra: 'compra.png',
+  Ahorra: 'ahorra.png',
+  'Recibe alertas': 'recibe-alertas.png',
+  Comparte: 'comparte.png',
 }
 const stepImage = (step) =>
-  `${import.meta.env.BASE_URL}images/steps/${encodeURI(STEP_IMG[step.title] || 'Explora _ Photo.png')}`
+  `${import.meta.env.BASE_URL}images/steps/${STEP_IMG[step.title] || 'explora.png'}`
 
 // Mosaico de pines para el hero estilo Pinterest (datos reales del store)
 const heroPins = computed(() => {
