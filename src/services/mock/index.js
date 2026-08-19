@@ -151,6 +151,8 @@ export const landingData = {
     { name: 'Elena Ruiz', role: 'Compradora exigente', text: 'Encontré la misma cámara 40€ más barata en otro marketplace. La comparativa es increíble.', avatar: 'https://randomuser.me/api/portraits/women/68.jpg' },
     { name: 'Sofía Navarro', role: 'Community manager', text: 'Diseño impecable y ofertas reales de AliExpress. Lo recomiendo al 100%.', avatar: 'https://i.pravatar.cc/96?img=32' },
     { name: 'Hugo Moreno', role: 'Comprador tech', text: 'Comparar los 3 marketplaces en una sola vista me ahorra un montón de tiempo. Top.', avatar: 'https://randomuser.me/api/portraits/men/52.jpg' },
+    { name: 'Daniel Castro', role: 'Padre y comprador', text: 'Compro juguetes y electrónica para la familia y siempre encuentro el mejor precio aquí.', avatar: 'https://randomuser.me/api/portraits/men/76.jpg' },
+    { name: 'Pablo Serra', role: 'Estudiante', text: 'De alumno, cualquier euro cuenta. La comparativa de comisiones me ha salvado más de una vez.', avatar: 'https://randomuser.me/api/portraits/men/14.jpg' },
   ],
 }
 
