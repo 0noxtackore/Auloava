@@ -48,6 +48,7 @@ const base = import.meta.env.BASE_URL
           <li><RouterLink :to="{ name: 'landing', hash: '#about' }">Quiénes somos</RouterLink></li>
           <li><RouterLink :to="{ name: 'landing', hash: '#how' }">Cómo funciona</RouterLink></li>
           <li><RouterLink :to="{ name: 'landing', hash: '#press' }">Prensa</RouterLink></li>
+          <li><RouterLink :to="{ name: 'privacy' }">Política de privacidad</RouterLink></li>
         </ul>
       </div>
     </div>

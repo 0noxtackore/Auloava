@@ -99,6 +99,14 @@ const routes = [
     component: () => import('@/views/public/NotFoundView.vue'),
     meta: { title: 'Página no encontrada' },
   },
+
+  // ===== Política de privacidad (requerida por AdSense) =====
+  {
+    path: '/privacy',
+    name: 'privacy',
+    component: () => import('@/views/public/PrivacyPolicyView.vue'),
+    meta: { title: 'Política de privacidad' },
+  },
 ]
 
 // Redirige el área privada anterior (/app) a la nueva (/admin)
