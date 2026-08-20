@@ -29,6 +29,8 @@ const products = computed(() => {
 
 // Estado por producto: { loading, draft, error, platform }
 const drafts = reactive({})
+// Si la descripción de un producto está colapsada (oculta)
+const collapsed = reactive({})
 
 onMounted(() => {
   if (!store.products.length) store.fetchProducts().catch(() => {})
@@ -40,6 +42,7 @@ async function generate(p) {
   try {
     const draft = await socialService.generatePost(p, selectedPlatform.value)
     drafts[id] = { loading: false, draft, error: '', platform: selectedPlatform.value }
+    collapsed[id] = false
   } catch (e) {
     drafts[id] = {
       loading: false,
@@ -179,14 +182,26 @@ function suggestBoards(p) {
             v-if="drafts[p.id]?.draft && drafts[p.id]?.platform === selectedPlatform"
             class="social-card__draft"
           >
-            <pre class="social-card__text">{{ drafts[p.id].draft }}</pre>
-            <button
-              class="social-card__copy"
-              type="button"
-              @click="copy(p.id, drafts[p.id].draft)"
-            >
-              {{ copiedId === p.id ? '¡Copiado!' : 'Copiar descripción' }}
-            </button>
+            <div class="social-card__draft-head">
+              <span class="social-card__draft-label">Borrador (IA)</span>
+              <button
+                class="social-card__toggle"
+                type="button"
+                @click="collapsed[p.id] = !collapsed[p.id]"
+              >
+                {{ collapsed[p.id] ? 'Mostrar' : 'Ocultar' }}
+              </button>
+            </div>
+            <template v-if="!collapsed[p.id]">
+              <pre class="social-card__text">{{ drafts[p.id].draft }}</pre>
+              <button
+                class="social-card__copy"
+                type="button"
+                @click="copy(p.id, drafts[p.id].draft)"
+              >
+                {{ copiedId === p.id ? '¡Copiado!' : 'Copiar descripción' }}
+              </button>
+            </template>
           </div>
 
           <div
@@ -349,6 +364,30 @@ function suggestBoards(p) {
   border-radius: var(--radius);
   background: var(--green-50);
   padding: 10px;
+}
+.social-card__draft-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.social-card__draft-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--green-800);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.social-card__toggle {
+  padding: 4px 12px;
+  border: 1px solid var(--green-600);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--green-700);
+  font-weight: 600;
+  font-size: 0.74rem;
+  cursor: pointer;
 }
 .social-card__text {
   white-space: pre-wrap;
