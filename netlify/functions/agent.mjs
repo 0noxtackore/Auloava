@@ -577,9 +577,10 @@ function injectAffiliateTag(url, platform) {
       // la página interstitial "Continue shopping" de Amazon.
       const m = String(url).match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i)
       const tag = AMZ_PARTNER_TAG || 'auloava-20'
-      if (m) return `https://www.amazon.com/dp/${m[1].toUpperCase()}?tag=${tag}`
+      if (m) return `https://www.amazon.com/dp/${m[1].toUpperCase()}?tag=${tag}&th=1`
       const u = new URL(url)
       u.searchParams.set('tag', tag)
+      u.searchParams.set('th', '1')
       return u.toString()
     }
     if (platform === 'aliexpress') {
