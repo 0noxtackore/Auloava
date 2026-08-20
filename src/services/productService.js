@@ -1,27 +1,38 @@
 // ============================================================
 // AULOAVA · Servicio de productos (CRUD)
-// Única fuente de verdad: Firebase (vía la Netlify Function
-// agente, que usa la cuenta de servicio / admin SDK).
-// No hay mock ni localStorage: si Firebase no está disponible,
-// la operación falla visiblemente en vez de guardar en falso.
+// Fuente de verdad: Firebase (vía la Netlify Function agente) en
+// producción. En desarrollo/local usa el mock (localStorage) cuando
+// VITE_MOCK_API !== 'false', de modo que la app funciona sin backend.
 // ============================================================
 import { firebaseProducts } from './firebase/products'
+import { productHandlers, MOCK_ENABLED } from './mock'
+
+if (MOCK_ENABLED) {
+  console.info('[Auloava] Usando backend MOCK (localStorage). Desactívalo con VITE_MOCK_API=false')
+} else {
+  console.info('[Auloava] Usando backend Firebase (agente).')
+}
+
+const backend = MOCK_ENABLED ? productHandlers : firebaseProducts
 
 export const productService = {
   /** Lista todos los productos */
-  getAll: (...args) => firebaseProducts.getAll(...args),
+  getAll: (...args) => backend.list(...args),
 
   /** Obtiene un producto por id */
-  getById: (...args) => firebaseProducts.getById(...args),
+  getById: (...args) => backend.get(...args),
 
   /** Crea un producto nuevo */
-  create: (...args) => firebaseProducts.create(...args),
+  create: (...args) => backend.create(...args),
 
   /** Actualiza un producto existente */
-  update: (...args) => firebaseProducts.update(...args),
+  update: (...args) => backend.update(...args),
 
   /** Elimina un producto */
-  remove: (...args) => firebaseProducts.remove(...args),
+  remove: (...args) => backend.remove(...args),
+
+  /** Registra un click (acumulador) */
+  registerClick: (...args) => backend.registerClick(...args),
 }
 
-export const USE_FIREBASE = true
+export const USE_FIREBASE = !MOCK_ENABLED

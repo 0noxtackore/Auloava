@@ -18,7 +18,6 @@ const navItems = [
   { to: { name: 'products' }, label: 'Explorar', icon: 'box' },
   { to: { name: 'agent' }, label: 'Agente', icon: 'bot' },
   { to: { name: 'social' }, label: 'Redes', icon: 'share' },
-  { to: { name: 'approval' }, label: 'Aprobación', icon: 'check' },
 ]
 
 // Iconos SVG inline por nombre

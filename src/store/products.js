@@ -28,11 +28,12 @@ export const useProductStore = defineStore('products', {
       return state.products.filter((p) => {
         const cat = (p.category || '').toLowerCase()
         const title = (p.title || '').toLowerCase()
-        const matchSearch = !q || title.includes(q) || cat.includes(q)
+        const platform = (p.platform || '').toLowerCase()
+        const matchSearch = !q || title.includes(q) || cat.includes(q) || platform.includes(q)
         const matchPlatform =
-          state.filters.platform === 'all' || p.platform === state.filters.platform
+          state.filters.platform === 'all' || platform === state.filters.platform
         const matchCategory =
-          state.filters.category === 'all' || cat === state.filters.category
+          state.filters.category === 'all' || cat === state.filters.category.toLowerCase()
         return matchSearch && matchPlatform && matchCategory
       })
     },
