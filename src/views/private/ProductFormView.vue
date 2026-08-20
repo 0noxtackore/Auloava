@@ -351,12 +351,18 @@ onMounted(async () => {
             :error="errors.affiliateUrl"
           />
 
+          <!-- El input manual solo aparece si no hay galería (p.ej. producto no Amazon).
+               Para Amazon/AliExpress se elige la portada desde la galería de abajo. -->
           <BaseInput
+            v-if="!gallery.length"
             v-model="form.image"
-            label="URL de la imagen (o elige una de la galería)"
+            label="URL de la imagen"
             name="image"
             placeholder="https://..."
           />
+          <p v-else class="pform__hint">
+            Elige la imagen de portada desde la galería de abajo.
+          </p>
         </div>
 
         <!-- ===== Galería de imágenes reales (Amazon) ===== -->
