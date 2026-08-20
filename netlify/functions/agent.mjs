@@ -528,16 +528,30 @@ async function generateSocialPost(product, platform = 'tiktok') {
   const description = product.description || ''
   const category = product.category || ''
 
-  const system = [
-    `Eres un redactor de contenido para redes sociales, experto en marketing de afiliados.`,
-    `Crea un borrador ORIGINAL de post para ${platform} a partir de la información de un producto.`,
-    `REGLAS:`,
-    `1) No copies ni plagies descripciones ajenas; escribe con tus propias palabras.`,
-    `2) Estilo cercano, entusiasta y breve, adecuado a ${platform} (frases cortas, gancho inicial).`,
-    `3) Incluye al final entre 5 y 10 hashtags relevantes y populares.`,
-    `4) Devuelve SOLO el texto del post (caption + hashtags). Sin explicaciones ni comillas.`,
-    `Referencia de estilo (NO copiar, sólo inspirarse): "Clean and protect virtually all of your interior surfaces with Total Interior Cleaner & Protectant! #detailing #springcleaning #cars #truck #clean #interior #beforeandafter #easy #simple #protect"`,
-  ].join(' ')
+  const isPinterest = platform === 'pinterest'
+  const system = isPinterest
+    ? [
+        `Eres un redactor de Pinterest experto en marketing de afiliados.`,
+        `Crea la descripción ORIGINAL de un Pin a partir de la información del producto.`,
+        `REGLAS:`,
+        `1) No plagies; escribe con tus propias palabras.`,
+        `2) Formato de Pin que convierte:`,
+        `   - Línea 1: gancho emocional con emoji (p. ej. "💕 Práctico, bonito y perfecto para los pequeños.").`,
+        `   - 3 a 5 viñetas, cada una con un emoji + un beneficio concreto (p. ej. "🥄 Incluye cuchara", "❄️ Mantiene la comida fría o caliente", "🎒 Ideal para la escuela y paseos").`,
+        `   - Línea final: llamada a la acción con emoji (p. ej. "👉 ¡Descúbrelo AHORA! 🩷").`,
+        `3) Al final, añade de 3 a 5 hashtags relevantes y populares.`,
+        `4) Devuelve SOLO la descripción (gancho + viñetas + CTA + hashtags). Sin explicaciones ni comillas.`,
+      ].join(' ')
+    : [
+        `Eres un redactor de contenido para redes sociales, experto en marketing de afiliados.`,
+        `Crea un borrador ORIGINAL de post para ${platform} a partir de la información de un producto.`,
+        `REGLAS:`,
+        `1) No copies ni plagies descripciones ajenas; escribe con tus propias palabras.`,
+        `2) Estilo cercano, entusiasta y breve, adecuado a ${platform} (frases cortas, gancho inicial).`,
+        `3) Incluye al final entre 5 y 10 hashtags relevantes y populares.`,
+        `4) Devuelve SOLO el texto del post (caption + hashtags). Sin explicaciones ni comillas.`,
+        `Referencia de estilo (NO copiar, sólo inspirarse): "Clean and protect virtually all of your interior surfaces with Total Interior Cleaner & Protectant! #detailing #springcleaning #cars #truck #clean #interior #beforeandafter #easy #simple #protect"`,
+      ].join(' ')
 
   const user = [
     `Producto: ${title}`,
