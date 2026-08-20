@@ -54,6 +54,42 @@ const goToCatalog = async () => {
   }
 }
 
+// Categorías dinámicas: las más populares (por clicks acumulados) y las más
+// recientes (por createdAt). Se combinan sin duplicar y se limitan a 12.
+const categoryChips = computed(() => {
+  const products = productStore.products
+  if (!products.length) return [...CATEGORIES]
+  const map = new Map()
+  for (const p of products) {
+    const c = (p.category || '').trim()
+    if (!c) continue
+    const e = map.get(c) || { category: c, clicks: 0, latest: 0 }
+    e.clicks += Number(p.clicks) || 0
+    const t = new Date(p.createdAt || 0).getTime()
+    if (t > e.latest) e.latest = t
+    map.set(c, e)
+  }
+  const arr = [...map.values()]
+  const popular = arr
+    .slice()
+    .sort((a, b) => b.clicks - a.clicks)
+    .slice(0, 8)
+    .map((x) => x.category)
+  const recent = arr
+    .slice()
+    .sort((a, b) => b.latest - a.latest)
+    .slice(0, 8)
+    .map((x) => x.category)
+  const out = []
+  for (const c of [...popular, ...recent]) if (!out.includes(c)) out.push(c)
+  return out.slice(0, 12)
+})
+
+// Clic en una categoría: siempre muestra el login (luego redirige al catálogo).
+const goToCategoryLogin = () => {
+  router.push({ name: 'public-login', query: { redirect: '/catalog' } })
+}
+
 // Mosaico de pines para el hero estilo Pinterest (datos reales del store)
 const heroPins = computed(() => {
   const p = productStore.products
@@ -162,14 +198,15 @@ onMounted(() => {
       <!-- ============ CATEGORÍAS (chips) ============ -->
       <section id="nav" class="chips">
         <div class="container chips__inner">
-          <RouterLink
-            v-for="category in CATEGORIES"
+          <button
+            v-for="category in categoryChips"
             :key="category"
-              :to="{ name: 'catalog' }"
+            type="button"
             class="chips__item"
+            @click="goToCategoryLogin"
           >
             {{ category }}
-          </RouterLink>
+          </button>
         </div>
       </section>
 
