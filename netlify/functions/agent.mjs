@@ -375,6 +375,17 @@ async function scrapeProduct(rawUrl) {
     }
   }
 
+  // Galería de imágenes reales (Amazon) para que el admin elija la portada
+  const imageIds = extractGallery(html)
+  if (imageIds.length === 0 && image) {
+    const m = image.match(/\/I\/([^"\\]+?)\.(?:_AC|jpg|webp)/)
+    if (m) imageIds.push(m[1])
+  }
+  const images = imageIds.map(
+    (id) => `https://images-na.ssl-images-amazon.com/images/I/${id}._AC_SX679_.jpg`,
+  )
+  if (!image && images.length) image = images[0]
+
   let description = ''
   const fb = html.match(/id="feature-bullets"[^>]*>([\s\S]*?)<\/ul>/i)
   if (fb) {
@@ -456,6 +467,7 @@ async function scrapeProduct(rawUrl) {
     ok: true,
     title,
     image,
+    images,
     description,
     priceText,
     price: Number(String(priceText).replace(/[^0-9.]/g, '')) || 0,
@@ -593,4 +605,33 @@ function injectAffiliateTag(url, platform) {
   } catch {
     return url
   }
+}
+
+// Extrae los IDs de imagen de la galería de Amazon desde el HTML de la
+// página del producto (data-a-dynamic-image, colorImages, /I/ enlinea).
+function extractGallery(html) {
+  const ids = []
+  const push = (url) => {
+    if (!url) return
+    const m = String(url).match(/\/I\/([^"\\]+?)\.(?:_AC|jpg|webp)/)
+    if (m && /^[A-Za-z0-9+_-]+$/.test(m[1]) && !ids.includes(m[1])) ids.push(m[1])
+  }
+  const dyn = html.match(/data-a-dynamic-image="([^"]+)"/)
+  if (dyn) {
+    try {
+      const o = JSON.parse(dyn[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'))
+      Object.keys(o).forEach(push)
+    } catch {
+      /* ignora */
+    }
+  }
+  const blobs =
+    html.match(/'(?:colorImages|colorImagesByAngle|imageGalleryData|imageData)'[\s\S]*?'large'\s*:\s*'([^']+)'/g) || []
+  blobs.forEach((b) => {
+    const m = b.match(/'large'\s*:\s*'([^']+)'/)
+    if (m) push(m[1])
+  })
+  const all = html.match(/https?:\/\/[^"')\s]*\/I\/[^"')\s]+?\.(?:_AC|jpg|webp)/g) || []
+  all.forEach(push)
+  return ids
 }
