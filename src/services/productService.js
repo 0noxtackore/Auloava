@@ -13,26 +13,17 @@ if (MOCK_ENABLED) {
   console.info('[Auloava] Usando backend Firebase (agente).')
 }
 
-const backend = MOCK_ENABLED ? productHandlers : firebaseProducts
-
-export const productService = {
-  /** Lista todos los productos */
-  getAll: (...args) => backend.list(...args),
-
-  /** Obtiene un producto por id */
-  getById: (...args) => backend.get(...args),
-
-  /** Crea un producto nuevo */
-  create: (...args) => backend.create(...args),
-
-  /** Actualiza un producto existente */
-  update: (...args) => backend.update(...args),
-
-  /** Elimina un producto */
-  remove: (...args) => backend.remove(...args),
-
-  /** Registra un click (acumulador) */
-  registerClick: (...args) => backend.registerClick(...args),
-}
+// El mock expone list/get; Firebase expone getAll/getById. Unificamos la
+// interfaz para que el resto de la app no tenga que saber qué backend usa.
+export const productService = MOCK_ENABLED
+  ? {
+      getAll: (...args) => productHandlers.list(...args),
+      getById: (...args) => productHandlers.get(...args),
+      create: (...args) => productHandlers.create(...args),
+      update: (...args) => productHandlers.update(...args),
+      remove: (...args) => productHandlers.remove(...args),
+      registerClick: (...args) => productHandlers.registerClick(...args),
+    }
+  : firebaseProducts
 
 export const USE_FIREBASE = !MOCK_ENABLED
