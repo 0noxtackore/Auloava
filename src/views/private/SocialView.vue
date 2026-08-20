@@ -15,6 +15,8 @@ const store = useProductStore()
 const query = ref('')
 const copiedId = ref('')
 const selectedPlatform = ref('tiktok') // 'tiktok' | 'pinterest'
+const generatingAll = ref(false)
+const generatedCount = ref(0)
 
 const products = computed(() => {
   const q = query.value.trim().toLowerCase()
@@ -63,6 +65,21 @@ async function copy(id, text) {
   } catch {
     /* el navegador bloqueó el portapapeles */
   }
+}
+
+// Genera borradores para todos los productos visibles en secuencia (con
+// pausa) para no saturar la IA. No se hace automático al cargar la página
+// para evitar 200 llamadas de golpe (límites de tasa + coste).
+async function generateAll() {
+  if (generatingAll.value) return
+  generatingAll.value = true
+  generatedCount.value = 0
+  for (const p of products.value) {
+    await generate(p)
+    generatedCount.value++
+    await new Promise((r) => setTimeout(r, 350))
+  }
+  generatingAll.value = false
 }
 
 // Tableros populares sugeridos para Pinterest según la categoría/producto.
@@ -147,6 +164,18 @@ function suggestBoards(p) {
           placeholder="Buscar producto o categoría…"
           aria-label="Buscar producto"
         />
+        <button
+          type="button"
+          class="social__generate-all"
+          :disabled="generatingAll"
+          @click="generateAll"
+        >
+          {{
+            generatingAll
+              ? `Generando ${generatedCount}/${products.length}…`
+              : 'Generar para todos'
+          }}
+        </button>
       </div>
     </header>
 
@@ -290,6 +319,25 @@ function suggestBoards(p) {
   background: var(--off-white);
   font-size: 0.92rem;
   color: var(--ink);
+}
+.social__generate-all {
+  padding: 9px 18px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--green-700);
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+.social__generate-all:hover:not(:disabled) {
+  background: var(--green-800);
+}
+.social__generate-all:disabled {
+  opacity: 0.65;
+  cursor: default;
 }
 .social__loading {
   color: var(--muted);
