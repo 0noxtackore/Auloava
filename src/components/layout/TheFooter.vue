@@ -17,10 +17,10 @@ const base = import.meta.env.BASE_URL
           una comisión sin coste extra para ti.
         </p>
         <div class="footer__social">
-          <a href="#" aria-label="Reddit"><img :src="`${base}images/social/reddit.svg`" alt="Reddit" /></a>
+          <a href="https://es.quora.com/profile/Auloava" target="_blank" rel="noopener" aria-label="Quora"><img :src="`${base}images/social/quora.svg`" alt="Quora" /></a>
           <a href="#" aria-label="Facebook"><img :src="`${base}images/social/facebook.svg`" alt="Facebook" /></a>
-          <a href="#" aria-label="Pinterest"><img :src="`${base}images/social/pinterest.svg`" alt="Pinterest" /></a>
-          <a href="#" aria-label="TikTok"><img :src="`${base}images/social/tiktok.svg`" alt="TikTok" /></a>
+          <a href="https://pin.it/mqicV1j3f" target="_blank" rel="noopener" aria-label="Pinterest"><img :src="`${base}images/social/pinterest.svg`" alt="Pinterest" /></a>
+          <a href="https://www.tiktok.com/@auloava" target="_blank" rel="noopener" aria-label="TikTok"><img :src="`${base}images/social/tiktok.svg`" alt="TikTok" /></a>
         </div>
       </div>
 
