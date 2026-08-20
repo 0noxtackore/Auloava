@@ -52,6 +52,9 @@ const pasteUrl = ref('')
 const scraping = ref(false)
 const scrapeMsg = ref('')
 
+// Galería de imágenes reales del producto (Amazon) para elegir la portada
+const gallery = ref([])
+
 async function loadFromUrl() {
   scrapeMsg.value = ''
   if (!pasteUrl.value.trim()) return
@@ -68,7 +71,14 @@ async function loadFromUrl() {
       return
     }
     if (data.title) form.title = data.title.slice(0, 300)
-    if (data.image) form.image = data.image
+    // Si el scraper trajo galería, la usamos para elegir la portada; si no,
+    // usamos la imagen principal (og:image) como fallback.
+    if (Array.isArray(data.images) && data.images.length) {
+      gallery.value = data.images
+      form.image = ''
+    } else if (data.image) {
+      form.image = data.image
+    }
     if (typeof data.price === 'number' && data.price) form.price = data.price
     else if (data.priceText) form.price = Number(String(data.priceText).replace(/[^0-9.]/g, '')) || ''
     if (typeof data.originalPrice === 'number' && data.originalPrice) form.originalPrice = data.originalPrice
@@ -77,7 +87,7 @@ async function loadFromUrl() {
     if (data.category) form.category = data.category
     if (data.affiliateUrl) form.affiliateUrl = data.affiliateUrl
     else if (data.url) form.affiliateUrl = data.url
-    scrapeMsg.value = data.note || 'Datos cargados. Revisa y completa lo que falte.'
+    scrapeMsg.value = data.note || 'Datos cargados. Elige la imagen de portada de la galería.'
   } catch {
     scrapeMsg.value = 'Error al contactar con el agente.'
   } finally {
@@ -116,6 +126,11 @@ async function handleSubmit() {
   formError.value = ''
   saved.value = false
   if (!validateForm()) return
+
+  // Si hay galería pero el usuario no eligió portada, el sistema elige una al azar.
+  if (!form.image && gallery.value.length) {
+    form.image = gallery.value[Math.floor(Math.random() * gallery.value.length)]
+  }
 
   const payload = {
     ...form,
@@ -314,10 +329,34 @@ onMounted(async () => {
 
           <BaseInput
             v-model="form.image"
-            label="URL de la imagen"
+            label="URL de la imagen (o elige una de la galería)"
             name="image"
             placeholder="https://..."
           />
+        </div>
+
+        <!-- ===== Galería de imágenes reales (Amazon) ===== -->
+        <div v-if="gallery.length" class="pform__gallery-wrap">
+          <p class="pform__hint">
+            Imágenes reales del producto en Amazon. Haz clic para elegir la portada.
+            Si no eliges ninguna, se usará una al azar al guardar.
+          </p>
+          <div class="pform__gallery">
+            <button
+              v-for="(img, i) in gallery"
+              :key="i"
+              type="button"
+              class="pform__thumb"
+              :class="{ 'pform__thumb--active': form.image === img }"
+              @click="form.image = img"
+            >
+              <img :src="img" :alt="`Miniatura ${i + 1}`" loading="lazy" />
+            </button>
+          </div>
+          <div v-if="form.image" class="pform__preview-img">
+            <span>Vista previa de portada:</span>
+            <img :src="form.image" alt="Vista previa de portada" />
+          </div>
         </div>
       </section>
 
@@ -463,6 +502,65 @@ onMounted(async () => {
   gap: 12px;
   padding-top: 20px;
   border-top: 1px solid var(--line);
+}
+
+.pform__gallery-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--line);
+}
+
+.pform__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 10px;
+}
+
+.pform__thumb {
+  position: relative;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--off-white);
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 1 / 1;
+  transition: border-color var(--transition), transform var(--transition);
+}
+.pform__thumb:hover {
+  border-color: var(--green-500);
+  transform: translateY(-2px);
+}
+.pform__thumb--active {
+  border-color: var(--green-600);
+  box-shadow: 0 0 0 3px var(--green-100);
+}
+.pform__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pform__preview-img {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--green-50);
+  color: var(--green-800);
+  font-size: 0.9rem;
+}
+.pform__preview-img img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
 }
 
 .pform__alert {
