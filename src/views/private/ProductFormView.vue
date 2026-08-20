@@ -95,6 +95,28 @@ async function loadFromUrl() {
   }
 }
 
+// Carga solo la galería de imágenes desde el enlace (sin sobrescribir el resto)
+async function loadGallery() {
+  const url = pasteUrl.value.trim() || form.affiliateUrl
+  if (!url) return
+  scraping.value = true
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-agent-key': AGENT_KEY },
+      body: JSON.stringify({ action: 'scrape', url }),
+    })
+    const data = await res.json()
+    if (res.ok && data.ok && Array.isArray(data.images) && data.images.length) {
+      gallery.value = data.images
+    }
+  } catch {
+    /* silencioso: la galería es opcional */
+  } finally {
+    scraping.value = false
+  }
+}
+
 /** Valida el formulario antes de enviar */
 function validateForm() {
   errors.title =
@@ -171,6 +193,8 @@ onMounted(async () => {
       affiliateUrl: product.affiliateUrl || '',
     })
     pasteUrl.value = product.url || product.affiliateUrl || ''
+    // Carga la galería de imágenes reales de inmediato (si es Amazon)
+    loadGallery()
   } catch (error) {
     formError.value = error?.response?.data?.message || 'No se pudo cargar el producto'
     router.replace({ name: 'products' })
