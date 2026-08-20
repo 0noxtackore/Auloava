@@ -71,7 +71,7 @@ export function injectAffiliateTag(rawUrl, platform) {
     const u = new URL(rawUrl)
     if (platform === 'amazon') {
       u.searchParams.set('tag', AMZ_PARTNER_TAG)
-      u.searchParams.set('th', '1')
+      u.searchParams.set('th', '0')
       u.searchParams.delete('ascsubtag')
     } else if (platform === 'aliexpress') {
       u.searchParams.set('trackingId', ALI_TRACKING_ID)

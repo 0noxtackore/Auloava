@@ -6,7 +6,7 @@ const ENDPOINT = 'https://auloava.netlify.app/.netlify/functions/agent'
 const AGENT_KEY = 'auloava'
 
 const ASIN_RE = /\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i
-const COMPLIANT_RE = /^https:\/\/www\.amazon\.com\/dp\/[A-Z0-9]{10}\?tag=auloava-20&th=1$/i
+const COMPLIANT_RE = /^https:\/\/www\.amazon\.com\/dp\/[A-Z0-9]{10}\?tag=auloava-20&th=0$/i
 
 async function list() {
   const res = await fetch(ENDPOINT, {
