@@ -6,10 +6,13 @@
 // ============================================================
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useProductSuggestions } from '@/composables/useProductSuggestions'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
 const search = ref('')
+const { suggestions: searchSuggestions } = useProductSuggestions(search, 6)
+const searchOpen = ref(false)
 const open = ref(false)
 const subOpen = ref(false)
 const country = ref('')
@@ -18,6 +21,17 @@ function goSearch() {
   const q = search.value.trim()
   router.push({ name: 'catalog', query: q ? { q } : {} })
   open.value = false
+  searchOpen.value = false
+}
+function pickSuggestion(p) {
+  search.value = p.title
+  searchOpen.value = false
+  router.push({ name: 'catalog', query: { q: p.title } })
+}
+function onSearchBlur() {
+  setTimeout(() => {
+    searchOpen.value = false
+  }, 150)
 }
 function goRegister() {
   router.push({ name: 'register' })
@@ -92,12 +106,26 @@ onMounted(detectLocation)
             <circle cx="11" cy="11" r="7" />
             <line x1="16.5" y1="16.5" x2="21" y2="21" />
           </svg>
-          <input
-            v-model="search"
-            type="search"
-            placeholder="Buscar ofertas…"
-            aria-label="Buscar ofertas"
-          />
+          <div class="topbar__search-box">
+            <input
+              v-model="search"
+              type="search"
+              placeholder="Buscar ofertas…"
+              aria-label="Buscar ofertas"
+              @focus="searchOpen = true"
+              @blur="onSearchBlur"
+            />
+            <ul v-if="searchOpen && searchSuggestions.length" class="topbar__suggestions">
+              <li
+                v-for="p in searchSuggestions"
+                :key="p.id"
+                @mousedown.prevent="pickSuggestion(p)"
+              >
+                <span class="topbar__sugg-title">{{ p.title }}</span>
+                <span class="topbar__sugg-cat">{{ p.category || 'Sin categoría' }}</span>
+              </li>
+            </ul>
+          </div>
         </form>
 
         <div class="topbar__location" :title="country || 'Ubicación desconocida'">
@@ -326,6 +354,53 @@ onMounted(detectLocation)
   outline: none;
   border-color: var(--green-500);
   background: var(--white);
+}
+
+/* Desplegable de sugerencias (estilo Google) */
+.topbar__search-box {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+.topbar__suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.topbar__suggestions li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.topbar__suggestions li:hover {
+  background: var(--green-50);
+}
+.topbar__sugg-title {
+  font-size: 0.9rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar__sugg-cat {
+  font-size: 0.74rem;
+  color: var(--muted);
 }
 
 /* ---- Acciones (login / registro) en esquina ---- */

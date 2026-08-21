@@ -7,6 +7,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
+import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { landingData } from '@/services/mock'
 import { CATEGORIES } from '@/constants'
 import { formatPercent } from '@/utils/formatters'
@@ -46,6 +47,20 @@ const stepImage = (step) =>
 // Firebase sólo se carga al pulsar (no en la carga inicial de la landing).
 // La búsqueda del hero se pasa como ?q= al catálogo (y en el redirect de login).
 const heroSearch = ref('')
+const { suggestions: heroSuggestions } = useProductSuggestions(heroSearch, 6)
+const heroOpen = ref(false)
+
+function pickHeroSuggestion(p) {
+  heroSearch.value = p.title
+  heroOpen.value = false
+  goToCatalog()
+}
+function onHeroBlur() {
+  setTimeout(() => {
+    heroOpen.value = false
+  }, 150)
+}
+
 const goToCatalog = async () => {
   const { auth, authReady } = await import('@/services/auth')
   await authReady
@@ -189,7 +204,25 @@ onMounted(() => {
             <svg class="hero__search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
             </svg>
-            <input type="text" v-model="heroSearch" placeholder="Busca Auriculares, relojes, gadgets…" />
+            <div class="hero__search-box">
+              <input
+                type="text"
+                v-model="heroSearch"
+                @focus="heroOpen = true"
+                @blur="onHeroBlur"
+                placeholder="Busca Auriculares, relojes, gadgets…"
+              />
+              <ul v-if="heroOpen && heroSuggestions.length" class="hero__suggestions">
+                <li
+                  v-for="p in heroSuggestions"
+                  :key="p.id"
+                  @mousedown.prevent="pickHeroSuggestion(p)"
+                >
+                  <span class="hero__sugg-title">{{ p.title }}</span>
+                  <span class="hero__sugg-cat">{{ p.category || 'Sin categoría' }}</span>
+                </li>
+              </ul>
+            </div>
             <button type="submit">Explorar</button>
           </form>
 
@@ -581,6 +614,56 @@ onMounted(() => {
 }
 .hero__search button:hover {
   transform: translateY(-1px);
+}
+
+/* Desplegable de sugerencias (estilo Google) */
+.hero__search-box {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+.hero__search-box .hero__search-icon {
+  display: none;
+}
+.hero__suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-height: 320px;
+  overflow-y: auto;
+}
+.hero__suggestions li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.hero__suggestions li:hover {
+  background: var(--green-50);
+}
+.hero__sugg-title {
+  font-size: 0.9rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hero__sugg-cat {
+  font-size: 0.74rem;
+  color: var(--muted);
 }
 
 .hero__stats {
