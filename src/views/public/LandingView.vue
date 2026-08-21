@@ -4,7 +4,7 @@
 // Diseño tipo Pinterest (masonry) con paleta verde + blanco,
 // degradados suaves y estado atractivo cuando no hay productos.
 // ============================================================
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { landingData } from '@/services/mock'
@@ -44,13 +44,20 @@ const stepImage = (step) =>
 
 // Ir al catálogo, pero exigiendo login si el usuario no ha iniciado sesión.
 // Firebase sólo se carga al pulsar (no en la carga inicial de la landing).
+// La búsqueda del hero se pasa como ?q= al catálogo (y en el redirect de login).
+const heroSearch = ref('')
 const goToCatalog = async () => {
   const { auth, authReady } = await import('@/services/auth')
   await authReady
+  const q = heroSearch.value.trim()
+  const to = { name: 'catalog', query: q ? { q } : {} }
   if (auth.currentUser) {
-    router.push({ name: 'catalog' })
+    router.push(to)
   } else {
-    router.push({ name: 'public-login', query: { redirect: '/catalog' } })
+    router.push({
+      name: 'public-login',
+      query: { redirect: `/catalog${q ? `?q=${encodeURIComponent(q)}` : ''}` },
+    })
   }
 }
 
@@ -182,7 +189,7 @@ onMounted(() => {
             <svg class="hero__search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
             </svg>
-            <input type="text" placeholder="Busca Auriculares, relojes, gadgets…" />
+            <input type="text" v-model="heroSearch" placeholder="Busca Auriculares, relojes, gadgets…" />
             <button type="submit">Explorar</button>
           </form>
 

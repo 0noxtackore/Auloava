@@ -23,11 +23,25 @@ onMounted(() => {
   if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
 })
 
+// Si el ?q= cambia en la URL (p.ej. desde el buscador del menubar estando
+// ya en el catálogo), actualizamos el término local.
+watch(
+  () => route.query.q,
+  (q) => {
+    query.value = String(q || '')
+  },
+)
+
 const products = computed(() => {
   const q = query.value.trim().toLowerCase()
   const list = productStore.products
   if (!q) return list
-  return list.filter((p) => p.title.toLowerCase().includes(q))
+  return list.filter(
+    (p) =>
+      (p.title || '').toLowerCase().includes(q) ||
+      (p.category || '').toLowerCase().includes(q) ||
+      (p.description || '').toLowerCase().includes(q),
+  )
 })
 
 // Paginación: sólo se renderizan los primeros `visible` productos para
