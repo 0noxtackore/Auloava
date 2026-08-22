@@ -103,6 +103,20 @@ export async function scrapeProduct(url) {
   const description = extractMeta(html, 'og:description') || ''
   let image = extractMeta(html, 'og:image') || ''
   if (image.startsWith('//')) image = 'https:' + image
+  // Fallback de imagen principal: la 1ª del data-a-dynamic-image
+  if (!image) {
+    const dyn = html.match(/data-a-dynamic-image="([^"]+)"/)
+    if (dyn) {
+      try {
+        const o = JSON.parse(dyn[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'))
+        const first = Object.keys(o)[0]
+        if (first) image = first
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  if (image.startsWith('//')) image = 'https:' + image
 
   const imageIds = extractGallery(html)
   // Si la galería no trajo nada, derivamos el ID de og:image
@@ -115,15 +129,22 @@ export async function scrapeProduct(url) {
     extract(html, /id="price_inside_buybox"[^>]*>\s*([^<]+)/i) ||
       extract(html, /id="priceblock_ourprice"[^>]*>\s*([^<]+)/i) ||
       extract(html, /id="priceblock_dealprice"[^>]*>\s*([^<]+)/i) ||
+      extract(html, /<span class="a-price-whole">([\d.,]+)/i) ||
+      extract(html, /<span class="a-offscreen">\$([\d.,]+)/i) ||
       extractMeta(html, 'product:price:amount'),
   )
   let originalPrice = parsePrice(
-    extract(html, /<span class="[^"]*priceBlockStrikePriceString[^"]*"[^>]*>([^<]+)/i),
+    extract(html, /<span class="[^"]*priceBlockStrikePriceString[^"]*"[^>]*>([^<]+)/i) ||
+      extract(html, /<span class="a-text-strike"[^>]*>\$([\d.,]+)/i),
   )
   if (!originalPrice || originalPrice <= price) originalPrice = null
   let rating =
     parseFloat(
-      extract(html, /id="acrPopover"[^>]*>\s*<span[^>]*>([\d.]+)/i) || extractMeta(html, 'og:rating'),
+      extract(html, /id="acrPopover"[^>]*>\s*<span[^>]*>([\d.]+)/i) ||
+        extract(html, /<span class="a-icon-alt">([\d.]+) out of/i) ||
+        extract(html, /([\d.]+)\s+out of\s+5\s+stars/i) ||
+        extract(html, /([\d.]+)\s+de\s+5\s+estrellas/i) ||
+        extractMeta(html, 'og:rating'),
     ) || null
 
   return {

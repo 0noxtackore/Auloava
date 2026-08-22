@@ -7,9 +7,10 @@
 import { storage } from '@/utils/storage'
 import { PLATFORM_LIST, CATEGORIES } from '@/constants'
 import nailProducts from '../../../data/nail-products.json'
+import clothingProducts from '../../../data/clothing-products.json'
 
 const DB_PRODUCTS = 'db_products'
-const DB_VERSION = 3
+const DB_VERSION = 4
 
 const delay = (ms = 450) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -43,9 +44,9 @@ function saveProducts(items) {
 
 /* ---------- Datos semilla ---------- */
 
-/** Productos reales de uñas extraídos de Amazon Best Sellers (data/nail-products.json). */
+/** Productos reales extraídos de Amazon (uñas + ropa) vía scrape. */
 function seedProducts() {
-  return nailProducts.map((p, i) => ({
+  return [...nailProducts, ...clothingProducts].map((p, i) => ({
     id: ids.next(),
     clicks: 0,
     createdAt: new Date(Date.now() - i * 86400000).toISOString(),
