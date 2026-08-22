@@ -169,8 +169,8 @@ watch(query, () => {
 
       <div v-if="isGuest" class="catalog-guest">
         <span>
-          Estás viendo un catálogo <strong>limitado</strong> como invitado.
-          Inicia sesión para ver el catálogo completo.
+          Solo estás viendo <strong>una parte</strong>. El catálogo completo
+          esconde mucho más de lo que imaginas…
         </span>
         <button type="button" class="catalog-guest__btn" @click="goLogin">
           Ver catálogo completo
@@ -354,6 +354,15 @@ watch(query, () => {
   background: var(--green-900);
   color: var(--green-100);
   font-size: 0.92rem;
+}
+@media (min-width: 768px) {
+  .catalog-guest {
+    width: min(100vw - 32px, 1500px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+    padding: 18px 32px;
+    font-size: 1.05rem;
+  }
 }
 .catalog-guest__btn {
   padding: 9px 18px;

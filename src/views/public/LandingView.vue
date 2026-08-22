@@ -300,8 +300,8 @@ onMounted(async () => {
           <div v-if="featured.length" class="featured-more">
             <div v-if="isGuest" class="catalog-guest catalog-guest--landing">
               <span>
-                Estás viendo un catálogo <strong>limitado</strong> como invitado.
-                Inicia sesión para ver el catálogo completo.
+                Solo estás viendo <strong>una parte</strong>. El catálogo completo
+                esconde mucho más de lo que imaginas…
               </span>
               <button type="button" class="catalog-guest__btn" @click="goToCatalog">
                 Ver catálogo completo
@@ -1348,9 +1348,14 @@ onMounted(async () => {
   margin-top: 36px;
 }
 .catalog-guest--landing {
-  width: 100%;
-  max-width: 640px;
+  width: min(100vw - 32px, 1500px);
+  max-width: none;
   margin: 0;
+}
+@media (max-width: 767px) {
+  .catalog-guest--landing {
+    width: 100%;
+  }
 }
 .catalog-guest {
   display: flex;
