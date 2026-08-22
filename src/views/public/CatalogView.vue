@@ -123,11 +123,6 @@ watch(query, () => {
     <PublicHeader />
 
     <main class="container catalog-main">
-      <div class="catalog-demo-banner">
-        Catálogo de <strong>demostración</strong>: precios e enlaces son de muestra.
-        Los datos reales de AliExpress se activarán al aprobar la cuenta de afiliado.
-      </div>
-
       <div v-if="userNiches && userNiches.length" class="catalog-personal">
         <span>
           Catálogo <strong>personalizado</strong> · tus nichos:
@@ -320,17 +315,6 @@ watch(query, () => {
   border-color: var(--green-500);
   background: var(--green-50);
   transform: translateY(-1px);
-}
-
-.catalog-demo-banner {
-  margin: 22px 0 30px;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  border: 1px dashed var(--green-500);
-  background: var(--green-50);
-  color: var(--green-800);
-  font-size: 0.92rem;
-  text-align: center;
 }
 
 .catalog-personal {
