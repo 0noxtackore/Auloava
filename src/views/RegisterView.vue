@@ -6,6 +6,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { register } from '@/services/auth'
+import OnboardingModal from '@/components/OnboardingModal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -16,6 +17,8 @@ const confirm = ref('')
 const showPassword = ref(false)
 const loading = ref(false)
 const error = ref('')
+const showOnboarding = ref(false)
+const newUser = ref({ uid: '', email: '' })
 
 const emailInput = ref(null)
 
@@ -49,14 +52,20 @@ async function onSubmit() {
 
   loading.value = true
   try {
-    await register(email.value.trim(), password.value)
-    const redirect = route.query.redirect
-    router.push(redirect ? { path: redirect } : { path: '/' })
+    const user = await register(email.value.trim(), password.value)
+    newUser.value = { uid: user.uid, email: user.email || email.value.trim() }
+    showOnboarding.value = true
   } catch (err) {
     error.value = ERROR_MESSAGES[err?.code] || err?.message || 'No se pudo crear la cuenta'
   } finally {
     loading.value = false
   }
+}
+
+function goAfterOnboarding() {
+  showOnboarding.value = false
+  const redirect = route.query.redirect
+  router.push(redirect ? { path: redirect } : { name: 'catalog' })
 }
 </script>
 
@@ -163,6 +172,13 @@ async function onSubmit() {
         <p class="login__foot">Conexión segura · Auloava</p>
       </form>
     </main>
+
+    <OnboardingModal
+      :visible="showOnboarding"
+      :user="newUser"
+      @done="goAfterOnboarding"
+      @close="goAfterOnboarding"
+    />
   </div>
 </template>
 

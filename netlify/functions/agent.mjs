@@ -152,6 +152,87 @@ export const handler = async (event) => {
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
     }
 
+    // ---------- Nichos (categorías) para el onboarding ----------
+    async function getNiches() {
+      const ndb = ensureAdmin()
+      const [prodSnap, nicheSnap] = await Promise.all([
+        ndb.ref('products').get(),
+        ndb.ref('niches').get(),
+      ])
+      const set = new Set()
+      if (prodSnap.exists()) {
+        Object.values(prodSnap.val() || {}).forEach((p) => {
+          const c = ((p && p.category) || '').trim()
+          if (c) set.add(c)
+        })
+      }
+      if (nicheSnap.exists()) {
+        const v = nicheSnap.val()
+        const arr = Array.isArray(v) ? v : Object.values(v || {})
+        arr.forEach((n) => {
+          const name = n && typeof n === 'object' ? n.name : n
+          if (name && String(name).trim()) set.add(String(name).trim())
+        })
+      }
+      return [...set].sort((a, b) => a.localeCompare(b))
+    }
+
+    if (action === 'list-niches') {
+      const niches = await getNiches()
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, niches }) }
+    }
+
+    if (action === 'create-niche') {
+      const name = String(payload.name || '').trim()
+      if (!name) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Falta el nombre del nicho' }) }
+      }
+      const ndb = ensureAdmin()
+      const snap = await ndb.ref('niches').get()
+      const list = snap.exists()
+        ? (Array.isArray(snap.val())
+            ? snap.val()
+            : Object.values(snap.val() || {}).map((n) => (n && n.name) || n)
+          ).map(String).map((s) => s.trim()).filter(Boolean)
+        : []
+      if (!list.includes(name)) list.push(name)
+      await ndb.ref('niches').set(list)
+      const niches = await getNiches()
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, niches }) }
+    }
+
+    // ---------- Perfil de usuario (nichos elegidos) ----------
+    if (action === 'get-profile') {
+      const ndb = ensureAdmin()
+      const snap = await ndb.ref(`users/${payload.uid}`).get()
+      const profile = snap.exists() ? { id: payload.uid, ...snap.val() } : null
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, profile }) }
+    }
+
+    if (action === 'save-profile') {
+      const ndb = ensureAdmin()
+      const { uid, email, niches } = payload
+      if (!uid) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Falta uid' }) }
+      }
+      const now = new Date().toISOString()
+      const snap = await ndb.ref(`users/${uid}`).get()
+      const existing = snap.exists() ? snap.val() : {}
+      const profile = {
+        ...existing,
+        email: email || existing.email || '',
+        niches: Array.isArray(niches) ? niches : existing.niches || [],
+        updatedAt: now,
+      }
+      if (!existing.createdAt) profile.createdAt = now
+      await ndb.ref(`users/${uid}`).set(profile)
+      return {
+        statusCode: 200,
+        headers: HEADERS,
+        body: JSON.stringify({ ok: true, profile: { id: uid, ...profile } }),
+      }
+    }
+
     // Acumulador de clicks: suma +1 al contador del producto (atómico)
     if (action === 'click-product') {
       const db = ensureAdmin()

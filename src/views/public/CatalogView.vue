@@ -7,6 +7,8 @@
 import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
+import { auth, authReady } from '@/services/auth'
+import { profileService } from '@/services/profile'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
@@ -19,8 +21,25 @@ const query = ref(String(route.query.q || ''))
 const PAGE = 24
 const visible = ref(PAGE)
 
-onMounted(() => {
+// Catálogo personalizado: si el usuario logueado eligió nichos, solo se
+// muestran productos de esos nichos. Sin sesión (o sin nichos) se ve todo.
+const userNiches = ref(null) // null = no personalizado
+const showAll = ref(false)
+
+onMounted(async () => {
   if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
+  await authReady
+  const user = auth.currentUser
+  if (user) {
+    try {
+      const profile = await profileService.get(user.uid)
+      if (profile && Array.isArray(profile.niches) && profile.niches.length) {
+        userNiches.value = profile.niches
+      }
+    } catch {
+      /* catálogo no personalizado */
+    }
+  }
 })
 
 // Si el ?q= cambia en la URL (p.ej. desde el buscador del menubar estando
@@ -34,7 +53,14 @@ watch(
 
 const products = computed(() => {
   const q = query.value.trim().toLowerCase()
-  const list = productStore.products
+  let list = productStore.products
+
+  // Personalización por nichos (solo si hay sesión y nichos elegidos)
+  if (userNiches.value && userNiches.value.length && !showAll.value) {
+    const set = new Set(userNiches.value.map((n) => n.toLowerCase()))
+    list = list.filter((p) => set.has((p.category || '').toLowerCase()))
+  }
+
   if (!q) return list
   return list.filter(
     (p) =>
@@ -78,6 +104,16 @@ watch(query, () => {
       <div class="catalog-demo-banner">
         Catálogo de <strong>demostración</strong>: precios e enlaces son de muestra.
         Los datos reales de AliExpress se activarán al aprobar la cuenta de afiliado.
+      </div>
+
+      <div v-if="userNiches && userNiches.length" class="catalog-personal">
+        <span>
+          Catálogo <strong>personalizado</strong> · tus nichos:
+          {{ userNiches.join(', ') }}
+        </span>
+        <button type="button" class="catalog-personal__toggle" @click="showAll = !showAll">
+          {{ showAll ? 'Solo mis nichos' : 'Ver todo el catálogo' }}
+        </button>
       </div>
       <form class="catalog-search" @submit.prevent>
         <input
@@ -263,5 +299,30 @@ watch(query, () => {
   color: var(--green-800);
   font-size: 0.92rem;
   text-align: center;
+}
+
+.catalog-personal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: -14px 0 26px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--green-100);
+  color: var(--green-800);
+  font-size: 0.9rem;
+}
+.catalog-personal__toggle {
+  padding: 7px 16px;
+  border: 1.5px solid var(--green-600);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--green-700);
+  font-weight: 600;
+  font-size: 0.84rem;
+  cursor: pointer;
+  white-space: nowrap;
 }
 </style>
