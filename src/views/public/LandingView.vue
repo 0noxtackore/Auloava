@@ -107,9 +107,11 @@ const categoryChips = computed(() => {
   return out.slice(0, 12)
 })
 
-// Clic en una categoría: siempre muestra el login (luego redirige al catálogo).
-const goToCategoryLogin = () => {
-  router.push({ name: 'public-login', query: { redirect: '/catalog' } })
+// Clic en una categoría: lleva al catálogo filtrado por esa categoría.
+// El invitado lo ve LIMITADO (sin login); al pulsar "catálogo completo"
+// sí se pide login. Si ya inició sesión, lo ve completo sin problemas.
+const goToCategory = (category) => {
+  router.push({ name: 'catalog', query: { category } })
 }
 
 // Mosaico de pines para el hero estilo Pinterest (datos reales del store)
@@ -243,7 +245,7 @@ onMounted(() => {
             :key="category"
             type="button"
             class="chips__item"
-            @click="goToCategoryLogin"
+            @click="goToCategory(category)"
           >
             {{ category }}
           </button>

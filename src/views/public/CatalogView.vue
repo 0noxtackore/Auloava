@@ -18,18 +18,26 @@ const productStore = useProductStore()
 const route = useRoute()
 const router = useRouter()
 const query = ref(String(route.query.q || ''))
+const categoryFilter = ref(String(route.query.category || ''))
 const PAGE = 24
 const visible = ref(PAGE)
+const GUEST_LIMIT = 12
 
 // Catálogo personalizado: si el usuario logueado eligió nichos, solo se
 // muestran productos de esos nichos. Sin sesión (o sin nichos) se ve todo.
 const userNiches = ref(null) // null = no personalizado
 const showAll = ref(false)
+const isGuest = ref(true)
+
+function goLogin() {
+  router.push({ name: 'public-login', query: { redirect: route.fullPath } })
+}
 
 onMounted(async () => {
   if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
   await authReady
   const user = auth.currentUser
+  isGuest.value = !user
   if (user) {
     try {
       const profile = await profileService.get(user.uid)
@@ -42,12 +50,18 @@ onMounted(async () => {
   }
 })
 
-// Si el ?q= cambia en la URL (p.ej. desde el buscador del menubar estando
-// ya en el catálogo), actualizamos el término local.
+// Si el ?q= o ?category= cambian en la URL, actualizamos los términos locales.
 watch(
   () => route.query.q,
   (q) => {
     query.value = String(q || '')
+  },
+)
+watch(
+  () => route.query.category,
+  (c) => {
+    categoryFilter.value = String(c || '')
+    visible.value = PAGE
   },
 )
 
@@ -55,8 +69,12 @@ const products = computed(() => {
   const q = query.value.trim().toLowerCase()
   let list = productStore.products
 
-  // Personalización por nichos (solo si hay sesión y nichos elegidos)
-  if (userNiches.value && userNiches.value.length && !showAll.value) {
+  // Si se eligió una categoría explícitamente, se muestra esa categoría
+  // (para todos). Si no, se aplica la personalización por nichos.
+  if (categoryFilter.value) {
+    const c = categoryFilter.value.toLowerCase()
+    list = list.filter((p) => (p.category || '').toLowerCase() === c)
+  } else if (userNiches.value && userNiches.value.length && !showAll.value) {
     const set = new Set(userNiches.value.map((n) => n.toLowerCase()))
     list = list.filter((p) => set.has((p.category || '').toLowerCase()))
   }
@@ -70,10 +88,14 @@ const products = computed(() => {
   )
 })
 
-// Paginación: sólo se renderizan los primeros `visible` productos para
-// evitar cargar 130 imágenes de golpe (fuente principal del lag).
-const paged = computed(() => products.value.slice(0, visible.value))
-const hasMore = computed(() => visible.value < products.value.length)
+// El invitado ve un catálogo LIMITADO; al iniciar sesión ve el completo.
+const paged = computed(() => {
+  const max = isGuest.value ? GUEST_LIMIT : products.value.length
+  return products.value.slice(0, Math.min(visible.value, max))
+})
+const hasMore = computed(() =>
+  isGuest.value ? false : visible.value < products.value.length,
+)
 
 function loadMore() {
   visible.value = Math.min(visible.value + PAGE, products.value.length)
@@ -113,6 +135,16 @@ watch(query, () => {
         </span>
         <button type="button" class="catalog-personal__toggle" @click="showAll = !showAll">
           {{ showAll ? 'Solo mis nichos' : 'Ver todo el catálogo' }}
+        </button>
+      </div>
+
+      <div v-if="isGuest" class="catalog-guest">
+        <span>
+          Estás viendo un catálogo <strong>limitado</strong> como invitado.
+          Inicia sesión para ver el catálogo completo.
+        </span>
+        <button type="button" class="catalog-guest__btn" @click="goLogin">
+          Ver catálogo completo
         </button>
       </div>
       <form class="catalog-search" @submit.prevent>
@@ -321,6 +353,31 @@ watch(query, () => {
   background: var(--white);
   color: var(--green-700);
   font-weight: 600;
+  font-size: 0.84rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.catalog-guest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: -14px 0 26px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  background: var(--green-900);
+  color: var(--green-100);
+  font-size: 0.92rem;
+}
+.catalog-guest__btn {
+  padding: 9px 18px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--green-900);
+  font-weight: 700;
   font-size: 0.84rem;
   cursor: pointer;
   white-space: nowrap;
