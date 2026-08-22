@@ -8,6 +8,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { useProductSuggestions } from '@/composables/useProductSuggestions'
+import { auth, authReady } from '@/services/auth'
 import { landingData } from '@/services/mock'
 import { CATEGORIES } from '@/constants'
 import { formatPercent } from '@/utils/formatters'
@@ -158,10 +159,13 @@ const featureIcons = {
   refresh: 'M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6',
 }
 
-onMounted(() => {
+const isGuest = ref(true)
+onMounted(async () => {
   if (!productStore.products.length) {
     productStore.fetchProducts().catch(() => {})
   }
+  await authReady
+  isGuest.value = !auth.currentUser
 })
 </script>
 
@@ -294,7 +298,16 @@ onMounted(() => {
 
           <!-- Enlace al catálogo completo -->
           <div v-if="featured.length" class="featured-more">
-            <RouterLink :to="{ name: 'catalog' }" class="featured-more__btn" @click.prevent="goToCatalog">
+            <div v-if="isGuest" class="catalog-guest catalog-guest--landing">
+              <span>
+                Estás viendo un catálogo <strong>limitado</strong> como invitado.
+                Inicia sesión para ver el catálogo completo.
+              </span>
+              <button type="button" class="catalog-guest__btn" @click="goToCatalog">
+                Ver catálogo completo
+              </button>
+            </div>
+            <RouterLink v-else :to="{ name: 'catalog' }" class="featured-more__btn">
               Ver catálogo completo ({{ productStore.products.length }} ofertas)
             </RouterLink>
           </div>
@@ -1333,6 +1346,34 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin-top: 36px;
+}
+.catalog-guest--landing {
+  width: 100%;
+  max-width: 640px;
+  margin: 0;
+}
+.catalog-guest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  background: var(--green-900);
+  color: var(--green-100);
+  font-size: 0.92rem;
+}
+.catalog-guest__btn {
+  padding: 9px 18px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--green-900);
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  white-space: nowrap;
 }
 .featured-more__btn {
   padding: 12px 28px;
