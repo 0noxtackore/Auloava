@@ -132,16 +132,6 @@ watch(query, () => {
           {{ showAll ? 'Solo mis nichos' : 'Ver todo el catálogo' }}
         </button>
       </div>
-
-      <div v-if="isGuest" class="catalog-guest">
-        <span>
-          Estás viendo un catálogo <strong>limitado</strong> como invitado.
-          Inicia sesión para ver el catálogo completo.
-        </span>
-        <button type="button" class="catalog-guest__btn" @click="goLogin">
-          Ver catálogo completo
-        </button>
-      </div>
       <form class="catalog-search" @submit.prevent>
         <input
           v-model="query"
@@ -174,6 +164,16 @@ watch(query, () => {
       <div v-if="hasMore" class="catalog-more">
         <button class="catalog-more__btn" type="button" @click="onLoadMore">
           Cargar más ({{ products.length - visible }} restantes)
+        </button>
+      </div>
+
+      <div v-if="isGuest" class="catalog-guest">
+        <span>
+          Estás viendo un catálogo <strong>limitado</strong> como invitado.
+          Inicia sesión para ver el catálogo completo.
+        </span>
+        <button type="button" class="catalog-guest__btn" @click="goLogin">
+          Ver catálogo completo
         </button>
       </div>
 
