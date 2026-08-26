@@ -619,8 +619,8 @@ async function generateSocialPost(product, platform = 'tiktok') {
         `2) Formato de Pin que convierte:`,
         `   - Línea 1: gancho emocional con emoji (p. ej. "💕 Práctico, bonito y perfecto para los pequeños.").`,
         `   - 3 a 5 viñetas, cada una con un emoji + un beneficio concreto (p. ej. "🥄 Incluye cuchara", "❄️ Mantiene la comida fría o caliente", "🎒 Ideal para la escuela y paseos").`,
-        `   - Línea final: llamada a la acción con emoji (p. ej. "👉 ¡Descúbrelo AHORA! 🩷").`,
-        `3) Al final, añade de 3 a 5 hashtags relevantes y populares.`,
+        `   - Línea final: llamada a la acción con emoji que invite a hacer clic en el ENLACE DE AFILIADO (p. ej. "👉 Haz clic en el enlace para ver el precio y comprarlo 🩷").`,
+        `3) Al final, añade de 3 a 5 hashtags relevantes y populares, e incluye "#affiliate" o mención de que es contenido de afiliado.`,
         `4) Devuelve SOLO la descripción (gancho + viñetas + CTA + hashtags). Sin explicaciones ni comillas.`,
       ].join(' ')
     : [
@@ -629,8 +629,10 @@ async function generateSocialPost(product, platform = 'tiktok') {
         `REGLAS:`,
         `1) No copies ni plagies descripciones ajenas; escribe con tus propias palabras.`,
         `2) Estilo cercano, entusiasta y breve, adecuado a ${platform} (frases cortas, gancho inicial).`,
-        `3) Incluye al final entre 5 y 10 hashtags relevantes y populares.`,
-        `4) Devuelve SOLO el texto del post (caption + hashtags). Sin explicaciones ni comillas.`,
+        `3) Incluye al final una llamada a la acción CLARA que invite a hacer clic en el ENLACE DE AFILIADO (p. ej. "🔗 Consíguelo en el enlace de la bio / en el primero comentario", "👉 Haz clic para ver el precio"). No escribas la URL tú; solo dirige al enlace, que se añade aparte.`,
+        `4) Añade una breve mención de que es contenido de afiliado (p. ej. "#affiliate" o "como afiliado puedo ganar una comisión").`,
+        `5) Incluye al final entre 5 y 10 hashtags relevantes y populares.`,
+        `6) Devuelve SOLO el texto del post (caption + CTA + hashtags). Sin explicaciones ni comillas.`,
         `Referencia de estilo (NO copiar, sólo inspirarse): "Clean and protect virtually all of your interior surfaces with Total Interior Cleaner & Protectant! #detailing #springcleaning #cars #truck #clean #interior #beforeandafter #easy #simple #protect"`,
       ].join(' ')
 
