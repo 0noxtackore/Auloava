@@ -72,6 +72,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [940, 140],
+      "disabled": true,
       "parameters": {
         "mode": "runOnceForAllItems",
         "jsCode": "const TOKEN = process.env.PINTEREST_ACCESS_TOKEN;\nconst BOARD = process.env.PINTEREST_BOARD_ID;\nconst item = $input.all()[0].json;\nconst product = item.product;\nconst imgs = (product.images && product.images.length) ? product.images : [product.image];\nconst results = [];\nfor (const url of imgs) {\n  const res = await fetch('https://api.pinterest.com/v5/pins', {\n    method: 'POST',\n    headers: { Authorization: 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },\n    body: JSON.stringify({\n      board_id: BOARD,\n      title: (product.title || '').slice(0, 100),\n      description: item.draft,\n      link: product.affiliateUrl,\n      media: { source_type: 'image_url', url: url }\n    })\n  });\n  results.push({ status: res.status, url });\n}\nreturn [{ json: { platform: 'pinterest', count: results.length, results } }];"
