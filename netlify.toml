@@ -10,6 +10,11 @@
 [functions]
   directory = "netlify/functions"
 
+# Publicación automática diaria en redes (reemplaza a n8n).
+# Hora en UTC: "0 10 * * *" = 10:00 UTC. Ajusta si quieres otra hora.
+[functions.social-scheduler]
+  schedule = "0 10 * * *"
+
 # SPA: redirige cualquier ruta al index.html (history mode de Vue Router)
 [[redirects]]
   from = "/*"
