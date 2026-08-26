@@ -1,0 +1,164 @@
+{
+  "name": "Auloava - Posteo social (todas las redes)",
+  "nodes": [
+    {
+      "id": "n1",
+      "name": "Cada día 10am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 400],
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 10 * * *" }] }
+      }
+    },
+    {
+      "id": "n2",
+      "name": "Listar y elegir producto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 400],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENT = 'https://auloava.netlify.app/.netlify/functions/agent';\nconst KEY = process.env.AGENT_KEY || 'auloava';\nconst res = await fetch(AGENT, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-agent-key': KEY },\n  body: JSON.stringify({ action: 'list-products' })\n});\nconst data = await res.json();\nconst products = data.products || [];\nif (!products.length) throw new Error('Sin productos');\nconst pick = products[Math.floor(Math.random() * products.length)];\nreturn [{ json: { product: pick } }];"
+      }
+    },
+    {
+      "id": "n3",
+      "name": "Borrador Pinterest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 140],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENT = 'https://auloava.netlify.app/.netlify/functions/agent';\nconst KEY = process.env.AGENT_KEY || 'auloava';\nconst product = $input.all()[0].json.product;\nconst res = await fetch(AGENT, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-agent-key': KEY },\n  body: JSON.stringify({ action: 'generate-post', product, platform: 'pinterest' })\n});\nconst data = await res.json();\nif (!data.ok) throw new Error(data.error || 'generate-post fallo');\nreturn [{ json: { platform: 'pinterest', product, draft: data.draft } }];"
+      }
+    },
+    {
+      "id": "n4",
+      "name": "Borrador Facebook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENT = 'https://auloava.netlify.app/.netlify/functions/agent';\nconst KEY = process.env.AGENT_KEY || 'auloava';\nconst product = $input.all()[0].json.product;\nconst res = await fetch(AGENT, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-agent-key': KEY },\n  body: JSON.stringify({ action: 'generate-post', product, platform: 'facebook' })\n});\nconst data = await res.json();\nif (!data.ok) throw new Error(data.error || 'generate-post fallo');\nreturn [{ json: { platform: 'facebook', product, draft: data.draft } }];"
+      }
+    },
+    {
+      "id": "n5",
+      "name": "Borrador TikTok",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 460],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENT = 'https://auloava.netlify.app/.netlify/functions/agent';\nconst KEY = process.env.AGENT_KEY || 'auloava';\nconst product = $input.all()[0].json.product;\nconst res = await fetch(AGENT, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-agent-key': KEY },\n  body: JSON.stringify({ action: 'generate-post', product, platform: 'tiktok' })\n});\nconst data = await res.json();\nif (!data.ok) throw new Error(data.error || 'generate-post fallo');\nreturn [{ json: { platform: 'tiktok', product, draft: data.draft } }];"
+      }
+    },
+    {
+      "id": "n6",
+      "name": "Borrador Quora",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 620],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENT = 'https://auloava.netlify.app/.netlify/functions/agent';\nconst KEY = process.env.AGENT_KEY || 'auloava';\nconst product = $input.all()[0].json.product;\nconst res = await fetch(AGENT, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-agent-key': KEY },\n  body: JSON.stringify({ action: 'generate-post', product, platform: 'quora' })\n});\nconst data = await res.json();\nif (!data.ok) throw new Error(data.error || 'generate-post fallo');\nreturn [{ json: { platform: 'quora', product, draft: data.draft } }];"
+      }
+    },
+    {
+      "id": "n7",
+      "name": "Publicar Pinterest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 140],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const TOKEN = process.env.PINTEREST_ACCESS_TOKEN;\nconst BOARD = process.env.PINTEREST_BOARD_ID;\nconst item = $input.all()[0].json;\nconst product = item.product;\nconst imgs = (product.images && product.images.length) ? product.images : [product.image];\nconst results = [];\nfor (const url of imgs) {\n  const res = await fetch('https://api.pinterest.com/v5/pins', {\n    method: 'POST',\n    headers: { Authorization: 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },\n    body: JSON.stringify({\n      board_id: BOARD,\n      title: (product.title || '').slice(0, 100),\n      description: item.draft,\n      link: product.affiliateUrl,\n      media: { source_type: 'image_url', url: url }\n    })\n  });\n  results.push({ status: res.status, url });\n}\nreturn [{ json: { platform: 'pinterest', count: results.length, results } }];"
+      }
+    },
+    {
+      "id": "n8",
+      "name": "Publicar Facebook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 300],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const TOKEN = process.env.FACEBOOK_PAGE_TOKEN;\nconst PAGE = process.env.FACEBOOK_PAGE_ID || '61593917245819';\nconst item = $input.all()[0].json;\nconst product = item.product;\nconst imgs = (product.images && product.images.length) ? product.images : [product.image];\nconst results = [];\nfor (const url of imgs) {\n  const res = await fetch('https://graph.facebook.com/v18.0/' + PAGE + '/photos', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ url: url, caption: item.draft + '\\n' + product.affiliateUrl, access_token: TOKEN })\n  });\n  results.push({ status: res.status });\n}\nreturn [{ json: { platform: 'facebook', count: results.length, results } }];"
+      }
+    },
+    {
+      "id": "n9",
+      "name": "Borrador TikTok (manual)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 460],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const item = $input.all()[0].json;\nreturn [{ json: { platform: 'tiktok', nota: 'Pega este borrador manualmente (TikTok no tiene API de publicacion abierta).', draft: item.draft, url: item.product.affiliateUrl } }];"
+      }
+    },
+    {
+      "id": "n10",
+      "name": "Borrador Quora (manual)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 620],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const item = $input.all()[0].json;\nreturn [{ json: { platform: 'quora', nota: 'Pega este borrador manualmente (Quora no tiene API de publicacion).', draft: item.draft, url: item.product.affiliateUrl } }];"
+      }
+    },
+    {
+      "id": "n11",
+      "name": "Generar video (opcional)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 780],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "if (process.env.GENERATE_VIDEO !== 'true' || !process.env.CREATOMATE_API_KEY) return [{ json: { skipped: true } }];\nconst product = $input.all()[0].json.product;\nconst imgs = (product.images && product.images.length) ? product.images : [product.image];\nconst res = await fetch('https://api.creatomate.com/v1/renders', {\n  method: 'POST',\n  headers: { Authorization: 'Bearer ' + process.env.CREATOMATE_API_KEY, 'Content-Type': 'application/json' },\n  body: JSON.stringify({ source: { kind: 'slideshow', elements: imgs.map((u) => ({ source: u })) } })\n});\nconst data = await res.json();\nreturn [{ json: { videoUrl: data.url || (data[0] && data[0].url), renderId: data.id } }];"
+      }
+    },
+    {
+      "id": "n12",
+      "name": "Publicar video (opcional)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 780],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const item = $input.all()[0].json;\nif (item.skipped || !item.videoUrl) return [{ json: { skipped: true } }];\nconst TOKEN = process.env.FACEBOOK_PAGE_TOKEN;\nconst PAGE = process.env.FACEBOOK_PAGE_ID || '61593917245819';\nconst fbres = await fetch('https://graph.facebook.com/v18.0/' + PAGE + '/videos', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ file_url: item.videoUrl, description: item.product ? item.product.title : '', access_token: TOKEN })\n});\nreturn [{ json: { platform: 'video', facebook: fbres.status, tiktokVideoUrl: item.videoUrl, nota: 'Para TikTok usa este videoUrl en Buffer (TikTok no tiene API abierta).' } }];"
+      }
+    }
+  ],
+  "connections": {
+    "Listar y elegir producto": {
+      "main": [[
+        { "node": "Borrador Pinterest", "type": "main", "index": 0 },
+        { "node": "Borrador Facebook", "type": "main", "index": 0 },
+        { "node": "Borrador TikTok", "type": "main", "index": 0 },
+        { "node": "Borrador Quora", "type": "main", "index": 0 },
+        { "node": "Generar video (opcional)", "type": "main", "index": 0 }
+      ]]
+    },
+    "Generar video (opcional)": {
+      "main": [[{ "node": "Publicar video (opcional)", "type": "main", "index": 0 }]]
+    },
+    "Borrador Pinterest": {
+      "main": [[{ "node": "Publicar Pinterest", "type": "main", "index": 0 }]]
+    },
+    "Borrador Facebook": {
+      "main": [[{ "node": "Publicar Facebook", "type": "main", "index": 0 }]]
+    },
+    "Borrador TikTok": {
+      "main": [[{ "node": "Borrador TikTok (manual)", "type": "main", "index": 0 }]]
+    },
+    "Borrador Quora": {
+      "main": [[{ "node": "Borrador Quora (manual)", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

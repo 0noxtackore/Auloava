@@ -18,7 +18,7 @@ const base = import.meta.env.BASE_URL
         </p>
         <div class="footer__social">
           <a href="https://es.quora.com/profile/Auloava" target="_blank" rel="noopener" aria-label="Quora"><img :src="`${base}images/social/quora.svg`" alt="Quora" /></a>
-          <a href="#" aria-label="Facebook"><img :src="`${base}images/social/facebook.svg`" alt="Facebook" /></a>
+          <a href="https://www.facebook.com/profile.php?fb_profile_edit_entry_point=%7B%22click_point%22%3A%22edit_profile_button%22%2C%22feature%22%3A%22profile_header%22%7D&id=61593917245819&sk=about" target="_blank" rel="noopener" aria-label="Facebook"><img :src="`${base}images/social/facebook.svg`" alt="Facebook" /></a>
           <a href="https://pin.it/mqicV1j3f" target="_blank" rel="noopener" aria-label="Pinterest"><img :src="`${base}images/social/pinterest.svg`" alt="Pinterest" /></a>
           <a href="https://www.tiktok.com/@auloava" target="_blank" rel="noopener" aria-label="TikTok"><img :src="`${base}images/social/tiktok.svg`" alt="TikTok" /></a>
         </div>
