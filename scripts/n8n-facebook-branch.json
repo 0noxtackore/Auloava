@@ -1,0 +1,59 @@
+{
+  "name": "Auloava - Rama Facebook (lista para pegar)",
+  "nodes": [
+    {
+      "id": "fb0",
+      "name": "Probar ahora (Manual)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 400],
+      "parameters": {}
+    },
+    {
+      "id": "fb1",
+      "name": "Listar y elegir producto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 400],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENT = 'https://auloava.netlify.app/.netlify/functions/agent';\nconst KEY = process.env.AGENT_KEY || 'auloava';\nconst res = await fetch(AGENT, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-agent-key': KEY },\n  body: JSON.stringify({ action: 'list-products' })\n});\nconst data = await res.json();\nconst products = data.products || [];\nif (!products.length) throw new Error('Sin productos');\nconst pick = products[Math.floor(Math.random() * products.length)];\nreturn [{ json: { product: pick } }];"
+      }
+    },
+    {
+      "id": "fb2",
+      "name": "Borrador Facebook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 400],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENT = 'https://auloava.netlify.app/.netlify/functions/agent';\nconst KEY = process.env.AGENT_KEY || 'auloava';\nconst product = $input.all()[0].json.product;\nconst res = await fetch(AGENT, {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json', 'x-agent-key': KEY },\n  body: JSON.stringify({ action: 'generate-post', product, platform: 'facebook' })\n});\nconst data = await res.json();\nif (!data.ok) throw new Error(data.error || 'generate-post fallo');\nreturn [{ json: { platform: 'facebook', product, draft: data.draft } }];"
+      }
+    },
+    {
+      "id": "fb3",
+      "name": "Publicar Facebook",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 400],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const TOKEN = process.env.FACEBOOK_PAGE_TOKEN;\nconst PAGE = process.env.FACEBOOK_PAGE_ID || '61593917245819';\nconst item = $input.all()[0].json;\nconst product = item.product;\nconst imgs = (product.images && product.images.length) ? product.images : [product.image];\nconst results = [];\nfor (const url of imgs) {\n  const res = await fetch('https://graph.facebook.com/v18.0/' + PAGE + '/photos', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ url: url, caption: item.draft + '\\n' + product.affiliateUrl, access_token: TOKEN })\n  });\n  results.push({ status: res.status });\n}\nreturn [{ json: { platform: 'facebook', count: results.length, results } }];"
+      }
+    }
+  ],
+  "connections": {
+    "Probar ahora (Manual)": {
+      "main": [[{ "node": "Listar y elegir producto", "type": "main", "index": 0 }]]
+    },
+    "Listar y elegir producto": {
+      "main": [[{ "node": "Borrador Facebook", "type": "main", "index": 0 }]]
+    },
+    "Borrador Facebook": {
+      "main": [[{ "node": "Publicar Facebook", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}
