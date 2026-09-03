@@ -135,7 +135,7 @@ onMounted(() => {
     <!-- ===== Rejilla masonry ===== -->
     <div v-else class="pin-grid">
       <div v-for="product in store.filteredProducts" :key="product.id" class="pitem">
-        <ProductCard :product="product" />
+        <ProductCard :product="product" admin />
 
         <!-- Acciones de administración (hover) -->
         <div class="pitem__actions">

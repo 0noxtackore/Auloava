@@ -140,6 +140,7 @@ onMounted(() => {
               v-for="product in productStore.products.slice(0, 6)"
               :key="product.id"
               :product="product"
+              admin
             />
           </div>
           <div v-else class="dash__empty">

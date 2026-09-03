@@ -13,6 +13,7 @@ import { useProductStore } from '@/store/products'
 
 const props = defineProps({
   product: { type: Object, required: true },
+  admin: { type: Boolean, default: false },
 })
 
 const productStore = useProductStore()
@@ -90,7 +91,7 @@ const mediaAspect = computed(() => {
       <!-- Overlay al hacer hover -->
       <div class="pin__overlay">
         <span v-if="discount" class="pin__discount">-{{ discount }}%</span>
-        <span class="pin__save">Guardar</span>
+        <span v-if="!admin" class="pin__save">Guardar</span>
       </div>
 
       <span v-if="platform" class="pin__platform">{{ product.category || platform.name }}</span>
@@ -124,7 +125,7 @@ const mediaAspect = computed(() => {
         </span>
       </div>
 
-      <span class="pin__commission">
+      <span v-if="!admin" class="pin__commission">
         Comisión {{ formatPercent(product.commission) }} · {{ product.clicks.toLocaleString('es-ES') }} clicks
       </span>
     </div>
