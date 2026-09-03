@@ -90,7 +90,7 @@ const mediaAspect = computed(() => {
 
       <!-- Overlay al hacer hover -->
       <div class="pin__overlay">
-        <span v-if="discount" class="pin__discount">-{{ discount }}%</span>
+        <span v-if="discount && !admin" class="pin__discount">-{{ discount }}%</span>
         <span v-if="!admin" class="pin__save">Guardar</span>
       </div>
 
