@@ -20,9 +20,15 @@ import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 const router = useRouter()
 const productStore = useProductStore()
 
-// Ofertas destacadas: máximo 20 de los productos más recientes
-// (los últimos insertados en Firebase, que vienen en orden cronológico).
-const featured = computed(() => productStore.products.slice(-20))
+// Ofertas destacadas: 20 productos aleatorios mezclados de todas las categorías
+const featured = computed(() => {
+  const arr = [...productStore.products]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr.slice(0, 20)
+})
 
 const assetsBase = import.meta.env.BASE_URL
 const platformLogos = {

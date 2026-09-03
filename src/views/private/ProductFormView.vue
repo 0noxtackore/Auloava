@@ -30,7 +30,7 @@ const form = reactive({
   image: '',
   price: '',
   originalPrice: '',
-  commission: 10,
+  commission: 0,
   rating: 4.5,
   affiliateUrl: '',
 })
