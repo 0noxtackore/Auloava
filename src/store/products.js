@@ -83,6 +83,57 @@ export const useProductStore = defineStore('products', {
       }))
     },
 
+    /** Desglose por categoría */
+    categoryBreakdown: (state) => {
+      const map = {}
+      state.products.forEach((p) => {
+        const c = (p.category || 'Otros').trim() || 'Otros'
+        map[c] = (map[c] || 0) + 1
+      })
+      return Object.entries(map)
+        .map(([category, count]) => ({
+          category,
+          count,
+          percent: state.products.length
+            ? Math.round((count / state.products.length) * 100)
+            : 0,
+        }))
+        .sort((a, b) => b.count - a.count)
+    },
+
+    /** Ingresos estimados por plataforma */
+    revenueByPlatform: (state) => {
+      const map = {}
+      state.products.forEach((p) => {
+        const rev = (Number(p.clicks) || 0) * (Number(p.price) || 0) * ((Number(p.commission) || 0) / 100)
+        map[p.platform] = (map[p.platform] || 0) + rev
+      })
+      const total = Object.values(map).reduce((a, b) => a + b, 0) || 1
+      return Object.entries(map)
+        .map(([platform, revenue]) => ({
+          platform,
+          revenue,
+          percent: Math.round((revenue / total) * 100),
+        }))
+        .sort((a, b) => b.revenue - a.revenue)
+    },
+
+    /** Top 5 productos por ingresos estimados */
+    topProductsByRevenue: (state) =>
+      [...state.products]
+        .map((p) => ({
+          ...p,
+          revenue: (Number(p.clicks) || 0) * (Number(p.price) || 0) * ((Number(p.commission) || 0) / 100),
+        }))
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 5),
+
+    /** Últimos 5 productos añadidos */
+    recentProducts: (state) =>
+      [...state.products]
+        .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+        .slice(0, 5),
+
     /** Estadísticas compactas para las tarjetas del dashboard */
     stats: function () {
       return [

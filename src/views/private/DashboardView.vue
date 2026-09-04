@@ -1,25 +1,23 @@
 <script setup>
 // ============================================================
-// DashboardView · Panel con estadísticas
-// Ejemplo de integración del store (Pinia) con las vistas:
-//  - Estadísticas calculadas en getters del store
-//  - Desglose por plataforma con barras CSS
-//  - Top 5 productos por clicks
+// DashboardView · Panel mejorado con estadísticas
 // ============================================================
 import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { PLATFORMS } from '@/constants'
-import { formatPrice, formatPercent } from '@/utils/formatters'
+import { formatPrice, formatPercent, formatDate } from '@/utils/formatters'
 import BaseCard from '@/components/ui/BaseCard.vue'
+import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseLoader from '@/components/ui/BaseLoader.vue'
 import ErrorState from '@/components/common/ErrorState.vue'
 import ProductCard from '@/components/product/ProductCard.vue'
 
+const router = useRouter()
 const productStore = useProductStore()
 
 const stats = computed(() => productStore.stats)
 
-// Iconos para cada tarjeta de estadística
 const statIcons = {
   box: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM12 22V12',
   cursor: 'm3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z',
@@ -27,12 +25,33 @@ const statIcons = {
   percent: 'M19 5 5 19M5 5h.01M19 19h.01',
 }
 
+const CATEGORY_COLORS = [
+  '#5DAA7E', '#2D6A4F', '#95D5B2', '#74C69D', '#40916C',
+  '#1B4332', '#B7E4C7', '#D8F3DC', '#344E41', '#52B788',
+]
+
 function platformName(id) {
   return PLATFORMS[id]?.name || id
 }
 
 function platformColor(id) {
   return PLATFORMS[id]?.color || '#888'
+}
+
+function categoryColor(index) {
+  return CATEGORY_COLORS[index % CATEGORY_COLORS.length]
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return 'desconocido'
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'ahora mismo'
+  if (mins < 60) return `hace ${mins} min`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `hace ${hours}h`
+  const days = Math.floor(hours / 24)
+  return `hace ${days}d`
 }
 
 onMounted(() => {
@@ -47,12 +66,13 @@ onMounted(() => {
         <h1 class="dash__title">Dashboard 👋</h1>
         <p class="dash__subtitle">Resumen del catálogo de afiliados.</p>
       </div>
+      <BaseButton @click="router.push({ name: 'product-create' })">
+        + Nuevo producto
+      </BaseButton>
     </header>
 
-    <!-- Loader global -->
     <BaseLoader v-if="productStore.loading" full label="Cargando dashboard..." />
 
-    <!-- Estado de error -->
     <ErrorState
       v-else-if="productStore.error"
       :message="productStore.error"
@@ -82,8 +102,9 @@ onMounted(() => {
         </BaseCard>
       </section>
 
+      <!-- ===== Grid 2x2: breakdowns + tops ===== -->
       <div class="dash__grid">
-        <!-- ===== Desglose por plataforma ===== -->
+        <!-- Desglose por plataforma -->
         <BaseCard title="Productos por plataforma">
           <div class="dash__breakdown">
             <div
@@ -108,12 +129,12 @@ onMounted(() => {
               </div>
             </div>
           </div>
-        <p v-if="!productStore.platformBreakdown.length" class="dash__hint">
+          <p v-if="!productStore.platformBreakdown.length" class="dash__hint">
             Aún no hay productos para mostrar el desglose.
           </p>
         </BaseCard>
 
-        <!-- ===== Top productos ===== -->
+        <!-- Top productos por clicks -->
         <BaseCard title="Top productos por clicks">
           <ol class="dash__top">
             <li v-for="(p, i) in productStore.topProducts" :key="p.id" class="top">
@@ -121,7 +142,7 @@ onMounted(() => {
               <img class="top__img" :src="p.image" :alt="p.title" loading="lazy" />
               <div class="top__meta">
                 <strong>{{ p.title }}</strong>
-                <span>{{ p.platform }} · {{ formatPrice(p.price) }}</span>
+                <span>{{ platformName(p.platform) }} · {{ formatPrice(p.price) }}</span>
               </div>
               <span class="top__clicks">{{ p.clicks.toLocaleString('es-ES') }}</span>
             </li>
@@ -130,9 +151,71 @@ onMounted(() => {
             Cuando añadas productos, verás aquí los más populares.
           </p>
         </BaseCard>
+
+        <!-- Desglose por categorías -->
+        <BaseCard title="Productos por categoría">
+          <div class="dash__breakdown">
+            <div
+              v-for="(item, index) in productStore.categoryBreakdown.slice(0, 8)"
+              :key="item.category"
+              class="break"
+            >
+              <div class="break__head">
+                <span class="break__dot" :style="{ background: categoryColor(index) }" />
+                <span class="break__name">{{ item.category }}</span>
+                <span class="break__count">{{ item.count }} productos</span>
+                <strong>{{ item.percent }}%</strong>
+              </div>
+              <div class="break__track">
+                <div
+                  class="break__bar"
+                  :style="{
+                    width: item.percent + '%',
+                    background: categoryColor(index),
+                  }"
+                />
+              </div>
+            </div>
+          </div>
+          <p v-if="!productStore.categoryBreakdown.length" class="dash__hint">
+            Aún no hay categorías para mostrar.
+          </p>
+        </BaseCard>
+
+        <!-- Top por revenue estimado -->
+        <BaseCard title="Top por revenue estimado">
+          <ol class="dash__top">
+            <li v-for="(p, i) in productStore.topProductsByRevenue" :key="p.id" class="top">
+              <span class="top__rank" :class="{ 'top__rank--gold': i === 0 }">{{ i + 1 }}</span>
+              <img class="top__img" :src="p.image" :alt="p.title" loading="lazy" />
+              <div class="top__meta">
+                <strong>{{ p.title }}</strong>
+                <span>{{ p.clicks.toLocaleString('es-ES') }} clicks · {{ formatPercent(p.commission) }}</span>
+              </div>
+              <span class="top__revenue">{{ formatPrice(p.revenue) }}</span>
+            </li>
+          </ol>
+          <p v-if="!productStore.topProductsByRevenue.length" class="dash__hint">
+            Cuando haya clicks, verás los productos más rentables.
+          </p>
+        </BaseCard>
       </div>
 
-      <!-- ===== Productos destacados ===== -->
+      <!-- ===== Actividad reciente ===== -->
+      <BaseCard v-if="productStore.recentProducts.length" title="Actividad reciente">
+        <ul class="activity">
+          <li v-for="p in productStore.recentProducts" :key="p.id" class="activity__item">
+            <img class="activity__img" :src="p.image" :alt="p.title" loading="lazy" />
+            <div class="activity__meta">
+              <strong>{{ p.title }}</strong>
+              <span>{{ platformName(p.platform) }} · {{ formatPrice(p.price) }}</span>
+            </div>
+            <span class="activity__time">{{ timeAgo(p.createdAt) }}</span>
+          </li>
+        </ul>
+      </BaseCard>
+
+      <!-- ===== Productos más recientes (grid) ===== -->
       <section class="dash__featured">
         <BaseCard title="Productos más recientes" padded>
           <div v-if="productStore.products.length" class="pin-grid">
@@ -222,10 +305,10 @@ onMounted(() => {
   text-transform: lowercase;
 }
 
-/* Grid principal */
+/* Grid principal 2x2 */
 .dash__grid {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
 
@@ -351,6 +434,13 @@ onMounted(() => {
   color: var(--green-600);
 }
 
+.top__revenue {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--green-600);
+  font-size: 0.95rem;
+}
+
 .dash__hint {
   padding: 16px 4px 4px;
   font-size: 0.85rem;
@@ -358,6 +448,62 @@ onMounted(() => {
   text-align: center;
 }
 
+/* Actividad reciente */
+.activity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.activity__item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  transition: background var(--transition);
+}
+.activity__item:hover {
+  background: var(--green-50);
+}
+
+.activity__img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.activity__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.activity__meta strong {
+  font-size: 0.9rem;
+  color: var(--green-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.activity__meta span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.activity__time {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Empty state */
 .dash__empty {
   display: flex;
   flex-direction: column;
@@ -390,9 +536,5 @@ onMounted(() => {
 }
 .dash__empty a:hover {
   text-decoration: underline;
-}
-
-.dash__featured {
-  /* usa el padding de BaseCard internamente para la cuadrícula */
 }
 </style>
