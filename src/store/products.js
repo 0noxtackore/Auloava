@@ -128,11 +128,11 @@ export const useProductStore = defineStore('products', {
         .sort((a, b) => b.revenue - a.revenue)
         .slice(0, 5),
 
-    /** Últimos 5 productos añadidos */
+    /** Últimos 9 productos añadidos */
     recentProducts: (state) =>
       [...state.products]
         .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-        .slice(0, 5),
+        .slice(0, 9),
 
     /** Estadísticas compactas para las tarjetas del dashboard */
     stats: function () {

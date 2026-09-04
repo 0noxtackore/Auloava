@@ -138,7 +138,9 @@ onMounted(() => {
         <BaseCard title="Top productos por clicks">
           <ol class="dash__top">
             <li v-for="(p, i) in productStore.topProducts" :key="p.id" class="top">
-              <span class="top__rank" :class="{ 'top__rank--gold': i === 0 }">{{ i + 1 }}</span>
+              <span class="top__rank" :class="`top__rank--${['gold','silver','bronze'][i] || ''}`">
+                {{ ['🥇','🥈','🥉'][i] || i + 1 }}
+              </span>
               <img class="top__img" :src="p.image" :alt="p.title" loading="lazy" />
               <div class="top__meta">
                 <strong>{{ p.title }}</strong>
@@ -186,7 +188,9 @@ onMounted(() => {
         <BaseCard title="Top por revenue estimado">
           <ol class="dash__top">
             <li v-for="(p, i) in productStore.topProductsByRevenue" :key="p.id" class="top">
-              <span class="top__rank" :class="{ 'top__rank--gold': i === 0 }">{{ i + 1 }}</span>
+              <span class="top__rank" :class="`top__rank--${['gold','silver','bronze'][i] || ''}`">
+                {{ ['🥇','🥈','🥉'][i] || i + 1 }}
+              </span>
               <img class="top__img" :src="p.image" :alt="p.title" loading="lazy" />
               <div class="top__meta">
                 <strong>{{ p.title }}</strong>
@@ -399,7 +403,15 @@ onMounted(() => {
   flex-shrink: 0;
 }
 .top__rank--gold {
-  background: var(--warning);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: var(--white);
+}
+.top__rank--silver {
+  background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+  color: var(--white);
+}
+.top__rank--bronze {
+  background: linear-gradient(135deg, #CD7F32, #A0522D);
   color: var(--white);
 }
 
