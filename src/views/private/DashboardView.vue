@@ -218,9 +218,9 @@ onMounted(() => {
       <!-- ===== Productos más recientes (grid) ===== -->
       <section class="dash__featured">
         <BaseCard title="Productos más recientes" padded>
-          <div v-if="productStore.products.length" class="pin-grid">
+          <div v-if="productStore.recentProducts.length" class="pin-grid">
             <ProductCard
-              v-for="product in productStore.products.slice(0, 6)"
+              v-for="product in productStore.recentProducts"
               :key="product.id"
               :product="product"
               admin
