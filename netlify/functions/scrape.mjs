@@ -14,19 +14,30 @@ const HEADERS = {
   'Content-Type': 'application/json',
 }
 
+function decodeHtmlEntities(str) {
+  if (!str) return ''
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+}
+
 function extract(html, re) {
   const m = html.match(re)
-  return m
-    ? m[1].replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim()
-    : ''
+  return m ? decodeHtmlEntities(m[1].trim()) : ''
 }
 function extractMeta(html, prop) {
   const m = html.match(new RegExp(`<meta[^>]+(?:property|name)="${prop}"[^>]+content="([^"]+)"`, 'i'))
   if (!m) {
     const m2 = html.match(new RegExp(`<meta[^>]+content="([^"]+)"[^>]+(?:property|name)="${prop}"`, 'i'))
-    return m2 ? m2[1].replace(/&amp;/g, '&').trim() : ''
+    return m2 ? decodeHtmlEntities(m2[1].trim()) : ''
   }
-  return m[1].replace(/&amp;/g, '&').trim()
+  return decodeHtmlEntities(m[1].trim())
 }
 function parsePrice(s) {
   if (!s) return null

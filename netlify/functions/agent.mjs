@@ -408,6 +408,19 @@ function detectPlatform(url) {
   return 'aliexpress'
 }
 
+function decodeHtmlEntities(str) {
+  if (!str) return ''
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+}
+
 async function scrapeProduct(rawUrl) {
   if (!rawUrl) return { ok: false, error: 'Falta la URL del producto.' }
   const res = await axios.get(rawUrl, {
@@ -436,6 +449,7 @@ async function scrapeProduct(rawUrl) {
   let title = (meta('og:title') || meta('twitter:title') || (titleTag && titleTag[1]) || '').trim()
   const ptMatch = html.match(/id="productTitle"[^>]*>([^<]+)</i)
   if (ptMatch) title = ptMatch[1].trim()
+  title = decodeHtmlEntities(title)
   title = title.replace(/^amazon\.com[^:]*:\s*/i, '').trim()
 
   let image = (meta('og:image') || meta('twitter:image') || '').trim()
