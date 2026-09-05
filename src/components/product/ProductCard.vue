@@ -6,7 +6,7 @@
 // ============================================================
 import { computed } from 'vue'
 import { PLATFORMS } from '@/constants'
-import { formatPrice, formatRating, formatPercent } from '@/utils/formatters'
+import { formatPrice, formatRating, formatPercent, decodeHtml } from '@/utils/formatters'
 import { optimizeProductImage } from '@/utils/images'
 import { cleanAffiliateUrl } from '@/utils/links'
 import { useProductStore } from '@/store/products'
@@ -98,7 +98,7 @@ const mediaAspect = computed(() => {
     </a>
 
     <div class="pin__body">
-      <h3 class="pin__title">{{ product.title }}</h3>
+      <h3 class="pin__title">{{ decodeHtml(product.title) }}</h3>
 
       <div class="pin__meta">
         <span class="pin__publisher">

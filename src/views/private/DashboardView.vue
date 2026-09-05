@@ -6,7 +6,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { PLATFORMS } from '@/constants'
-import { formatPrice, formatPercent, formatDate } from '@/utils/formatters'
+import { formatPrice, formatPercent, formatDate, decodeHtml } from '@/utils/formatters'
 import BaseCard from '@/components/ui/BaseCard.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseLoader from '@/components/ui/BaseLoader.vue'
@@ -143,7 +143,7 @@ onMounted(() => {
               </span>
               <img class="top__img" :src="p.image" :alt="p.title" loading="lazy" />
               <div class="top__meta">
-                <strong>{{ p.title }}</strong>
+                <strong>{{ decodeHtml(p.title) }}</strong>
                 <span>{{ platformName(p.platform) }} · {{ formatPrice(p.price) }}</span>
               </div>
               <span class="top__clicks">{{ p.clicks.toLocaleString('es-ES') }}</span>
@@ -193,7 +193,7 @@ onMounted(() => {
               </span>
               <img class="top__img" :src="p.image" :alt="p.title" loading="lazy" />
               <div class="top__meta">
-                <strong>{{ p.title }}</strong>
+                <strong>{{ decodeHtml(p.title) }}</strong>
                 <span>{{ p.clicks.toLocaleString('es-ES') }} clicks · {{ formatPercent(p.commission) }}</span>
               </div>
               <span class="top__revenue">{{ formatPrice(p.revenue) }}</span>

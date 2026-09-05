@@ -11,7 +11,7 @@ import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { auth, authReady } from '@/services/auth'
 import { landingData } from '@/services/mock'
 import { CATEGORIES } from '@/constants'
-import { formatPercent } from '@/utils/formatters'
+import { formatPercent, decodeHtml } from '@/utils/formatters'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
@@ -230,7 +230,7 @@ onMounted(async () => {
                   :key="p.id"
                   @mousedown.prevent="pickHeroSuggestion(p)"
                 >
-                  <span class="hero__sugg-title">{{ p.title }}</span>
+                  <span class="hero__sugg-title">{{ decodeHtml(p.title) }}</span>
                   <span class="hero__sugg-cat">{{ p.category || 'Sin categoría' }}</span>
                 </li>
               </ul>

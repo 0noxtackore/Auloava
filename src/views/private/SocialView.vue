@@ -10,6 +10,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useProductStore } from '@/store/products'
 import { socialService } from '@/services/social'
 import { optimizeProductImage } from '@/utils/images'
+import { decodeHtml } from '@/utils/formatters'
 
 const store = useProductStore()
 const query = ref('')
@@ -191,7 +192,7 @@ function suggestBoards(p) {
           decoding="async"
         />
         <div class="social-card__body">
-          <h3 class="social-card__title">{{ p.title }}</h3>
+          <h3 class="social-card__title">{{ decodeHtml(p.title) }}</h3>
           <p class="social-card__cat">{{ p.category || 'Sin categoría' }}</p>
 
           <button

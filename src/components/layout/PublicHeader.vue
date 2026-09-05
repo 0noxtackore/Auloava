@@ -7,6 +7,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductSuggestions } from '@/composables/useProductSuggestions'
+import { decodeHtml } from '@/utils/formatters'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
@@ -121,7 +122,7 @@ onMounted(detectLocation)
                 :key="p.id"
                 @mousedown.prevent="pickSuggestion(p)"
               >
-                <span class="topbar__sugg-title">{{ p.title }}</span>
+                <span class="topbar__sugg-title">{{ decodeHtml(p.title) }}</span>
                 <span class="topbar__sugg-cat">{{ p.category || 'Sin categoría' }}</span>
               </li>
             </ul>

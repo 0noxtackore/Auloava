@@ -52,3 +52,11 @@ export function formatCompact(value) {
   if (Number.isNaN(n)) return '0'
   return Intl.NumberFormat('en', { notation: 'compact' }).format(n)
 }
+
+/** Decodifica entidades HTML (&#39; -> ', &amp; -> &, etc.) */
+export function decodeHtml(str) {
+  if (!str || typeof str !== 'string') return str
+  const el = document.createElement('div')
+  el.innerHTML = str
+  return el.textContent || str
+}
