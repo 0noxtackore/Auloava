@@ -6,6 +6,7 @@
 import { defineStore } from 'pinia'
 import { productService } from '@/services/productService'
 import { formatCompact } from '@/utils/formatters'
+import { useNotificationStore } from './notifications'
 
 export const useProductStore = defineStore('products', {
   state: () => ({
@@ -174,6 +175,7 @@ export const useProductStore = defineStore('products', {
       this.error = null
       try {
         this.products = await productService.getAll()
+        this._generateNotifications()
       } catch (error) {
         this.error = error?.response?.data?.message || error.message
         throw error
@@ -193,6 +195,8 @@ export const useProductStore = defineStore('products', {
       try {
         const product = await productService.create(payload)
         this.products.unshift(product)
+        const n = useNotificationStore()
+        n.add({ type: 'success', title: `Producto creado: "${product.title?.substring(0, 50)}"` })
         return product
       } finally {
         this.saving = false
@@ -214,8 +218,11 @@ export const useProductStore = defineStore('products', {
 
     /** Elimina un producto del estado */
     async deleteProduct(id) {
+      const product = this.products.find((p) => p.id === id)
       await productService.remove(id)
       this.products = this.products.filter((p) => p.id !== id)
+      const n = useNotificationStore()
+      n.add({ type: 'info', title: `Eliminado: "${product?.title?.substring(0, 50) || id}"` })
     },
 
     /**
@@ -227,6 +234,13 @@ export const useProductStore = defineStore('products', {
       if (index !== -1) {
         const current = Number(this.products[index].clicks) || 0
         this.products[index].clicks = current + 1
+        if (current + 1 === 10 || current + 1 === 50 || current + 1 === 100) {
+          const n = useNotificationStore()
+          n.add({
+            type: 'success',
+            title: `"${this.products[index].title?.substring(0, 40)}…" alcanzó ${current + 1} clics`,
+          })
+        }
       }
       try {
         await productService.registerClick(id)
@@ -240,6 +254,37 @@ export const useProductStore = defineStore('products', {
       this.filters.search = ''
       this.filters.platform = 'all'
       this.filters.category = 'all'
+    },
+
+    _generateNotifications() {
+      const n = useNotificationStore()
+      n.clear()
+
+      if (!this.products.length) {
+        n.add({ type: 'warning', title: 'Catálogo vacío — añade tu primer producto' })
+        return
+      }
+
+      n.add({
+        type: 'info',
+        title: `${this.totalProducts} productos en catálogo`,
+      })
+
+      const zeroCommission = this.products.filter((p) => !p.commission)
+      if (zeroCommission.length) {
+        n.add({
+          type: 'warning',
+          title: `${zeroCommission.length} producto(s) con comisión en 0 — revísalos`,
+        })
+      }
+
+      const top = this.topProducts[0]
+      if (top && top.clicks > 0) {
+        n.add({
+          type: 'success',
+          title: `Más clickeado: "${top.title?.substring(0, 40)}…" (${top.clicks} clicks)`,
+        })
+      }
     },
   },
 })
