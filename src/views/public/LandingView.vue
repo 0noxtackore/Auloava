@@ -138,7 +138,7 @@ const mockProducts = computed(() => productStore.products.slice(0, 6))
 const features = [
   {
     title: 'Curado a mano',
-    text: 'Cada producto lo revisa nuestro equipo antes de publicarlo.',
+    text: 'Cada producto es seleccionado y revisado antes de aparecer en Auloava.',
     icon: 'check',
   },
   {
@@ -269,7 +269,7 @@ onMounted(async () => {
             <span class="section__tag">Descubre</span>
             <h2 class="section__title">Ofertas destacadas</h2>
             <p class="section__lead">
-              Productos seleccionados a mano por nuestro equipo de afiliados.
+              Productos seleccionados a mano y verificados antes de publicarlos.
             </p>
           </div>
 
