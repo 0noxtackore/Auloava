@@ -4,7 +4,7 @@
 // Logo, navegación, buscador, "Iniciar sesión" y "Regístrese".
 // En móvil todo se colapsa en un menú desplegable.
 // ============================================================
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { decodeHtml } from '@/utils/formatters'
@@ -14,13 +14,11 @@ const base = import.meta.env.BASE_URL
 const search = ref('')
 const { suggestions: searchSuggestions } = useProductSuggestions(search, 6)
 const searchOpen = ref(false)
-const open = ref(false)
 const country = ref('')
 
 function goSearch() {
   const q = search.value.trim()
   router.push({ name: 'catalog', query: q ? { q } : {} })
-  open.value = false
   searchOpen.value = false
 }
 function pickSuggestion(p) {
@@ -35,21 +33,7 @@ function onSearchBlur() {
 }
 function goRegister() {
   router.push({ name: 'register' })
-  open.value = false
 }
-function closeMenu() {
-  open.value = false
-}
-
-// Cierra con Escape y bloquea el scroll del body mientras el menú está abierto
-function onKeydown(e) {
-  if (e.key === 'Escape') open.value = false
-}
-watch(open, (v) => {
-  document.body.style.overflow = v ? 'hidden' : ''
-})
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 async function detectLocation() {
   const setCountry = (name) => {
@@ -95,95 +79,59 @@ onMounted(detectLocation)
         <img class="topbar__logo-img" :src="`${base}images/logo.png`" alt="Auloava" />
       </RouterLink>
 
-      <button
-        class="topbar__toggle"
-        :class="{ 'is-active': open }"
-        type="button"
-        :aria-expanded="open"
-        aria-label="Abrir menú"
-        @click="open = !open"
-      >
-        <span></span><span></span><span></span>
-      </button>
-
-      <div class="topbar__collapse" :class="{ 'is-open': open }">
-        <div class="topbar__panel-head">
-          <img class="topbar__panel-logo" :src="`${base}images/logo.png`" alt="Auloava" />
-          <button
-            class="topbar__panel-close"
-            type="button"
-            aria-label="Cerrar menú"
-            @click="closeMenu"
-          >
-            ×
-          </button>
-        </div>
-
-        <div class="topbar__panel-section">
-          <span class="topbar__panel-label">Buscar ofertas</span>
-          <form class="topbar__search" @submit.prevent="goSearch">
-            <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <line x1="16.5" y1="16.5" x2="21" y2="21" />
-            </svg>
-            <div class="topbar__search-box">
-              <input
-                v-model="search"
-                type="search"
-                placeholder="Buscar ofertas…"
-                aria-label="Buscar ofertas"
-                @focus="searchOpen = true"
-                @blur="onSearchBlur"
-              />
-              <ul v-if="searchOpen && searchSuggestions.length" class="topbar__suggestions">
-                <li
-                  v-for="p in searchSuggestions"
-                  :key="p.id"
-                  @mousedown.prevent="pickSuggestion(p)"
-                >
-                  <span class="topbar__sugg-title">{{ decodeHtml(p.title) }}</span>
-                  <span class="topbar__sugg-cat">{{ p.category || 'Sin categoría' }}</span>
-                </li>
-              </ul>
-            </div>
-          </form>
-        </div>
-
-        <div class="topbar__panel-section">
-          <span class="topbar__panel-label">Ubicación</span>
-          <div class="topbar__location" :title="country || 'Ubicación desconocida'">
-            <svg
-              class="topbar__location-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            <span>{{ country || '—' }}</span>
+      <div class="topbar__collapse">
+        <form class="topbar__search" @submit.prevent="goSearch">
+          <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          </svg>
+          <div class="topbar__search-box">
+            <input
+              v-model="search"
+              type="search"
+              placeholder="Buscar ofertas…"
+              aria-label="Buscar ofertas"
+              @focus="searchOpen = true"
+              @blur="onSearchBlur"
+            />
+            <ul v-if="searchOpen && searchSuggestions.length" class="topbar__suggestions">
+              <li
+                v-for="p in searchSuggestions"
+                :key="p.id"
+                @mousedown.prevent="pickSuggestion(p)"
+              >
+                <span class="topbar__sugg-title">{{ decodeHtml(p.title) }}</span>
+                <span class="topbar__sugg-cat">{{ p.category || 'Sin categoría' }}</span>
+              </li>
+            </ul>
           </div>
+        </form>
+
+        <div class="topbar__location" :title="country || 'Ubicación desconocida'">
+          <svg
+            class="topbar__location-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span>{{ country || '—' }}</span>
         </div>
 
-        <div class="topbar__panel-section topbar__panel-section--actions">
-          <span class="topbar__panel-label">Cuenta</span>
-          <RouterLink
-            class="topbar__login"
-            :to="{ name: 'public-login' }"
-            @click="closeMenu"
-          >
+        <div class="topbar__actions">
+          <RouterLink class="topbar__login" :to="{ name: 'public-login' }">
             Iniciar sesión
           </RouterLink>
           <button class="topbar__cta" type="button" @click="goRegister">
             Regístrese
           </button>
         </div>
-
-        <p class="topbar__panel-foot">El mejor precio para cada hallazgo.</p>
       </div>
     </nav>
   </header>
@@ -218,27 +166,13 @@ onMounted(detectLocation)
   object-fit: contain;
 }
 
-/* ---- Collapse (PC: fila; móvil: panel) ---- */
+/* ---- Fila de menubar (siempre visible) ---- */
 .topbar__collapse {
   display: flex;
   align-items: center;
   gap: 14px;
   flex: 1;
   margin-left: 14px;
-}
-
-/* Cabecera/pie/labels del panel (solo visibles en móvil) */
-.topbar__panel-head,
-.topbar__panel-label,
-.topbar__panel-foot {
-  display: none;
-}
-/* En escritorio las secciones se aplanan para la fila normal */
-.topbar__panel-section {
-  display: contents;
-}
-.topbar__panel-section--actions {
-  margin-left: auto;
 }
 
 /* ---- Indicador de ubicación ---- */
@@ -389,155 +323,44 @@ onMounted(detectLocation)
   box-shadow: var(--shadow);
 }
 
-/* ---- Hamburguesa (oculta en PC) ---- */
-.topbar__toggle {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  width: 42px;
-  height: 42px;
-  padding: 0 10px;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-full);
-  background: var(--white);
-  cursor: pointer;
-}
-.topbar__toggle span {
-  display: block;
-  height: 2px;
-  width: 100%;
-  background: var(--ink);
-  border-radius: 2px;
-  transition: transform var(--transition), opacity var(--transition);
-}
-.topbar__toggle.is-active span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-.topbar__toggle.is-active span:nth-child(2) {
-  opacity: 0;
-}
-.topbar__toggle.is-active span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
-}
-
-/* ---- Móvil: menú a pantalla completa ---- */
+/* ---- Móvil: misma barra, compacta y sin desbordes ---- */
 @media (max-width: 820px) {
   .topbar__inner {
-    position: relative;
+    gap: 8px;
+    height: 58px;
   }
-  .topbar__brand {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-  .topbar__toggle {
-    display: inline-flex;
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-left: 0;
-    border: 1.5px solid var(--green-200);
-  }
-  .topbar__toggle span {
-    background: var(--green-700);
-  }
-  .topbar__toggle.is-active {
-    border-color: var(--green-500);
-    background: var(--green-50);
+  .topbar__logo-img {
+    height: 30px;
   }
   .topbar__collapse {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 850;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
-    padding: 18px 20px calc(20px + env(safe-area-inset-bottom));
-    background: var(--white);
-    overflow-y: auto;
-  }
-  .topbar__collapse.is-open {
-    display: flex;
-    animation: menu-slide 0.28s ease;
-  }
-  @keyframes menu-slide {
-    from {
-      opacity: 0;
-      transform: translateY(-18px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .topbar__panel-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--line);
-  }
-  .topbar__panel-logo {
-    height: 36px;
-    width: auto;
-    object-fit: contain;
-  }
-  .topbar__panel-close {
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 50%;
-    background: var(--green-50);
-    color: var(--green-700);
-    font-size: 1.35rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: background var(--transition), transform var(--transition);
-  }
-  .topbar__panel-close:hover {
-    background: var(--green-100);
-    transform: rotate(90deg);
-  }
-  .topbar__panel-section {
-    display: flex;
-    flex-direction: column;
     gap: 8px;
-  }
-  .topbar__panel-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
+    margin-left: 8px;
   }
   .topbar__search {
-    max-width: 100%;
+    flex: 1 1 120px;
+    min-width: 0;
+    max-width: none;
+  }
+  .topbar__search input {
+    padding: 7px 12px 7px 34px;
+    font-size: 0.85rem;
   }
   .topbar__location {
-    align-self: flex-start;
-    padding: 8px 14px;
+    display: none;
   }
-  .topbar__panel-section--actions {
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
+  .topbar__actions {
+    gap: 6px;
   }
   .topbar__login,
   .topbar__cta {
-    width: 100%;
+    width: auto;
+    padding: 8px 12px;
+    font-size: 0.82rem;
   }
-  .topbar__panel-foot {
-    display: block;
-    margin-top: auto;
-    padding-top: 16px;
-    text-align: center;
-    font-size: 0.78rem;
-    color: var(--muted);
+}
+@media (max-width: 480px) {
+  .topbar__login {
+    display: none;
   }
 }
 </style>
