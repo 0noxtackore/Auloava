@@ -11,7 +11,8 @@ import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { auth, authReady } from '@/services/auth'
 import { landingData } from '@/services/mock'
 import { CATEGORIES } from '@/constants'
-import { formatPercent, decodeHtml } from '@/utils/formatters'
+import { formatPercent, decodeHtml, formatPrice } from '@/utils/formatters'
+import { optimizeProductImage } from '@/utils/images'
 import ProductCard from '@/components/product/ProductCard.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
@@ -142,6 +143,24 @@ const heroStats = computed(() => {
     { value: `${fmtCompact(totalReviews)}+`, label: 'opiniones reales' },
   ]
 })
+
+// Hallazgos flotantes: 6 productos reales (solo visibles en escritorio)
+const heroFloats = computed(() => {
+  const p = [...productStore.products]
+  p.sort((a, b) => (b.rating || 0) - (a.rating || 0) || (a.price || 0) - (b.price || 0))
+  const used = new Set()
+  const out = []
+  for (const x of p) {
+    if (used.size < 5 && used.has(x.category)) continue
+    used.add(x.category)
+    out.push(x)
+    if (out.length === 6) break
+  }
+  return out
+})
+const openSpotlight = (p) => {
+  router.push({ name: 'catalog', query: { q: p.title } })
+}
 
 // Categorías del hero con su nº real de productos (para los chips decorativos)
 const heroCats = computed(() => {
@@ -286,6 +305,26 @@ onMounted(async () => {
               <span>{{ stat.label }}</span>
             </li>
           </ul>
+        </div>
+
+        <!-- Hallazgos flotantes (solo escritorio) -->
+        <div class="hero__tiles" aria-hidden="false">
+          <article
+            v-for="(t, i) in heroFloats"
+            :key="t.id || t.title"
+            class="hero-tile"
+            :class="`hero-tile--${i}`"
+            @click="openSpotlight(t)"
+          >
+            <img
+              class="hero-tile__img"
+              :src="optimizeProductImage(t.image, 300)"
+              :alt="t.title"
+              loading="lazy"
+              decoding="async"
+            />
+            <span class="hero-tile__price">{{ formatPrice(t.price) }}</span>
+          </article>
         </div>
       </section>
 
@@ -860,6 +899,91 @@ onMounted(async () => {
   color: var(--ink);
 }
 
+/* ---- Hallazgos flotantes (solo escritorio) ---- */
+.hero__tiles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.hero-tile {
+  position: absolute;
+  display: block;
+  width: 128px;
+  height: 168px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid #d3ded6;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation-name: float-tilt;
+  animation-duration: 7s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+.hero-tile:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.16);
+}
+.hero-tile__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-tile__price {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--green-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.hero-tile--0 {
+  top: 14%;
+  left: 2%;
+  animation-delay: 0s;
+}
+.hero-tile--1 {
+  top: 58%;
+  left: 6%;
+  animation-delay: -2s;
+}
+.hero-tile--2 {
+  top: 12%;
+  left: 88%;
+  animation-delay: -4s;
+}
+.hero-tile--3 {
+  top: 55%;
+  left: 91%;
+  animation-delay: -1s;
+}
+.hero-tile--4 {
+  top: 8%;
+  left: 41%;
+  animation-delay: -5s;
+}
+.hero-tile--5 {
+  top: 72%;
+  left: 45%;
+  animation-delay: -3s;
+}
+@keyframes float-tilt {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(4deg);
+  }
+}
+
 @media (max-width: 1179px) {
   .hero {
     flex-direction: column;
@@ -867,7 +991,8 @@ onMounted(async () => {
   }
   .hero__chips,
   .hero__ring,
-  .hero__glow {
+  .hero__glow,
+  .hero__tiles {
     display: none;
   }
 }
