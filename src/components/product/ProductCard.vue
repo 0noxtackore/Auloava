@@ -53,8 +53,8 @@ const avatarColor = computed(() => {
   return pal[hashStr(String(key)) % pal.length]
 })
 
-// Imagen optimizada (tamaño menor en Amazon) para cargar más rápido
-const optimizedImage = computed(() => optimizeProductImage(props.product.image, 320))
+// Imagen optimizada (tamaño medio en Amazon) para cargar rápido y nítida
+const optimizedImage = computed(() => optimizeProductImage(props.product.image, 480))
 
 // Enlace de afiliado canónico (ASIN limpio) para evitar la página
 // interstitial "Continue shopping" de Amazon.

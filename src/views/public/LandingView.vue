@@ -130,6 +130,46 @@ const heroPins = computed(() => {
 
 const pinHeights = [210, 280, 180, 250, 200, 300, 230, 260, 190, 270, 220, 240]
 
+// Stats del hero con datos reales del store (no adornos falsos)
+function fmtCompact(n) {
+  n = Number(n) || 0
+  if (n >= 1e6) return `${(n / 1e6).toLocaleString('es-ES', { maximumFractionDigits: 1 })} M`
+  if (n >= 1e3) return `${(n / 1e3).toLocaleString('es-ES', { maximumFractionDigits: 0 })} mil`
+  return String(n | 0)
+}
+const heroStats = computed(() => {
+  const p = productStore.products
+  if (!p.length) return []
+  const prices = p.map((x) => Number(x.price)).filter(Number.isFinite)
+  const min = Math.min(...prices)
+  const avgRating = p.reduce((a, x) => a + (Number(x.rating) || 0), 0) / p.length
+  const totalReviews = p.reduce((a, x) => a + (Number(x.ratingCount) || 0), 0)
+  return [
+    { value: String(p.length), label: 'hallazgos curados' },
+    { value: `$${min.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`, label: 'desde' },
+    { value: `${avgRating.toFixed(1)}★`, label: 'valoración media' },
+    { value: `${fmtCompact(totalReviews)}+`, label: 'opiniones reales' },
+  ]
+})
+
+// Spotlight: 3 hallazgos reales (mejor valoración y precio), uno por categoría
+const heroSpotlights = computed(() => {
+  const p = [...productStore.products]
+  p.sort((a, b) => (b.rating || 0) - (a.rating || 0) || (a.price || 0) - (b.price || 0))
+  const used = new Set()
+  const out = []
+  for (const x of p) {
+    if (used.has(x.category)) continue
+    used.add(x.category)
+    out.push(x)
+    if (out.length === 3) break
+  }
+  return out
+})
+const openSpotlight = (p) => {
+  router.push({ name: 'catalog', query: { q: p.title } })
+}
+
 // Imágenes para enriquecer secciones (datos reales del store)
 const featureImages = computed(() => productStore.products.map((p) => p.image))
 const mockProducts = computed(() => productStore.products.slice(0, 6))
@@ -180,7 +220,7 @@ onMounted(async () => {
     <PublicHeader />
 
     <main id="top">
-      <!-- ============ HERO (estilo Pinterest) ============ -->
+      <!-- ============ HERO (mosaico Pinterest + propuesta de valor) ============ -->
       <section class="hero">
         <div class="hero__wall" aria-hidden="true">
           <div
@@ -194,25 +234,34 @@ onMounted(async () => {
           <div class="hero__veil" />
         </div>
 
-        <span class="hero__badge hero__badge--save">Ahorra hasta 38%</span>
-        <span class="hero__badge hero__badge--rate">★ 4.6 valoración media</span>
+        <span class="hero__badge hero__badge--save">
+          {{ heroStats[0]?.value || '0' }} hallazgos curados
+        </span>
+        <span class="hero__badge hero__badge--rate">
+          ★ {{ heroStats[2]?.value || '0' }} valoración media
+        </span>
 
         <div class="container hero__center" v-reveal>
           <span class="hero__eyebrow">
-            <span class="hero__pulse" /> AliExpress · Amazon · Alibaba
+            <span class="hero__pulse" />
+            <img class="hero__plat-logo" :src="logoFor('aliexpress')" alt="AliExpress" />
+            <img class="hero__plat-logo" :src="logoFor('amazon')" alt="Amazon" />
+            <img class="hero__plat-logo" :src="logoFor('alibaba')" alt="Alibaba" />
+            <span class="hero__eyebrow-text">Un mismo hallazgo, tres marketplaces</span>
           </span>
 
           <h1 class="hero__title">
-            Las mejores ofertas en una
-            <span class="hero__accent">sola rejilla</span>
+            El mejor precio para cada
+            <span class="hero__accent">hallazgo</span>
           </h1>
 
           <p class="hero__subtitle">
-            Productos curados de los 3 gigantes del ecommerce con la mejor
-            relación precio-calidad. Y lo mejor: sin registros.
+            Tecnología, hogar, cocina, belleza y oficina: comparamos el mismo
+            producto en Amazon, AliExpress y Alibaba para que ahorres sin riesgos.
+            Sin cuentas, sin sorpresas.
           </p>
 
-            <form class="hero__search" @submit.prevent="goToCatalog">
+          <form class="hero__search" @submit.prevent="goToCatalog">
             <svg class="hero__search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" />
             </svg>
@@ -222,7 +271,7 @@ onMounted(async () => {
                 v-model="heroSearch"
                 @focus="heroOpen = true"
                 @blur="onHeroBlur"
-                placeholder="Busca Auriculares, relojes, gadgets…"
+                placeholder="Busca hallazgos: power banks, binoculares, ice makers…"
               />
               <ul v-if="heroOpen && heroSuggestions.length" class="hero__suggestions">
                 <li
@@ -238,8 +287,27 @@ onMounted(async () => {
             <button type="submit">Explorar</button>
           </form>
 
+          <div v-if="heroSpotlights.length" class="hero__showcase">
+            <article
+              v-for="p in heroSpotlights"
+              :key="p.id"
+              class="hero-spot"
+              @click="openSpotlight(p)"
+            >
+              <img :src="p.image" :alt="p.title" loading="lazy" />
+              <div class="hero-spot__body">
+                <span class="hero-spot__cat">{{ p.category }}</span>
+                <h3 class="hero-spot__title">{{ decodeHtml(p.title) }}</h3>
+                <div class="hero-spot__meta">
+                  <strong>${{ p.price }}</strong>
+                  <span>★ {{ p.rating }} · {{ fmtCompact(p.ratingCount) }}</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
           <ul class="hero__stats">
-            <li v-for="stat in landingData.stats" :key="stat.label">
+            <li v-for="stat in heroStats" :key="stat.label">
               <strong>{{ stat.value }}</strong>
               <span>{{ stat.label }}</span>
             </li>
@@ -512,6 +580,8 @@ onMounted(async () => {
 .hero__badge--save {
   top: 28px;
   left: 28px;
+  max-width: min(360px, 40vw);
+  text-align: center;
   background: linear-gradient(135deg, var(--green-600), var(--green-500));
   color: var(--white);
 }
@@ -530,7 +600,7 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   gap: 22px;
-  max-width: 760px;
+  max-width: 920px;
   padding: 0 20px;
   text-align: center;
 }
@@ -538,8 +608,8 @@ onMounted(async () => {
 .hero__eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 8px 18px;
   border-radius: var(--radius-full);
   background: var(--white);
   border: 1px solid var(--green-200);
@@ -547,6 +617,14 @@ onMounted(async () => {
   font-size: 0.84rem;
   font-weight: 600;
   box-shadow: var(--shadow-sm);
+}
+.hero__plat-logo {
+  height: 15px;
+  width: auto;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.08));
+}
+.hero__eyebrow-text {
+  margin-left: 4px;
 }
 
 .hero__pulse {
@@ -687,6 +765,72 @@ onMounted(async () => {
   color: var(--muted);
 }
 
+/* Showcase: hallazgos reales del catálogo */
+.hero__showcase {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: min(860px, 100%);
+  margin-top: 4px;
+}
+.hero-spot {
+  width: 252px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.hero-spot:hover {
+  transform: translateY(-5px) rotate(-0.5deg);
+  box-shadow: var(--shadow-lg);
+}
+.hero-spot img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+.hero-spot__body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hero-spot__cat {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--green-600);
+}
+.hero-spot__title {
+  font-size: 0.9rem;
+  line-height: 1.3;
+  color: var(--ink);
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hero-spot__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.hero-spot__meta strong {
+  color: var(--green-700);
+  font-size: 0.98rem;
+}
+
 .hero__stats {
   display: flex;
   gap: 36px;
@@ -721,7 +865,7 @@ onMounted(async () => {
 }
 @media (max-width: 820px) {
   .hero {
-    min-height: 80vh;
+    min-height: 84vh;
     padding: 100px 0 60px;
   }
   .hero__wall {
@@ -735,10 +879,31 @@ onMounted(async () => {
     bottom: 16px;
     right: 16px;
   }
+  .hero-spot {
+    width: 230px;
+  }
+}
+@media (max-width: 700px) {
+  .hero__showcase {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .hero-spot {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    width: 210px;
+  }
 }
 @media (max-width: 540px) {
   .hero__wall {
     columns: 2;
+  }
+  .hero__eyebrow-text {
+    display: none;
   }
   .hero__search {
     flex-wrap: wrap;
@@ -750,6 +915,9 @@ onMounted(async () => {
   }
   .hero__search button {
     width: 100%;
+  }
+  .hero__stats {
+    gap: 24px;
   }
 }
 

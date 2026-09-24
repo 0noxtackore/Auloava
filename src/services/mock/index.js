@@ -6,11 +6,10 @@
 // ============================================================
 import { storage } from '@/utils/storage'
 import { PLATFORM_LIST, CATEGORIES } from '@/constants'
-import nailProducts from '../../../data/nail-products.json'
-import clothingProducts from '../../../data/clothing-products.json'
+import bestsellerProducts from '../../../data/auloava-products.json'
 
 const DB_PRODUCTS = 'db_products'
-const DB_VERSION = 4
+const DB_VERSION = 11
 
 const delay = (ms = 450) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -44,9 +43,9 @@ function saveProducts(items) {
 
 /* ---------- Datos semilla ---------- */
 
-/** Productos reales extraídos de Amazon (uñas + ropa) vía scrape. */
+/** Productos reales: Best Sellers de Amazon (6 categorías) extraídos 2026-09-23. */
 function seedProducts() {
-  return [...nailProducts, ...clothingProducts].map((p, i) => ({
+  return bestsellerProducts.map((p, i) => ({
     id: ids.next(),
     clicks: 0,
     createdAt: new Date(Date.now() - i * 86400000).toISOString(),
@@ -130,10 +129,10 @@ const productHandlers = {
 
 export const landingData = {
   stats: [
-    { label: 'Productos curados', value: 1200 },
-    { label: 'Marketplaces', value: 3 },
-    { label: 'Comisión media', value: '14%' },
-    { label: 'Ahorro medio', value: '38%' },
+    { label: 'Productos curados', value: '99' },
+    { label: 'Marketplaces', value: '3' },
+    { label: 'Comisión media', value: '5%' },
+    { label: 'Ahorro medio', value: 'Hasta 50%' },
   ],
   platforms: PLATFORM_LIST,
   categories: CATEGORIES,

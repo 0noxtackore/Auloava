@@ -30,23 +30,13 @@ export const PLATFORMS = {
 /** Lista ordenada de marketplaces (para filtros y tarjetas) */
 export const PLATFORM_LIST = Object.values(PLATFORMS)
 
-/** Categorías de productos */
+/** Categorías de productos · Nicho Auloava: hallazgos asequibles (tech, hogar, cocina, belleza, oficina) */
 export const CATEGORIES = [
-  'Electrónica',
   'Tecnología',
   'Hogar',
-  'Moda',
+  'Cocina',
   'Belleza',
-  'Juguetes',
-  'Papelería y Oficina',
-  'Deportes',
-  'Salud',
-  'Alimentos',
-  'Mascotas',
-  'Accesorios',
-  'Automotriz',
-  'Mayorista',
-  'Otros',
+  'Oficina',
 ]
 
 /** Moneda por defecto */
