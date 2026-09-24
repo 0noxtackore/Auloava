@@ -169,7 +169,7 @@ const heroChips = computed(() => {
     const j = Math.floor(Math.random() * (i + 1))
     ;[pool[i], pool[j]] = [pool[j], pool[i]]
   }
-  return pool.slice(0, 5).map((x) => decodeHtml(x.title))
+  return pool.slice(0, 9).map((x) => decodeHtml(x.title))
 })
 
 // Imágenes para enriquecer secciones (datos reales del store)
@@ -242,9 +242,6 @@ onMounted(async () => {
 
         <span class="hero__badge hero__badge--save">
           {{ heroStats[0]?.value || '0' }} hallazgos curados
-        </span>
-        <span class="hero__badge hero__badge--rate">
-          ★ {{ heroStats[2]?.value || '0' }} valoración media
         </span>
 
         <div class="container hero__center" v-reveal>
@@ -660,6 +657,22 @@ onMounted(async () => {
   top: 46%;
   right: 3%;
 }
+.hero-chip:nth-child(6) {
+  top: 40%;
+  left: 3%;
+}
+.hero-chip:nth-child(7) {
+  top: 24%;
+  left: 3%;
+}
+.hero-chip:nth-child(8) {
+  bottom: 34%;
+  right: 3%;
+}
+.hero-chip:nth-child(9) {
+  bottom: 26%;
+  left: 3%;
+}
 @keyframes chip-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -682,13 +695,6 @@ onMounted(async () => {
   text-align: center;
   background: linear-gradient(135deg, var(--green-600), var(--green-500));
   color: var(--white);
-}
-.hero__badge--rate {
-  bottom: 28px;
-  right: 28px;
-  background: var(--white);
-  color: var(--green-700);
-  border: 1px solid var(--green-200);
 }
 
 .hero__center {
