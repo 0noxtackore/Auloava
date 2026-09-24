@@ -323,44 +323,50 @@ onMounted(detectLocation)
   box-shadow: var(--shadow);
 }
 
-/* ---- Móvil: misma barra, compacta y sin desbordes ---- */
+/* ---- Móvil: contenido apilado uno debajo de otro ---- */
 @media (max-width: 820px) {
   .topbar__inner {
-    gap: 8px;
-    height: 58px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    height: auto;
+    padding: 12px 0;
   }
   .topbar__logo-img {
-    height: 30px;
+    height: 32px;
   }
   .topbar__collapse {
-    gap: 8px;
-    margin-left: 8px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-left: 0;
   }
   .topbar__search {
-    flex: 1 1 120px;
+    flex: 1 1 auto;
     min-width: 0;
-    max-width: none;
+    max-width: 100%;
   }
   .topbar__search input {
-    padding: 7px 12px 7px 34px;
-    font-size: 0.85rem;
+    padding: 9px 14px 9px 38px;
+    font-size: 0.9rem;
   }
   .topbar__location {
-    display: none;
+    display: inline-flex;
+    align-self: flex-start;
   }
   .topbar__actions {
-    gap: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin-left: 0;
+    gap: 10px;
   }
   .topbar__login,
   .topbar__cta {
-    width: auto;
-    padding: 8px 12px;
-    font-size: 0.82rem;
-  }
-}
-@media (max-width: 480px) {
-  .topbar__login {
-    display: none;
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 0.9rem;
   }
 }
 </style>
