@@ -867,7 +867,8 @@ onMounted(async () => {
   }
   .hero__chips,
   .hero__ring,
-  .hero__glow {
+  .hero__glow,
+  .hero__badge {
     display: none;
   }
 }
