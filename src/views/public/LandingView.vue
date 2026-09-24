@@ -121,15 +121,6 @@ const goToCategory = (category) => {
   router.push({ name: 'catalog', query: { category } })
 }
 
-// Mosaico de pines para el hero estilo Pinterest (datos reales del store)
-const heroPins = computed(() => {
-  const p = productStore.products
-  if (!p.length) return []
-  return [...p, ...p].slice(0, 12)
-})
-
-const pinHeights = [210, 280, 180, 250, 200, 300, 230, 260, 190, 270, 220, 240]
-
 // Stats del hero con datos reales del store (no adornos falsos)
 function fmtCompact(n) {
   n = Number(n) || 0
@@ -152,23 +143,19 @@ const heroStats = computed(() => {
   ]
 })
 
-// Spotlight: 3 hallazgos reales (mejor valoración y precio), uno por categoría
-const heroSpotlights = computed(() => {
-  const p = [...productStore.products]
-  p.sort((a, b) => (b.rating || 0) - (a.rating || 0) || (a.price || 0) - (b.price || 0))
-  const used = new Set()
-  const out = []
-  for (const x of p) {
-    if (used.has(x.category)) continue
-    used.add(x.category)
-    out.push(x)
-    if (out.length === 3) break
+// Categorías del hero con su nº real de productos (para los chips decorativos)
+const heroCats = computed(() => {
+  const counts = new Map()
+  for (const p of productStore.products) {
+    const c = (p.category || '').trim()
+    if (!c) continue
+    counts.set(c, (counts.get(c) || 0) + 1)
   }
-  return out
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([cat, n]) => ({ cat, n }))
 })
-const openSpotlight = (p) => {
-  router.push({ name: 'catalog', query: { q: p.title } })
-}
 
 // Imágenes para enriquecer secciones (datos reales del store)
 const featureImages = computed(() => productStore.products.map((p) => p.image))
@@ -220,18 +207,24 @@ onMounted(async () => {
     <PublicHeader />
 
     <main id="top">
-      <!-- ============ HERO (mosaico Pinterest + propuesta de valor) ============ -->
+      <!-- ============ HERO (gradiente de marca + hallazgos flotantes) ============ -->
       <section class="hero">
-        <div class="hero__wall" aria-hidden="true">
-          <div
-            v-for="(pin, i) in heroPins"
-            :key="pin.id + '-' + i"
-            class="hero-pin"
-            :style="{ height: pinHeights[i % pinHeights.length] + 'px' }"
-          >
-            <img :src="pin.image" :alt="pin.title" loading="lazy" />
-          </div>
-          <div class="hero__veil" />
+        <div class="hero__pattern" aria-hidden="true" />
+        <div class="hero__glow" aria-hidden="true" />
+        <div class="hero__ring hero__ring--a" aria-hidden="true" />
+        <div class="hero__ring hero__ring--b" aria-hidden="true" />
+        <div class="hero__blob hero__blob--a" aria-hidden="true" />
+        <div class="hero__blob hero__blob--b" aria-hidden="true" />
+        <div class="hero__blob hero__blob--c" aria-hidden="true" />
+        <div class="hero__blob hero__blob--d" aria-hidden="true" />
+        <div class="hero__blob hero__blob--e" aria-hidden="true" />
+
+        <div v-if="heroStats.length" class="hero__chips" aria-hidden="true">
+          <span class="hero-chip">★ {{ heroStats[2]?.value }} en promedio</span>
+          <span class="hero-chip">desde {{ heroStats[1]?.value }}</span>
+          <span v-for="(c, i) in heroCats" :key="c.cat" class="hero-chip">
+            {{ c.cat }} · {{ c.n }}
+          </span>
         </div>
 
         <span class="hero__badge hero__badge--save">
@@ -286,25 +279,6 @@ onMounted(async () => {
             </div>
             <button type="submit">Explorar</button>
           </form>
-
-          <div v-if="heroSpotlights.length" class="hero__showcase">
-            <article
-              v-for="p in heroSpotlights"
-              :key="p.id"
-              class="hero-spot"
-              @click="openSpotlight(p)"
-            >
-              <img :src="p.image" :alt="p.title" loading="lazy" />
-              <div class="hero-spot__body">
-                <span class="hero-spot__cat">{{ p.category }}</span>
-                <h3 class="hero-spot__title">{{ decodeHtml(p.title) }}</h3>
-                <div class="hero-spot__meta">
-                  <strong>${{ p.price }}</strong>
-                  <span>★ {{ p.rating }} · {{ fmtCompact(p.ratingCount) }}</span>
-                </div>
-              </div>
-            </article>
-          </div>
 
           <ul class="hero__stats">
             <li v-for="stat in heroStats" :key="stat.label">
@@ -509,62 +483,170 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* ================= HERO (estilo Pinterest) ================= */
+/* ================= HERO (gradiente de marca + hallazgos flotantes) ================= */
 .hero {
   position: relative;
   overflow: hidden;
-  min-height: 88vh;
+  min-height: 92vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 120px 0 80px;
-  background: var(--beige-50);
-}
-
-/* Mosaico de pines a pantalla completa */
-.hero__wall {
-  position: absolute;
-  inset: 0;
-  columns: 6;
-  column-gap: 14px;
-  padding: 14px;
-  pointer-events: none;
-}
-.hero-pin {
-  break-inside: avoid;
-  margin-bottom: 14px;
-  border-radius: var(--radius);
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--green-100), var(--green-200));
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.hero-pin:nth-child(3n) {
-  transform: rotate(-1.6deg);
-}
-.hero-pin:nth-child(4n) {
-  transform: rotate(1.6deg);
-}
-.hero-pin:hover {
-  transform: scale(1.05) rotate(0deg);
-  box-shadow: var(--shadow);
-  z-index: 3;
-}
-.hero-pin img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Velo para legibilidad del texto central */
-.hero__veil {
-  position: absolute;
-  inset: 0;
+  padding: 120px 0 90px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.35) 45%, rgba(255, 255, 255, 0.78)),
-    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.15), rgba(47, 107, 79, 0.14));
+    radial-gradient(120% 90% at 85% -10%, rgba(47, 107, 79, 0.20), transparent 60%),
+    radial-gradient(100% 80% at 0% 115%, rgba(61, 138, 99, 0.18), transparent 62%),
+    linear-gradient(160deg, var(--green-100) 0%, var(--green-50) 45%, var(--off-white) 100%);
+}
+
+/* Puntos sutiles que se desvanecen hacia los bordes */
+.hero__pattern {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
+  background-image: radial-gradient(rgba(47, 107, 79, 0.16) 1.5px, transparent 1.5px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 45%, #000 0%, transparent 74%);
+  mask-image: radial-gradient(ellipse 58% 62% at 50% 45%, #000 0%, transparent 74%);
+}
+
+/* Formas orgánicas suaves de la paleta */
+.hero__blob {
+  position: absolute;
+  border-radius: 42% 58% 63% 37% / 45% 45% 55% 55%;
+  pointer-events: none;
+}
+.hero__blob--a {
+  width: 460px;
+  height: 460px;
+  top: -110px;
+  right: -70px;
+  background: linear-gradient(135deg, var(--green-200), var(--green-100));
+  opacity: 0.85;
+  animation: blob-drift 18s ease-in-out infinite;
+}
+.hero__blob--b {
+  width: 420px;
+  height: 420px;
+  bottom: -140px;
+  left: -90px;
+  background: linear-gradient(135deg, var(--green-200), var(--green-100));
+  opacity: 0.9;
+  animation: blob-drift 24s ease-in-out infinite reverse;
+}
+.hero__blob--c {
+  width: 220px;
+  height: 220px;
+  top: 36%;
+  left: 7%;
+  background: var(--green-200);
+  opacity: 0.5;
+  animation: blob-drift 30s ease-in-out infinite;
+}
+.hero__blob--d {
+  width: 300px;
+  height: 300px;
+  top: 6%;
+  left: 30%;
+  background: var(--green-100);
+  opacity: 0.5;
+  animation: blob-drift 22s ease-in-out infinite;
+}
+.hero__blob--e {
+  width: 260px;
+  height: 260px;
+  bottom: 6%;
+  right: 24%;
+  background: linear-gradient(135deg, var(--green-200), var(--green-100));
+  opacity: 0.7;
+  animation: blob-drift 26s ease-in-out infinite reverse;
+}
+@keyframes blob-drift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33% { transform: translate(18px, -14px) rotate(6deg) scale(1.05); }
+  66% { transform: translate(-14px, 12px) rotate(-6deg) scale(0.97); }
+}
+
+/* Luz central que da profundidad al texto */
+.hero__glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(980px, 92vw);
+  height: min(680px, 72vh);
+  background:
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 62%),
+    radial-gradient(closest-side at 50% 100%, rgba(140, 199, 166, 0.28), transparent 70%);
+  pointer-events: none;
+}
+
+/* Anillos finos de marca en los extremos */
+.hero__ring {
+  position: absolute;
+  border: 2px solid rgba(47, 107, 79, 0.16);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero__ring--a {
+  width: 540px;
+  height: 540px;
+  top: -160px;
+  left: -120px;
+  animation: blob-drift 28s ease-in-out infinite;
+}
+.hero__ring--b {
+  width: 340px;
+  height: 340px;
+  bottom: -120px;
+  right: 4%;
+  border-color: rgba(47, 107, 79, 0.12);
+  animation: blob-drift 24s ease-in-out infinite reverse;
+}
+
+/* Chips flotantes con datos reales (rellenan las zonas libres) */
+.hero__chips {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.hero-chip {
+  position: absolute;
+  padding: 8px 15px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(47, 107, 79, 0.18);
+  color: var(--green-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+  animation: chip-float 6s ease-in-out infinite;
+}
+.hero-chip:nth-child(1) {
+  top: 30%;
+  left: 12%;
+}
+.hero-chip:nth-child(2) {
+  bottom: 30%;
+  right: 12%;
+}
+.hero-chip:nth-child(3) {
+  top: 17%;
+  right: 15%;
+}
+.hero-chip:nth-child(4) {
+  bottom: 17%;
+  left: 14%;
+}
+.hero-chip:nth-child(5) {
+  top: 58%;
+  left: 4.5%;
+}
+@keyframes chip-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .hero__badge {
@@ -642,11 +724,7 @@ onMounted(async () => {
   line-height: 1.05;
   color: var(--ink);
   max-width: 700px;
-  text-shadow:
-    0 0 1px #fff,
-    0 0 3px #fff,
-    0 0 10px rgba(255, 255, 255, 0.9),
-    0 0 18px rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .hero__accent {
@@ -669,10 +747,6 @@ onMounted(async () => {
   color: var(--ink);
   font-size: 1.1rem;
   max-width: 560px;
-  text-shadow:
-    0 0 1px #fff,
-    0 0 6px rgba(255, 255, 255, 0.95),
-    0 0 14px rgba(255, 255, 255, 0.9);
 }
 
 /* Barra de búsqueda tipo Pinterest */
@@ -765,72 +839,6 @@ onMounted(async () => {
   color: var(--muted);
 }
 
-/* Showcase: hallazgos reales del catálogo */
-.hero__showcase {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  width: min(860px, 100%);
-  margin-top: 4px;
-}
-.hero-spot {
-  width: 252px;
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  cursor: pointer;
-  text-align: left;
-  transition: transform var(--transition), box-shadow var(--transition);
-}
-.hero-spot:hover {
-  transform: translateY(-5px) rotate(-0.5deg);
-  box-shadow: var(--shadow-lg);
-}
-.hero-spot img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  display: block;
-}
-.hero-spot__body {
-  padding: 12px 14px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.hero-spot__cat {
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--green-600);
-}
-.hero-spot__title {
-  font-size: 0.9rem;
-  line-height: 1.3;
-  color: var(--ink);
-  font-weight: 600;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.hero-spot__meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 0.76rem;
-  color: var(--muted);
-}
-.hero-spot__meta strong {
-  color: var(--green-700);
-  font-size: 0.98rem;
-}
-
 .hero__stats {
   display: flex;
   gap: 36px;
@@ -846,30 +854,27 @@ onMounted(async () => {
   font-family: var(--font-display);
   font-size: 1.7rem;
   color: var(--green-600);
-  text-shadow:
-    0 0 1px #fff,
-    0 0 8px rgba(255, 255, 255, 0.9);
 }
 .hero__stats span {
   font-size: 0.85rem;
   color: var(--ink);
-  text-shadow:
-    0 0 1px #fff,
-    0 0 6px rgba(255, 255, 255, 0.9);
 }
 
-@media (max-width: 1100px) {
-  .hero__wall {
-    columns: 4;
+@media (max-width: 1179px) {
+  .hero {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .hero__chips,
+  .hero__ring,
+  .hero__glow {
+    display: none;
   }
 }
 @media (max-width: 820px) {
   .hero {
-    min-height: 84vh;
-    padding: 100px 0 60px;
-  }
-  .hero__wall {
-    columns: 3;
+    min-height: auto;
+    padding: 96px 0 48px;
   }
   .hero__badge--save {
     top: 16px;
@@ -879,29 +884,8 @@ onMounted(async () => {
     bottom: 16px;
     right: 16px;
   }
-  .hero-spot {
-    width: 230px;
-  }
-}
-@media (max-width: 700px) {
-  .hero__showcase {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .hero-spot {
-    flex-shrink: 0;
-    scroll-snap-align: start;
-    width: 210px;
-  }
 }
 @media (max-width: 540px) {
-  .hero__wall {
-    columns: 2;
-  }
   .hero__eyebrow-text {
     display: none;
   }
