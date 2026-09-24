@@ -241,21 +241,17 @@ onMounted(async () => {
         <div v-if="heroChips.length" class="hero__chips" aria-hidden="true">
           <ul v-if="heroChipsLeft.length" class="chip-chain chip-chain--left">
             <li v-for="(name, i) in heroChipsLeft" :key="`l${i}`" class="chip-node">
-              <span class="chip-node__joint" />
               <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
                 {{ name }}
               </span>
-              <span class="chip-node__joint" />
             </li>
           </ul>
 
           <ul v-if="heroChipsRight.length" class="chip-chain chip-chain--right">
             <li v-for="(name, i) in heroChipsRight" :key="`r${i}`" class="chip-node">
-              <span class="chip-node__joint" />
               <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
                 {{ name }}
               </span>
-              <span class="chip-node__joint" />
             </li>
           </ul>
         </div>
@@ -673,15 +669,7 @@ onMounted(async () => {
 .chip-node {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-}
-.chip-node__joint {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green-500);
-  box-shadow: 0 0 0 3px rgba(63, 157, 110, 0.12);
 }
 .chip-node__pill {
   position: relative;
