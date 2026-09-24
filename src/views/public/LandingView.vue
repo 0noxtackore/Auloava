@@ -641,24 +641,24 @@ onMounted(async () => {
   animation: chip-float 6s ease-in-out infinite;
 }
 .hero-chip:nth-child(1) {
-  top: 30%;
-  left: 12%;
+  top: 10%;
+  left: 3%;
 }
 .hero-chip:nth-child(2) {
-  bottom: 30%;
-  right: 12%;
+  top: 14%;
+  right: 3%;
 }
 .hero-chip:nth-child(3) {
-  top: 17%;
-  right: 15%;
+  bottom: 16%;
+  left: 3%;
 }
 .hero-chip:nth-child(4) {
-  bottom: 17%;
-  left: 14%;
+  bottom: 12%;
+  right: 3%;
 }
 .hero-chip:nth-child(5) {
-  top: 58%;
-  left: 4.5%;
+  top: 46%;
+  right: 3%;
 }
 @keyframes chip-float {
   0%, 100% { transform: translateY(0); }
