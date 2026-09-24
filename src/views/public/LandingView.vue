@@ -234,15 +234,42 @@ onMounted(async () => {
         <div class="hero__blob hero__blob--d" aria-hidden="true" />
         <div class="hero__blob hero__blob--e" aria-hidden="true" />
 
+        <svg
+          class="hero__branches"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <g stroke="#7fbca0" stroke-opacity="0.45" stroke-width="1.4" vector-effect="non-scaling-stroke" fill="none">
+            <path d="M50 50 L3 10" />
+            <path d="M50 50 L97 14" />
+            <path d="M50 50 L3 84" />
+            <path d="M50 50 L97 88" />
+            <path d="M50 50 L97 46" />
+            <path d="M50 50 L3 40" />
+            <path d="M50 50 L3 24" />
+            <path d="M50 50 L97 66" />
+            <path d="M50 50 L3 74" />
+          </g>
+          <g fill="#3f9d6e">
+            <circle cx="3" cy="10" r="1.1" />
+            <circle cx="97" cy="14" r="1.1" />
+            <circle cx="3" cy="84" r="1.1" />
+            <circle cx="97" cy="88" r="1.1" />
+            <circle cx="97" cy="46" r="1.1" />
+            <circle cx="3" cy="40" r="1.1" />
+            <circle cx="3" cy="24" r="1.1" />
+            <circle cx="97" cy="66" r="1.1" />
+            <circle cx="3" cy="74" r="1.1" />
+            <circle cx="50" cy="50" r="1.8" />
+          </g>
+        </svg>
+
         <div v-if="heroChips.length" class="hero__chips" aria-hidden="true">
           <span v-for="(chip, i) in heroChips" :key="chip + i" class="hero-chip">
             {{ chip }}
           </span>
         </div>
-
-        <span class="hero__badge hero__badge--save">
-          {{ heroStats[0]?.value || '0' }} hallazgos curados
-        </span>
 
         <div class="container hero__center" v-reveal>
           <span class="hero__eyebrow">
@@ -620,11 +647,19 @@ onMounted(async () => {
   z-index: 2;
   pointer-events: none;
 }
+.hero__branches {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 .hero-chip {
   position: absolute;
   padding: 8px 15px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.86);
+  background: #fefefe;
   border: 1px solid rgba(47, 107, 79, 0.18);
   color: var(--green-700);
   font-size: 0.78rem;
@@ -636,6 +671,11 @@ onMounted(async () => {
   text-overflow: ellipsis;
   white-space: nowrap;
   animation: chip-float 6s ease-in-out infinite;
+}
+.hero-chip:nth-child(odd) {
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  border-color: transparent;
+  color: var(--white);
 }
 .hero-chip:nth-child(1) {
   top: 10%;
@@ -676,25 +716,6 @@ onMounted(async () => {
 @keyframes chip-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
-}
-
-.hero__badge {
-  position: absolute;
-  z-index: 4;
-  padding: 10px 16px;
-  border-radius: var(--radius-full);
-  font-size: 0.82rem;
-  font-weight: 700;
-  box-shadow: var(--shadow);
-  animation: float 6s ease-in-out infinite;
-}
-.hero__badge--save {
-  top: 28px;
-  left: 28px;
-  max-width: min(360px, 40vw);
-  text-align: center;
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  color: var(--white);
 }
 
 .hero__center {
@@ -890,7 +911,7 @@ onMounted(async () => {
   .hero__chips,
   .hero__ring,
   .hero__glow,
-  .hero__badge {
+  .hero__branches {
     display: none;
   }
 }
@@ -898,14 +919,6 @@ onMounted(async () => {
   .hero {
     min-height: auto;
     padding: 96px 0 48px;
-  }
-  .hero__badge--save {
-    top: 16px;
-    left: 16px;
-  }
-  .hero__badge--rate {
-    bottom: 16px;
-    right: 16px;
   }
 }
 @media (max-width: 540px) {
