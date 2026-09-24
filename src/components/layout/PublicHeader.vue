@@ -4,7 +4,7 @@
 // Logo, navegación, buscador, "Iniciar sesión" y "Regístrese".
 // En móvil todo se colapsa en un menú desplegable.
 // ============================================================
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { decodeHtml } from '@/utils/formatters'
@@ -40,6 +40,16 @@ function goRegister() {
 function closeMenu() {
   open.value = false
 }
+
+// Cierra con Escape y bloquea el scroll del body mientras el menú está abierto
+function onKeydown(e) {
+  if (e.key === 'Escape') open.value = false
+}
+watch(open, (v) => {
+  document.body.style.overflow = v ? 'hidden' : ''
+})
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 
 async function detectLocation() {
   const setCountry = (name) => {
@@ -96,7 +106,26 @@ onMounted(detectLocation)
         <span></span><span></span><span></span>
       </button>
 
+      <div
+        v-if="open"
+        class="topbar__overlay"
+        aria-hidden="true"
+        @click="closeMenu"
+      />
+
       <div class="topbar__collapse" :class="{ 'is-open': open }">
+        <div class="topbar__panel-head">
+          <span class="topbar__panel-title">Menú</span>
+          <button
+            class="topbar__panel-close"
+            type="button"
+            aria-label="Cerrar menú"
+            @click="closeMenu"
+          >
+            ×
+          </button>
+        </div>
+
         <form class="topbar__search" @submit.prevent="goSearch">
           <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7" />
@@ -194,6 +223,14 @@ onMounted(detectLocation)
   gap: 14px;
   flex: 1;
   margin-left: 14px;
+}
+
+/* Cabecera del panel (solo visible en móvil) */
+.topbar__panel-head {
+  display: none;
+}
+.topbar__overlay {
+  display: none;
 }
 
 /* ---- Indicador de ubicación ---- */
@@ -378,6 +415,14 @@ onMounted(detectLocation)
 
 /* ---- Móvil: colapsa en menú desplegable ---- */
 @media (max-width: 820px) {
+  .topbar__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 750;
+    display: block;
+    background: rgba(15, 25, 20, 0.5);
+    backdrop-filter: blur(2px);
+  }
   .topbar__inner {
     position: relative;
   }
@@ -394,34 +439,88 @@ onMounted(detectLocation)
     top: 50%;
     transform: translateY(-50%);
     margin-left: 0;
+    border: 1.5px solid var(--green-200);
+  }
+  .topbar__toggle span {
+    background: var(--green-700);
+  }
+  .topbar__toggle.is-active {
+    border-color: var(--green-500);
+    background: var(--green-50);
   }
   .topbar__collapse {
     display: none;
     position: absolute;
-    top: 66px;
-    left: 0;
-    right: 0;
+    top: calc(100% + 10px);
+    left: 14px;
+    right: 14px;
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
-    padding: 20px;
+    gap: 14px;
+    padding: 18px;
     background: var(--white);
-    border-bottom: 1px solid var(--line);
-    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 44px rgba(15, 25, 20, 0.22);
   }
   .topbar__collapse.is-open {
     display: flex;
+    animation: menu-drop 0.24s ease;
+  }
+  @keyframes menu-drop {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .topbar__panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar__panel-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .topbar__panel-close {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: var(--green-50);
+    color: var(--green-700);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+  }
+  .topbar__panel-close:hover {
+    background: var(--green-100);
+    transform: rotate(90deg);
   }
   .topbar__search {
     max-width: 100%;
   }
   .topbar__location {
     align-self: flex-start;
+    padding: 8px 14px;
   }
   .topbar__actions {
     flex-direction: column;
     width: 100%;
     margin-left: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
   }
   .topbar__login,
   .topbar__cta {
