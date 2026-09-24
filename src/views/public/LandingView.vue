@@ -172,6 +172,10 @@ const heroChips = computed(() => {
   return pool.slice(0, 9).map((x) => decodeHtml(x.title))
 })
 
+// Dos cadenas verticales (izquierda y derecha) intercalando las chips
+const heroChipsLeft = computed(() => heroChips.value.filter((_, i) => i % 2 === 0))
+const heroChipsRight = computed(() => heroChips.value.filter((_, i) => i % 2 === 1))
+
 // Imágenes para enriquecer secciones (datos reales del store)
 const featureImages = computed(() => productStore.products.map((p) => p.image))
 const mockProducts = computed(() => productStore.products.slice(0, 6))
@@ -234,47 +238,28 @@ onMounted(async () => {
         <div class="hero__blob hero__blob--d" aria-hidden="true" />
         <div class="hero__blob hero__blob--e" aria-hidden="true" />
 
-        <svg
-          class="hero__branches"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <g
-            stroke="#7fbca0"
-            stroke-opacity="0.4"
-            stroke-width="1.3"
-            vector-effect="non-scaling-stroke"
-            fill="none"
-          >
-            <path d="M50 6 V94" />
-            <path d="M3 10 H50" />
-            <path d="M50 14 H97" />
-            <path d="M3 84 H50" />
-            <path d="M50 88 H97" />
-            <path d="M50 46 H97" />
-            <path d="M3 40 H50" />
-            <path d="M3 24 H50" />
-            <path d="M50 66 H97" />
-            <path d="M3 74 H50" />
-          </g>
-          <g fill="#3f9d6e">
-            <circle cx="3" cy="10" r="1.1" />
-            <circle cx="97" cy="14" r="1.1" />
-            <circle cx="3" cy="84" r="1.1" />
-            <circle cx="97" cy="88" r="1.1" />
-            <circle cx="97" cy="46" r="1.1" />
-            <circle cx="3" cy="40" r="1.1" />
-            <circle cx="3" cy="24" r="1.1" />
-            <circle cx="97" cy="66" r="1.1" />
-            <circle cx="3" cy="74" r="1.1" />
-          </g>
-        </svg>
-
         <div v-if="heroChips.length" class="hero__chips" aria-hidden="true">
-          <span v-for="(chip, i) in heroChips" :key="chip + i" class="hero-chip">
-            {{ chip }}
-          </span>
+          <ul v-if="heroChipsLeft.length" class="chip-chain chip-chain--left">
+            <li v-for="(name, i) in heroChipsLeft" :key="`l${i}`" class="chip-node">
+              <span class="chip-node__bar" />
+              <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
+                {{ name }}
+              </span>
+              <span class="chip-node__bar" />
+              <span v-if="i + 1 < heroChipsLeft.length" class="chip-node__stem" />
+            </li>
+          </ul>
+
+          <ul v-if="heroChipsRight.length" class="chip-chain chip-chain--right">
+            <li v-for="(name, i) in heroChipsRight" :key="`r${i}`" class="chip-node">
+              <span class="chip-node__bar" />
+              <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
+                {{ name }}
+              </span>
+              <span class="chip-node__bar" />
+              <span v-if="i + 1 < heroChipsRight.length" class="chip-node__stem" />
+            </li>
+          </ul>
         </div>
 
         <div class="container hero__center" v-reveal>
@@ -646,82 +631,68 @@ onMounted(async () => {
   animation: blob-drift 24s ease-in-out infinite reverse;
 }
 
-/* Chips flotantes con datos reales (rellenan las zonas libres) */
+/* Cadenas verticales estilo mapa conceptual */
 .hero__chips {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
 }
-.hero__branches {
+.chip-chain {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
+  top: 0;
   height: 100%;
-  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
 }
-.hero-chip {
-  position: absolute;
-  padding: 8px 15px;
+.chip-chain--left {
+  left: 3.5%;
+}
+.chip-chain--right {
+  right: 3.5%;
+}
+.chip-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.chip-node__bar {
+  width: 58px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--green-600);
+  opacity: 0.5;
+}
+.chip-node__stem {
+  width: 2px;
+  height: 24px;
+  border-radius: 2px;
+  background: var(--green-600);
+  opacity: 0.5;
+}
+.chip-node__pill {
+  max-width: 220px;
+  padding: 7px 14px;
   border-radius: var(--radius-full);
-  background: #fefefe;
-  border: 1px solid rgba(47, 107, 79, 0.18);
-  color: var(--green-700);
-  font-size: 0.78rem;
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  border: 1px solid transparent;
+  color: var(--white);
+  font-size: 0.76rem;
   font-weight: 700;
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(4px);
-  max-width: 240px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  animation: chip-float 6s ease-in-out infinite;
 }
-.hero-chip:nth-child(odd) {
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  border-color: transparent;
-  color: var(--white);
-}
-.hero-chip:nth-child(1) {
-  top: 10%;
-  left: 3%;
-}
-.hero-chip:nth-child(2) {
-  top: 14%;
-  right: 3%;
-}
-.hero-chip:nth-child(3) {
-  bottom: 16%;
-  left: 3%;
-}
-.hero-chip:nth-child(4) {
-  bottom: 12%;
-  right: 3%;
-}
-.hero-chip:nth-child(5) {
-  top: 46%;
-  right: 3%;
-}
-.hero-chip:nth-child(6) {
-  top: 40%;
-  left: 3%;
-}
-.hero-chip:nth-child(7) {
-  top: 24%;
-  left: 3%;
-}
-.hero-chip:nth-child(8) {
-  bottom: 34%;
-  right: 3%;
-}
-.hero-chip:nth-child(9) {
-  bottom: 26%;
-  left: 3%;
-}
-@keyframes chip-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+.chip-node__pill--alt {
+  background: #fefefe;
+  border-color: rgba(47, 107, 79, 0.18);
+  color: var(--green-700);
 }
 
 .hero__center {
@@ -916,8 +887,7 @@ onMounted(async () => {
   }
   .hero__chips,
   .hero__ring,
-  .hero__glow,
-  .hero__branches {
+  .hero__glow {
     display: none;
   }
 }
