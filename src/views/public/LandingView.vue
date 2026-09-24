@@ -135,8 +135,14 @@ const heroStats = computed(() => {
   const min = Math.min(...prices)
   const avgRating = p.reduce((a, x) => a + (Number(x.rating) || 0), 0) / p.length
   const totalReviews = p.reduce((a, x) => a + (Number(x.ratingCount) || 0), 0)
+  const withDiscount = p
+    .map((x) => Number(x.originalPrice) > Number(x.price) ? ((Number(x.originalPrice) - Number(x.price)) / Number(x.originalPrice)) * 100 : null)
+    .filter((d) => d !== null && Number.isFinite(d))
+  const avgSave = withDiscount.length
+    ? withDiscount.reduce((a, d) => a + d, 0) / withDiscount.length
+    : 0
   return [
-    { value: String(p.length), label: 'hallazgos verificados' },
+    { value: `${Math.round(avgSave)}%`, label: 'ahorro medio' },
     { value: `$${min.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`, label: 'desde' },
     { value: `${avgRating.toFixed(1)}★`, label: 'valoración media' },
     { value: `${fmtCompact(totalReviews)}+`, label: 'opiniones reales' },
