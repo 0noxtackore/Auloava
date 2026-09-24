@@ -136,7 +136,7 @@ const heroStats = computed(() => {
   const avgRating = p.reduce((a, x) => a + (Number(x.rating) || 0), 0) / p.length
   const totalReviews = p.reduce((a, x) => a + (Number(x.ratingCount) || 0), 0)
   return [
-    { value: String(p.length), label: 'hallazgos curados' },
+    { value: String(p.length), label: 'hallazgos verificados' },
     { value: `$${min.toLocaleString('es-ES', { maximumFractionDigits: 0 })}`, label: 'desde' },
     { value: `${avgRating.toFixed(1)}★`, label: 'valoración media' },
     { value: `${fmtCompact(totalReviews)}+`, label: 'opiniones reales' },
