@@ -9,7 +9,7 @@ import { PLATFORM_LIST, CATEGORIES } from '@/constants'
 import bestsellerProducts from '../../../data/auloava-products.json'
 
 const DB_PRODUCTS = 'db_products'
-const DB_VERSION = 11
+const DB_VERSION = 12
 
 const delay = (ms = 450) => new Promise((resolve) => setTimeout(resolve, ms))
 

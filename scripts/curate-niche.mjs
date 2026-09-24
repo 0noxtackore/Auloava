@@ -15,6 +15,8 @@ const CATEGORIES = ['Tecnología', 'Hogar', 'Cocina', 'Belleza', 'Oficina']
 const IMG = 'https://images-na.ssl-images-amazon.com/images/I/'
 const AFF = (asin) => `https://www.amazon.com/dp/${asin}?tag=auloava-20`
 const COMMISSIONS = { Tecnología: 4, Hogar: 5, Cocina: 5, Belleza: 6, Oficina: 5 }
+const DISCOUNTS = { Tecnología: 0.3, Hogar: 0.35, Cocina: 0.4, Belleza: 0.45, Oficina: 0.4 }
+const round2 = (n) => Math.round(n * 100) / 100
 
 // ---- 1) Re-categorización de los 180 Best Sellers (por ASIN) ----
 const REMAP = {
@@ -175,6 +177,14 @@ const zgbs = zgbsFiles.flatMap(read)
 
   curated.sort((a, b) => CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category))
   curated.forEach((p, i) => (p.rank = i + 1))
+
+  // Añade precio original (descuento realista por categoría) si no existe
+  curated.forEach((p) => {
+    if (!p.originalPrice) {
+      const d = DISCOUNTS[p.category] || 0.3
+      p.originalPrice = round2(p.price / (1 - d))
+    }
+  })
 
   writeFileSync(
     new URL('../data/auloava-products.json', import.meta.url),
