@@ -224,8 +224,8 @@ onMounted(detectLocation)
 /* ---- Buscador ---- */
 .topbar__search {
   position: relative;
-  flex: 1;
-  max-width: 320px;
+  flex: 1 1 360px;
+  max-width: 560px;
 }
 .topbar__search-icon {
   position: absolute;
