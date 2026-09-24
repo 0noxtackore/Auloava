@@ -15,7 +15,6 @@ const search = ref('')
 const { suggestions: searchSuggestions } = useProductSuggestions(search, 6)
 const searchOpen = ref(false)
 const open = ref(false)
-const subOpen = ref(false)
 const country = ref('')
 
 function goSearch() {
@@ -40,10 +39,6 @@ function goRegister() {
 }
 function closeMenu() {
   open.value = false
-  subOpen.value = false
-}
-function toggleSub() {
-  subOpen.value = !subOpen.value
 }
 
 async function detectLocation() {
@@ -146,39 +141,6 @@ onMounted(detectLocation)
           <span>{{ country || '—' }}</span>
         </div>
 
-        <ul class="topbar__nav">
-          <li>
-            <RouterLink :to="{ name: 'catalog' }" @click="closeMenu">Más vendidos</RouterLink>
-          </li>
-          <li class="topbar__has-sub">
-            <button
-              class="topbar__sub-toggle"
-              type="button"
-              :aria-expanded="subOpen"
-              @click="toggleSub"
-            >
-              Más
-            </button>
-            <ul class="topbar__sub" :class="{ 'is-open': subOpen }">
-              <li>
-                <RouterLink :to="{ name: 'landing', hash: '#about' }" @click="closeMenu">
-                  Quiénes somos
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink :to="{ name: 'landing', hash: '#how' }" @click="closeMenu">
-                  Cómo funciona
-                </RouterLink>
-              </li>
-              <li>
-                <RouterLink :to="{ name: 'landing', hash: '#press' }" @click="closeMenu">
-                  Prensa
-                </RouterLink>
-              </li>
-            </ul>
-          </li>
-        </ul>
-
         <div class="topbar__actions">
           <RouterLink
             class="topbar__login"
@@ -234,16 +196,6 @@ onMounted(detectLocation)
   margin-left: 14px;
 }
 
-/* ---- Navegación ---- */
-.topbar__nav {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
 /* ---- Indicador de ubicación ---- */
 .topbar__location {
   display: inline-flex;
@@ -266,60 +218,6 @@ onMounted(detectLocation)
 .topbar__location span {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--green-700);
-}
-.topbar__nav > li > a,
-.topbar__sub-toggle {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 12px;
-  border: none;
-  background: none;
-  border-radius: var(--radius-full);
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--ink);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background var(--transition), color var(--transition);
-}
-.topbar__nav > li > a:hover,
-.topbar__sub-toggle:hover {
-  background: var(--green-50);
-  color: var(--green-700);
-}
-
-.topbar__has-sub {
-  position: relative;
-}
-.topbar__sub {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 6px;
-  min-width: 190px;
-  padding: 8px;
-  list-style: none;
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  z-index: 900;
-}
-.topbar__sub.is-open {
-  display: block;
-}
-.topbar__sub li a {
-  display: block;
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: var(--ink);
-  font-size: 0.9rem;
-  transition: background var(--transition), color var(--transition);
-}
-.topbar__sub li a:hover {
-  background: var(--green-50);
   color: var(--green-700);
 }
 
@@ -513,29 +411,6 @@ onMounted(detectLocation)
   }
   .topbar__collapse.is-open {
     display: flex;
-  }
-  .topbar__nav {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 2px;
-    width: 100%;
-  }
-  .topbar__nav > li > a,
-  .topbar__sub-toggle {
-    justify-content: space-between;
-    width: 100%;
-    padding: 12px 14px;
-  }
-  .topbar__sub {
-    position: static;
-    display: none;
-    margin-top: 2px;
-    padding-left: 12px;
-    box-shadow: none;
-    border: none;
-  }
-  .topbar__sub.is-open {
-    display: block;
   }
   .topbar__search {
     max-width: 100%;
