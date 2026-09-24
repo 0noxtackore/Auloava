@@ -241,22 +241,24 @@ onMounted(async () => {
         <div v-if="heroChips.length" class="hero__chips" aria-hidden="true">
           <ul v-if="heroChipsLeft.length" class="chip-chain chip-chain--left">
             <li v-for="(name, i) in heroChipsLeft" :key="`l${i}`" class="chip-node">
-              <span class="chip-node__bar" />
+              <span v-if="i > 0" class="chip-node__stem" />
+              <span class="chip-node__joint" />
               <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
                 {{ name }}
               </span>
-              <span class="chip-node__bar" />
+              <span class="chip-node__joint" />
               <span v-if="i + 1 < heroChipsLeft.length" class="chip-node__stem" />
             </li>
           </ul>
 
           <ul v-if="heroChipsRight.length" class="chip-chain chip-chain--right">
             <li v-for="(name, i) in heroChipsRight" :key="`r${i}`" class="chip-node">
-              <span class="chip-node__bar" />
+              <span v-if="i > 0" class="chip-node__stem" />
+              <span class="chip-node__joint" />
               <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
                 {{ name }}
               </span>
-              <span class="chip-node__bar" />
+              <span class="chip-node__joint" />
               <span v-if="i + 1 < heroChipsRight.length" class="chip-node__stem" />
             </li>
           </ul>
@@ -661,19 +663,20 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
 }
-.chip-node__bar {
-  width: 58px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--green-600);
-  opacity: 0.5;
-}
 .chip-node__stem {
   width: 2px;
-  height: 24px;
+  height: 26px;
   border-radius: 2px;
   background: var(--green-600);
-  opacity: 0.5;
+  opacity: 0.35;
+}
+.chip-node__joint {
+  width: 9px;
+  height: 9px;
+  margin: 3px 0;
+  border-radius: 50%;
+  background: var(--green-500);
+  box-shadow: 0 0 0 3px rgba(63, 157, 110, 0.12);
 }
 .chip-node__pill {
   max-width: 220px;
