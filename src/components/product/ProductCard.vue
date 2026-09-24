@@ -148,6 +148,7 @@ const mediaAspect = computed(() => {
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--off-white);
+  border: 1px solid #d3ded6;
   aspect-ratio: 1 / 1;
 }
 
