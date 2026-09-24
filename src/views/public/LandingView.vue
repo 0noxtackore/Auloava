@@ -143,18 +143,33 @@ const heroStats = computed(() => {
   ]
 })
 
-// Categorías del hero con su nº real de productos (para los chips decorativos)
-const heroCats = computed(() => {
-  const counts = new Map()
-  for (const p of productStore.products) {
-    const c = (p.category || '').trim()
+// Chips del hero: nombres de productos random de la categoría mejor valorada
+const heroChips = computed(() => {
+  const p = productStore.products
+  if (!p.length) return []
+  const byCat = new Map()
+  for (const x of p) {
+    const c = (x.category || '').trim()
     if (!c) continue
-    counts.set(c, (counts.get(c) || 0) + 1)
+    const arr = byCat.get(c) || []
+    arr.push(x)
+    byCat.set(c, arr)
   }
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([cat, n]) => ({ cat, n }))
+  let best = null
+  let bestAvg = 0
+  for (const [c, arr] of byCat) {
+    const avg = arr.reduce((a, x) => a + (Number(x.rating) || 0), 0) / arr.length
+    if (avg > bestAvg) {
+      bestAvg = avg
+      best = arr
+    }
+  }
+  const pool = (best || p).slice()
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+  }
+  return pool.slice(0, 5).map((x) => decodeHtml(x.title))
 })
 
 // Imágenes para enriquecer secciones (datos reales del store)
@@ -219,11 +234,9 @@ onMounted(async () => {
         <div class="hero__blob hero__blob--d" aria-hidden="true" />
         <div class="hero__blob hero__blob--e" aria-hidden="true" />
 
-        <div v-if="heroStats.length" class="hero__chips" aria-hidden="true">
-          <span class="hero-chip">★ {{ heroStats[2]?.value }} en promedio</span>
-          <span class="hero-chip">desde {{ heroStats[1]?.value }}</span>
-          <span v-for="(c, i) in heroCats" :key="c.cat" class="hero-chip">
-            {{ c.cat }} · {{ c.n }}
+        <div v-if="heroChips.length" class="hero__chips" aria-hidden="true">
+          <span v-for="(chip, i) in heroChips" :key="chip + i" class="hero-chip">
+            {{ chip }}
           </span>
         </div>
 
@@ -621,6 +634,9 @@ onMounted(async () => {
   font-weight: 700;
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(4px);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
   animation: chip-float 6s ease-in-out infinite;
 }
