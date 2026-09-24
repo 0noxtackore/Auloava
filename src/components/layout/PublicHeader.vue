@@ -227,11 +227,18 @@ onMounted(detectLocation)
   margin-left: 14px;
 }
 
-/* Cabecera/secciones del panel (solo visibles en móvil) */
+/* Cabecera/pie/labels del panel (solo visibles en móvil) */
 .topbar__panel-head,
-.topbar__panel-section,
+.topbar__panel-label,
 .topbar__panel-foot {
   display: none;
+}
+/* En escritorio las secciones se aplanan para la fila normal */
+.topbar__panel-section {
+  display: contents;
+}
+.topbar__panel-section--actions {
+  margin-left: auto;
 }
 
 /* ---- Indicador de ubicación ---- */
