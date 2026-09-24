@@ -241,25 +241,21 @@ onMounted(async () => {
         <div v-if="heroChips.length" class="hero__chips" aria-hidden="true">
           <ul v-if="heroChipsLeft.length" class="chip-chain chip-chain--left">
             <li v-for="(name, i) in heroChipsLeft" :key="`l${i}`" class="chip-node">
-              <span v-if="i > 0" class="chip-node__stem" />
               <span class="chip-node__joint" />
               <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
                 {{ name }}
               </span>
               <span class="chip-node__joint" />
-              <span v-if="i + 1 < heroChipsLeft.length" class="chip-node__stem" />
             </li>
           </ul>
 
           <ul v-if="heroChipsRight.length" class="chip-chain chip-chain--right">
             <li v-for="(name, i) in heroChipsRight" :key="`r${i}`" class="chip-node">
-              <span v-if="i > 0" class="chip-node__stem" />
               <span class="chip-node__joint" />
               <span class="chip-node__pill" :class="{ 'chip-node__pill--alt': i % 2 === 1 }">
                 {{ name }}
               </span>
               <span class="chip-node__joint" />
-              <span v-if="i + 1 < heroChipsRight.length" class="chip-node__stem" />
             </li>
           </ul>
         </div>
@@ -652,6 +648,22 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-evenly;
 }
+.chip-chain::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    rgba(63, 157, 110, 0),
+    rgba(63, 157, 110, 0.55) 8%,
+    rgba(63, 157, 110, 0.55) 92%,
+    rgba(63, 157, 110, 0)
+  );
+}
 .chip-chain--left {
   left: 3.5%;
 }
@@ -659,31 +671,25 @@ onMounted(async () => {
   right: 3.5%;
 }
 .chip-node {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.chip-node__stem {
-  width: 2px;
-  height: 26px;
-  border-radius: 2px;
-  background: var(--green-600);
-  opacity: 0.35;
-}
 .chip-node__joint {
-  width: 9px;
-  height: 9px;
-  margin: 3px 0;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--green-500);
   box-shadow: 0 0 0 3px rgba(63, 157, 110, 0.12);
 }
 .chip-node__pill {
+  position: relative;
+  z-index: 1;
   max-width: 220px;
   padding: 7px 14px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  border: 1px solid transparent;
+  background: var(--green-600);
   color: var(--white);
   font-size: 0.76rem;
   font-weight: 700;
@@ -694,7 +700,7 @@ onMounted(async () => {
 }
 .chip-node__pill--alt {
   background: #fefefe;
-  border-color: rgba(47, 107, 79, 0.18);
+  border: 1px solid rgba(47, 107, 79, 0.18);
   color: var(--green-700);
 }
 
