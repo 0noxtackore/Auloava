@@ -240,16 +240,23 @@ onMounted(async () => {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <g stroke="#7fbca0" stroke-opacity="0.45" stroke-width="1.4" vector-effect="non-scaling-stroke" fill="none">
-            <path d="M50 50 L3 10" />
-            <path d="M50 50 L97 14" />
-            <path d="M50 50 L3 84" />
-            <path d="M50 50 L97 88" />
-            <path d="M50 50 L97 46" />
-            <path d="M50 50 L3 40" />
-            <path d="M50 50 L3 24" />
-            <path d="M50 50 L97 66" />
-            <path d="M50 50 L3 74" />
+          <g
+            stroke="#7fbca0"
+            stroke-opacity="0.4"
+            stroke-width="1.3"
+            vector-effect="non-scaling-stroke"
+            fill="none"
+          >
+            <path d="M50 6 V94" />
+            <path d="M3 10 H50" />
+            <path d="M50 14 H97" />
+            <path d="M3 84 H50" />
+            <path d="M50 88 H97" />
+            <path d="M50 46 H97" />
+            <path d="M3 40 H50" />
+            <path d="M3 24 H50" />
+            <path d="M50 66 H97" />
+            <path d="M3 74 H50" />
           </g>
           <g fill="#3f9d6e">
             <circle cx="3" cy="10" r="1.1" />
@@ -261,7 +268,6 @@ onMounted(async () => {
             <circle cx="3" cy="24" r="1.1" />
             <circle cx="97" cy="66" r="1.1" />
             <circle cx="3" cy="74" r="1.1" />
-            <circle cx="50" cy="50" r="1.8" />
           </g>
         </svg>
 
