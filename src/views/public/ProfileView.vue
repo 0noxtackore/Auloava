@@ -20,6 +20,7 @@ const nameInput = ref('')
 const savingName = ref(false)
 const nameError = ref('')
 const nameSaved = ref(false)
+const editingName = ref(false)
 const { savedList, load: loadSaved } = useSavedProducts()
 
 function goCatalog() {
@@ -61,7 +62,7 @@ onMounted(async () => {
 
 async function saveName() {
   const u = auth.currentUser
-  if (!u) return
+  if (!u || savingName.value) return
   nameError.value = ''
   nameSaved.value = false
   const v = nameInput.value.trim()
@@ -77,6 +78,7 @@ async function saveName() {
   try {
     await updateProfile(u, { displayName: v })
     user.value = auth.currentUser
+    editingName.value = false
     nameSaved.value = true
     setTimeout(() => {
       nameSaved.value = false
@@ -86,6 +88,22 @@ async function saveName() {
   } finally {
     savingName.value = false
   }
+}
+
+function startEdit() {
+  const u = auth.currentUser
+  if (!u || savingName.value) return
+  nameInput.value = u.displayName || ''
+  nameError.value = ''
+  editingName.value = true
+}
+
+function cancelEdit() {
+  const u = auth.currentUser
+  if (!u || savingName.value) return
+  nameInput.value = u.displayName || ''
+  nameError.value = ''
+  editingName.value = false
 }
 
 const initial = () => {
@@ -106,35 +124,40 @@ const displayName = () => user.value?.displayName?.trim() || ''
       <div v-if="user" class="profile-card">
         <span class="profile-card__avatar">{{ initial() }}</span>
         <div class="profile-card__info">
-          <h1 class="profile-card__name">
+          <h1
+            v-if="!editingName"
+            class="profile-card__name"
+            role="button"
+            tabindex="0"
+            :title="'Clic para editar tu nombre'"
+            @click="startEdit"
+            @keyup.enter="startEdit"
+          >
             {{ displayName() || user.email || 'Mi cuenta' }}
+            <span class="profile-card__name-pencil" aria-hidden="true">✎</span>
           </h1>
+          <input
+            v-else
+            v-model="nameInput"
+            class="profile-card__name-input"
+            type="text"
+            maxlength="30"
+            :aria-label="'Nombre de usuario'"
+            @keyup.enter="saveName"
+            @keyup.esc="cancelEdit"
+            @blur="saveName"
+          />
           <p class="profile-card__meta">
             <span class="profile-card__email">{{ user.email }}</span>
             <span v-if="memberSince" class="profile-card__since">
               Miembro desde {{ memberSince }}
             </span>
           </p>
-
-          <form class="profile-card__nameform" @submit.prevent="saveName">
-            <input
-              v-model="nameInput"
-              type="text"
-              maxlength="30"
-              placeholder="Tu nombre de usuario…"
-              aria-label="Nombre de usuario"
-              class="profile-card__name-input"
-            />
-            <button
-              type="submit"
-              class="profile-card__name-btn"
-              :disabled="savingName"
-            >
-              {{ savingName ? 'Guardando…' : 'Guardar nombre' }}
-            </button>
-            <span v-if="nameSaved" class="profile-card__name-ok">✓ Guardado</span>
-          </form>
+          <span v-if="nameSaved" class="profile-card__name-ok">✓ Nombre guardado</span>
           <p v-if="nameError" class="profile-card__name-error">{{ nameError }}</p>
+          <p v-if="editingName" class="profile-card__name-hint">
+            Enter para guardar · Esc para cancelar
+          </p>
         </div>
       </div>
 
@@ -227,46 +250,42 @@ const displayName = () => user.value?.displayName?.trim() || ''
   border-radius: var(--radius-full);
 }
 
-.profile-card__nameform {
-  display: flex;
-  flex-wrap: wrap;
+.profile-card__name {
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
+}
+.profile-card__name-pencil {
+  font-size: 0.85rem;
+  color: var(--green-600);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.profile-card__name:hover .profile-card__name-pencil {
+  opacity: 1;
 }
 .profile-card__name-input {
-  width: min(240px, 100%);
-  padding: 9px 14px;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-full);
-  font-size: 0.9rem;
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  padding: 6px 10px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  border: 2px solid var(--green-500);
+  border-radius: 10px;
   background: var(--white);
   transition: border-color var(--transition);
 }
 .profile-card__name-input:focus {
   outline: none;
-  border-color: var(--green-500);
-}
-.profile-card__name-btn {
-  padding: 9px 16px;
-  border: none;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  color: var(--white);
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform var(--transition), box-shadow var(--transition);
-}
-.profile-card__name-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-.profile-card__name-btn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  border-color: var(--green-600);
 }
 .profile-card__name-ok {
+  display: inline-block;
+  margin-top: 8px;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--green-600);
@@ -275,6 +294,11 @@ const displayName = () => user.value?.displayName?.trim() || ''
   margin: 8px 0 0;
   font-size: 0.82rem;
   color: var(--danger);
+}
+.profile-card__name-hint {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
 }
 
 .profile-section__head {
