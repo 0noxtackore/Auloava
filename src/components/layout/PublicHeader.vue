@@ -10,6 +10,7 @@ import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { decodeHtml } from '@/utils/formatters'
 import { auth, logout } from '@/services/auth'
 import { profileService } from '@/services/profile'
+import { catalogPath, profilePath } from '@/utils/routes'
 import { onAuthStateChanged } from 'firebase/auth'
 
 const router = useRouter()
@@ -65,13 +66,13 @@ function goRegister() {
 }
 function goSearch() {
   const q = search.value.trim()
-  router.push({ name: 'catalog', query: q ? { q } : {} })
+  router.push({ path: catalogPath(auth.currentUser?.uid), query: q ? { q } : {} })
   searchOpen.value = false
 }
 function pickSuggestion(p) {
   search.value = p.title
   searchOpen.value = false
-  router.push({ name: 'catalog', query: { q: p.title } })
+  router.push({ path: catalogPath(auth.currentUser?.uid), query: { q: p.title } })
 }
 function onSearchBlur() {
   setTimeout(() => {
@@ -169,7 +170,10 @@ async function detectLocation() {
 
         <template v-if="user">
           <div class="topbar__account" :title="user.email || ''">
-            <RouterLink class="topbar__account-link" :to="{ name: 'profile' }">
+            <RouterLink
+              class="topbar__account-link"
+              :to="profilePath(user.uid)"
+            >
               <span class="topbar__account-avatar">
               <img
                 v-if="photoURL()"

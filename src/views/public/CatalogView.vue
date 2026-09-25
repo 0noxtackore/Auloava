@@ -12,6 +12,7 @@ import { auth, authReady } from '@/services/auth'
 import ProductCard from '@/components/product/ProductCard.vue'
 import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
+import { catalogPath } from '@/utils/routes'
 
 const productStore = useProductStore()
 const route = useRoute()
@@ -41,6 +42,11 @@ function shuffle(arr) {
 onMounted(async () => {
   await authReady
   isGuest.value = !auth.currentUser
+
+  // Si hay sesión, normaliza la URL a /catalog/{uid}.
+  if (auth.currentUser && !route.params.userId) {
+    router.replace({ path: catalogPath(auth.currentUser.uid), query: route.query })
+  }
 
   // Re-baraja cada vez que el store cambia la lista (carga inicial o refresco).
   watch(

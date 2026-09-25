@@ -4,15 +4,17 @@
 // Datos de la cuenta en modo lectura y los productos que el
 // usuario guardó para comprarlos directo en las tiendas.
 // ============================================================
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { auth, authReady } from '@/services/auth'
 import { useSavedProducts } from '@/composables/useSavedProducts'
 import { profileService } from '@/services/profile'
+import { catalogPath, profilePath } from '@/utils/routes'
 import { updateProfile } from 'firebase/auth'
 import ProductCard from '@/components/product/ProductCard.vue'
 
 const router = useRouter()
+const route = router.currentRoute.value
 const user = ref(null)
 const memberSince = ref('')
 const nameInput = ref('')
@@ -27,18 +29,24 @@ const photoSaved = ref(false)
 const profilePhoto = ref('')
 const { savedList, load: loadSaved } = useSavedProducts()
 
+const catalogTo = computed(() => catalogPath(user.value?.uid))
+
 function goCatalog() {
-  router.push({ name: 'catalog' })
+  router.push({ path: catalogTo.value })
 }
 
 onMounted(async () => {
   await authReady
   const u = auth.currentUser
   if (!u) {
-    router.replace({ name: 'public-login', query: { redirect: router.currentRoute.value.fullPath } })
+    router.replace({ name: 'public-login', query: { redirect: route.fullPath } })
     return
   }
   user.value = u
+  // Si el usuario entró a /profile sin el UID, normaliza a /profile/{uid}.
+  if (!route.params.userId) {
+    router.replace({ path: profilePath(u.uid), query: route.query })
+  }
   nameInput.value = u.displayName || ''
   const created = u.metadata?.creationTime
   if (created) {
@@ -190,7 +198,7 @@ const displayName = () => user.value?.displayName?.trim() || ''
 <template>
   <div class="profile-page">
     <div class="profile-topbar">
-      <RouterLink class="profile-topbar__back" :to="{ name: 'catalog' }">
+      <RouterLink class="profile-topbar__back" :to="catalogTo">
         <svg
           viewBox="0 0 24 24"
           fill="none"

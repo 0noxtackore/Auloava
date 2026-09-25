@@ -15,8 +15,9 @@ const routes = [
   },
 
   // ===== Catálogo público (enlace en inglés) =====
+  // Tras /catalog el UID del usuario logueado (/catalog/{uid})
   {
-    path: '/catalog',
+    path: '/catalog/:userId?',
     name: 'catalog',
     component: () => import('@/views/public/CatalogView.vue'),
     meta: { title: 'Catálogo' },
@@ -93,8 +94,9 @@ const routes = [
   },
 
   // ===== Perfil del usuario (solo lectura + guardados) =====
+  // Tras /profile el UID del usuario logueado (/profile/{uid})
   {
-    path: '/profile',
+    path: '/profile/:userId?',
     name: 'profile',
     component: () => import('@/views/public/ProfileView.vue'),
     meta: { title: 'Mi perfil' },
