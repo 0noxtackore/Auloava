@@ -10,7 +10,6 @@ import { auth, authReady } from '@/services/auth'
 import { useSavedProducts } from '@/composables/useSavedProducts'
 import { profileService } from '@/services/profile'
 import { updateProfile } from 'firebase/auth'
-import PublicHeader from '@/components/layout/PublicHeader.vue'
 import { PLATFORMS } from '@/constants'
 import {
   formatPrice,
@@ -213,7 +212,23 @@ const displayName = () => user.value?.displayName?.trim() || ''
 
 <template>
   <div class="profile-page">
-    <PublicHeader />
+    <div class="profile-topbar">
+      <RouterLink class="profile-topbar__back" :to="{ name: 'catalog' }">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M19 12H5" />
+          <path d="m12 19-7-7 7-7" />
+        </svg>
+        Volver al catálogo
+      </RouterLink>
+    </div>
 
     <main class="container profile-main">
       <div v-if="user" class="profile-card">
@@ -370,6 +385,38 @@ const displayName = () => user.value?.displayName?.trim() || ''
 .profile-page {
   min-height: 100vh;
   background: var(--white);
+}
+
+.profile-topbar {
+  display: flex;
+  align-items: center;
+  padding: 18px max(20px, calc((100vw - 1200px) / 2));
+}
+.profile-topbar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--green-200);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--green-700);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition),
+    transform var(--transition);
+}
+.profile-topbar__back:hover {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  transform: translateX(-2px);
+}
+.profile-topbar__back svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .profile-main {
