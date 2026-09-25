@@ -9,12 +9,17 @@ import { useRouter } from 'vue-router'
 import { auth, authReady } from '@/services/auth'
 import { useSavedProducts } from '@/composables/useSavedProducts'
 import { profileService } from '@/services/profile'
+import { updateProfile } from 'firebase/auth'
 import ProductCard from '@/components/product/ProductCard.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
 
 const router = useRouter()
 const user = ref(null)
 const memberSince = ref('')
+const nameInput = ref('')
+const savingName = ref(false)
+const nameError = ref('')
+const nameSaved = ref(false)
 const { savedList, load: loadSaved } = useSavedProducts()
 
 function goCatalog() {
@@ -29,6 +34,7 @@ onMounted(async () => {
     return
   }
   user.value = u
+  nameInput.value = u.displayName || ''
   const created = u.metadata?.creationTime
   if (created) {
     memberSince.value = new Date(created).toLocaleDateString('es-ES', {
@@ -53,12 +59,43 @@ onMounted(async () => {
   loadSaved()
 })
 
+async function saveName() {
+  const u = auth.currentUser
+  if (!u) return
+  nameError.value = ''
+  nameSaved.value = false
+  const v = nameInput.value.trim()
+  if (!v) {
+    nameError.value = 'Escribe un nombre de usuario.'
+    return
+  }
+  if (v.length > 30) {
+    nameError.value = 'Máximo 30 caracteres.'
+    return
+  }
+  savingName.value = true
+  try {
+    await updateProfile(u, { displayName: v })
+    user.value = auth.currentUser
+    nameSaved.value = true
+    setTimeout(() => {
+      nameSaved.value = false
+    }, 2000)
+  } catch {
+    nameError.value = 'No se pudo guardar tu nombre. Inténtalo de nuevo.'
+  } finally {
+    savingName.value = false
+  }
+}
+
 const initial = () => {
   const u = user.value
   if (!u) return ''
   if (u.displayName) return u.displayName.trim().charAt(0).toUpperCase()
   return ((u.email || '?').trim().charAt(0) || '?').toUpperCase()
 }
+
+const displayName = () => user.value?.displayName?.trim() || ''
 </script>
 
 <template>
@@ -69,13 +106,35 @@ const initial = () => {
       <div v-if="user" class="profile-card">
         <span class="profile-card__avatar">{{ initial() }}</span>
         <div class="profile-card__info">
-          <h1 class="profile-card__name">{{ user.email || 'Mi cuenta' }}</h1>
+          <h1 class="profile-card__name">
+            {{ displayName() || user.email || 'Mi cuenta' }}
+          </h1>
           <p class="profile-card__meta">
             <span class="profile-card__email">{{ user.email }}</span>
             <span v-if="memberSince" class="profile-card__since">
               Miembro desde {{ memberSince }}
             </span>
           </p>
+
+          <form class="profile-card__nameform" @submit.prevent="saveName">
+            <input
+              v-model="nameInput"
+              type="text"
+              maxlength="30"
+              placeholder="Tu nombre de usuario…"
+              aria-label="Nombre de usuario"
+              class="profile-card__name-input"
+            />
+            <button
+              type="submit"
+              class="profile-card__name-btn"
+              :disabled="savingName"
+            >
+              {{ savingName ? 'Guardando…' : 'Guardar nombre' }}
+            </button>
+            <span v-if="nameSaved" class="profile-card__name-ok">✓ Guardado</span>
+          </form>
+          <p v-if="nameError" class="profile-card__name-error">{{ nameError }}</p>
         </div>
       </div>
 
@@ -166,6 +225,56 @@ const initial = () => {
   background: var(--green-100);
   padding: 3px 10px;
   border-radius: var(--radius-full);
+}
+
+.profile-card__nameform {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.profile-card__name-input {
+  width: min(240px, 100%);
+  padding: 9px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  background: var(--white);
+  transition: border-color var(--transition);
+}
+.profile-card__name-input:focus {
+  outline: none;
+  border-color: var(--green-500);
+}
+.profile-card__name-btn {
+  padding: 9px 16px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: var(--white);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.profile-card__name-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.profile-card__name-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.profile-card__name-ok {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--green-600);
+}
+.profile-card__name-error {
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+  color: var(--danger);
 }
 
 .profile-section__head {

@@ -37,6 +37,12 @@ const userInitial = () => {
   return ((u.email || '?').trim().charAt(0) || '?').toUpperCase()
 }
 
+const userLabel = () => {
+  const u = user.value
+  if (!u) return ''
+  return ((u.displayName || '').trim() || u.email || 'Mi cuenta').trim()
+}
+
 function goLogout() {
   logout()
 }
@@ -152,7 +158,7 @@ async function detectLocation() {
           <div class="topbar__account" :title="user.email || ''">
             <RouterLink class="topbar__account-link" :to="{ name: 'profile' }">
               <span class="topbar__account-avatar">{{ userInitial() }}</span>
-              <span class="topbar__account-mail">{{ user.email || 'Mi cuenta' }}</span>
+              <span class="topbar__account-mail">{{ userLabel() }}</span>
             </RouterLink>
             <button
               class="topbar__account-logout"
