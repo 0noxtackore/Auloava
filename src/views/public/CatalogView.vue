@@ -198,12 +198,58 @@ const products = computed(() => {
   .catalog-main {
     padding: 28px 0 48px;
   }
+  .section__head {
+    margin-bottom: 32px;
+  }
 }
 
 @media (max-width: 380px) {
   .catalog-main {
     padding: 22px 0 40px;
   }
+  .section__title {
+    font-size: 1.5rem;
+  }
+}
+
+.section__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  margin-bottom: 52px;
+}
+.section__tag {
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  background: var(--green-100);
+  color: var(--green-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.section__title {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.6vw, 2.4rem);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.section__title::after {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 4px;
+  margin: 16px auto 0;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--green-500), var(--green-300));
+}
+.section__lead {
+  color: var(--muted);
+  font-size: 1.02rem;
+  max-width: 520px;
 }
 
 .catalog-empty {
