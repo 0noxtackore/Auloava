@@ -289,7 +289,7 @@ const displayName = () => user.value?.displayName?.trim() || ''
       </div>
 
       <div class="profile-section">
-        <div v-if="savedList.length" class="pin-grid">
+        <div v-if="savedList.length" class="grid-products">
           <ProductCard v-for="product in savedList" :key="product.id" :product="product" />
         </div>
         <div v-else class="profile-empty">
@@ -482,7 +482,11 @@ const displayName = () => user.value?.displayName?.trim() || ''
   color: var(--muted);
 }
 
-/* ---- Guardados: mismos cards que el catálogo (pin-grid) ---- */
+/* ---- Guardados: mismos cards del catálogo en filas ---- */
+.grid-products {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
 
 .profile-empty {
   text-align: center;
