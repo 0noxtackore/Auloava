@@ -92,6 +92,14 @@ const routes = [
     meta: { title: 'Crear cuenta' },
   },
 
+  // ===== Perfil del usuario (solo lectura + guardados) =====
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/public/ProfileView.vue'),
+    meta: { title: 'Mi perfil' },
+  },
+
   // ===== 404 =====
   {
     path: '/:pathMatch(.*)*',

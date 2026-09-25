@@ -5,11 +5,14 @@
 // precio y título. Alturas variables para el efecto masonry.
 // ============================================================
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { PLATFORMS } from '@/constants'
 import { formatPrice, formatRating, formatPercent, decodeHtml } from '@/utils/formatters'
 import { optimizeProductImage } from '@/utils/images'
 import { cleanAffiliateUrl } from '@/utils/links'
 import { useProductStore } from '@/store/products'
+import { auth, authReady } from '@/services/auth'
+import { useSavedProducts } from '@/composables/useSavedProducts'
 
 const props = defineProps({
   product: { type: Object, required: true },
@@ -17,6 +20,10 @@ const props = defineProps({
 })
 
 const productStore = useProductStore()
+const router = useRouter()
+const { toggle, isSaved, load } = useSavedProducts()
+
+if (!props.admin) load()
 
 // Al hacer clic en el enlace de afiliado: contabiliza el click (+1) y
 // luego abre la URL de Amazon en una pestaña nueva.
@@ -24,6 +31,31 @@ function onAffiliateClick(e) {
   e.preventDefault()
   if (props.product?.id) productStore.registerClick(props.product.id)
   window.open(affiliateHref.value, '_blank', 'noopener,noreferrer')
+}
+
+// Guarda/quita el producto de la lista del usuario. Sin sesión, lleva al login.
+async function onSave() {
+  await authReady
+  if (!auth.currentUser) {
+    router.push({ name: 'public-login', query: { redirect: router.currentRoute.value.fullPath } })
+    return
+  }
+  const product = {
+    id: props.product.id,
+    title: props.product.title,
+    image: props.product.image,
+    price: props.product.price,
+    priceText: props.product.priceText,
+    originalPrice: props.product.originalPrice,
+    rating: props.product.rating,
+    ratingCount: props.product.ratingCount,
+    commission: props.product.commission,
+    category: props.product.category,
+    platform: props.product.platform,
+    affiliateUrl: props.product.affiliateUrl,
+    url: props.product.url,
+  }
+  await toggle(product)
 }
 
 // Descuento respecto al precio original
@@ -91,7 +123,15 @@ const mediaAspect = computed(() => {
       <!-- Overlay al hacer hover -->
       <div class="pin__overlay">
         <span v-if="discount && !admin" class="pin__discount">-{{ discount }}%</span>
-        <span v-if="!admin" class="pin__save">Guardar</span>
+        <button
+          v-if="!admin"
+          type="button"
+          class="pin__save"
+          :class="{ 'is-saved': isSaved(product.id) }"
+          @click.stop.prevent="onSave"
+        >
+          {{ isSaved(product.id) ? 'Guardado ✓' : 'Guardar' }}
+        </button>
       </div>
 
       <span v-if="platform" class="pin__platform">{{ product.category || platform.name }}</span>
@@ -183,12 +223,14 @@ const mediaAspect = computed(() => {
 
 .pin__save {
   padding: 10px 18px;
+  border: none;
   border-radius: var(--radius-full);
   background: var(--green-600);
   color: var(--white);
   font-size: 0.9rem;
   font-weight: 700;
   box-shadow: var(--shadow);
+  cursor: pointer;
   transform: translateY(-6px);
   transition: transform 0.2s ease, background 0.2s ease;
 }
@@ -199,6 +241,11 @@ const mediaAspect = computed(() => {
 
 .pin__save:hover {
   background: var(--green-700);
+}
+
+.pin__save.is-saved {
+  background: var(--white);
+  color: var(--green-600);
 }
 
 .pin__discount {

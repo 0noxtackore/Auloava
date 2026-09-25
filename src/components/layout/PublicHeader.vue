@@ -150,8 +150,10 @@ async function detectLocation() {
 
         <template v-if="user">
           <div class="topbar__account" :title="user.email || ''">
-            <span class="topbar__account-avatar">{{ userInitial() }}</span>
-            <span class="topbar__account-mail">{{ user.email || 'Mi cuenta' }}</span>
+            <RouterLink class="topbar__account-link" :to="{ name: 'profile' }">
+              <span class="topbar__account-avatar">{{ userInitial() }}</span>
+              <span class="topbar__account-mail">{{ user.email || 'Mi cuenta' }}</span>
+            </RouterLink>
             <button
               class="topbar__account-logout"
               type="button"
@@ -367,14 +369,25 @@ async function detectLocation() {
 .topbar__account {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   flex: 0 0 auto;
   margin-left: auto;
-  padding: 5px 8px 5px 5px;
+  padding: 4px 6px 4px 4px;
   border: 1.5px solid var(--green-200);
   border-radius: var(--radius-full);
   background: var(--green-50);
   max-width: 100%;
+}
+.topbar__account-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+.topbar__account-link:hover {
+  opacity: 0.85;
 }
 .topbar__account-avatar {
   display: grid;
@@ -462,6 +475,10 @@ async function detectLocation() {
     margin-left: 0;
     justify-content: space-between;
     padding: 6px 10px;
+  }
+  .topbar__account-link {
+    flex: 1;
+    min-width: 0;
   }
   .topbar__account-mail {
     max-width: none;

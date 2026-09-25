@@ -233,6 +233,39 @@ export const handler = async (event) => {
       }
     }
 
+    // ---------- Productos guardados por usuario (para su perfil) ----------
+    if (action === 'get-saved') {
+      const ndb = ensureAdmin()
+      const snap = await ndb.ref(`users/${payload.uid}/saved`).get()
+      const saved = []
+      if (snap.exists()) {
+        Object.entries(snap.val() || {}).forEach(([id, d]) => saved.push({ id, ...d }))
+      }
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, saved }) }
+    }
+
+    if (action === 'save-product') {
+      const ndb = ensureAdmin()
+      const product = payload.product || {}
+      if (!payload.uid || !product.id) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Faltan uid o producto' }) }
+      }
+      await ndb.ref(`users/${payload.uid}/saved/${product.id}`).set({
+        ...product,
+        savedAt: new Date().toISOString(),
+      })
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: product.id, ...product } }) }
+    }
+
+    if (action === 'unsave-product') {
+      const ndb = ensureAdmin()
+      if (!payload.uid || !payload.id) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Faltan uid o id' }) }
+      }
+      await ndb.ref(`users/${payload.uid}/saved/${payload.id}`).remove()
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
+    }
+
     // Acumulador de clicks: suma +1 al contador del producto (atómico)
     if (action === 'click-product') {
       const db = ensureAdmin()
