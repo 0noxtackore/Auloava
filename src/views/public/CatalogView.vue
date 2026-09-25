@@ -1,30 +1,26 @@
 <script setup>
 // ============================================================
-// CatalogView · Catálogo público de ofertas (estilo Pinterest)
-// Pensado para que cualquier visitante navegue y compare
-// productos, sin entrar al área de administración.
+// CatalogView · Catálogo de ofertas (estilo Pinterest)
+// Reservado a usuarios con sesión: se muestra todo el catálogo
+// en orden aleatorio y sin paginación. Sin sesión se ve la
+// pantalla de acceso.
 // ============================================================
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { auth, authReady } from '@/services/auth'
 import { profileService } from '@/services/profile'
 import ProductCard from '@/components/product/ProductCard.vue'
-import TheFooter from '@/components/layout/TheFooter.vue'
-import PublicHeader from '@/components/layout/PublicHeader.vue'
 import EarningsMeter from '@/components/layout/EarningsMeter.vue'
+import PublicHeader from '@/components/layout/PublicHeader.vue'
 
 const productStore = useProductStore()
 const route = useRoute()
 const router = useRouter()
 const query = ref(String(route.query.q || ''))
 const categoryFilter = ref(String(route.query.category || ''))
-const PAGE = 24
-const visible = ref(PAGE)
-const GUEST_LIMIT = 12
 
-// Catálogo personalizado: si el usuario logueado eligió nichos, solo se
-// muestran productos de esos nichos. Sin sesión (o sin nichos) se ve todo.
+const randomOrder = ref([])
 const userNiches = ref(null) // null = no personalizado
 const showAll = ref(false)
 const isGuest = ref(true)
@@ -32,9 +28,20 @@ const isGuest = ref(true)
 function goLogin() {
   router.push({ name: 'public-login', query: { redirect: route.fullPath } })
 }
+function goRegister() {
+  router.push({ name: 'register', query: { redirect: route.fullPath } })
+}
+
+function shuffle(arr) {
+  const a = arr.slice()
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
 
 onMounted(async () => {
-  if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
   await authReady
   const user = auth.currentUser
   isGuest.value = !user
@@ -48,29 +55,27 @@ onMounted(async () => {
       /* catálogo no personalizado */
     }
   }
+
+  if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
+  randomOrder.value = shuffle(productStore.products)
+
+  const t = setInterval(() => {
+    if (productStore.products.length === randomOrder.value.length) {
+      clearInterval(t)
+      return
+    }
+    randomOrder.value = shuffle(productStore.products)
+  }, 400)
+  setTimeout(() => clearInterval(t), 5000)
 })
 
-// Si el ?q= o ?category= cambian en la URL, actualizamos los términos locales.
-watch(
-  () => route.query.q,
-  (q) => {
-    query.value = String(q || '')
-  },
-)
-watch(
-  () => route.query.category,
-  (c) => {
-    categoryFilter.value = String(c || '')
-    visible.value = PAGE
-  },
-)
-
+// Productos visibles: solo para usuarios con sesión, con el orden
+// aleatorio fijado al montar la vista ("salida" muy scrolleable).
 const products = computed(() => {
+  if (isGuest.value) return []
   const q = query.value.trim().toLowerCase()
-  let list = productStore.products
+  let list = randomOrder.value
 
-  // Si se eligió una categoría explícitamente, se muestra esa categoría
-  // (para todos). Si no, se aplica la personalización por nichos.
   if (categoryFilter.value) {
     const c = categoryFilter.value.toLowerCase()
     list = list.filter((p) => (p.category || '').toLowerCase() === c)
@@ -87,35 +92,6 @@ const products = computed(() => {
       (p.description || '').toLowerCase().includes(q),
   )
 })
-
-// El invitado ve un catálogo LIMITADO; al iniciar sesión ve el completo.
-const paged = computed(() => {
-  const max = isGuest.value ? GUEST_LIMIT : products.value.length
-  return products.value.slice(0, Math.min(visible.value, max))
-})
-const hasMore = computed(() =>
-  isGuest.value ? false : visible.value < products.value.length,
-)
-
-function loadMore() {
-  visible.value = Math.min(visible.value + PAGE, products.value.length)
-}
-
-// Cargar más exige login: si no hay sesión, manda al login y vuelve aquí.
-async function onLoadMore() {
-  const { auth, authReady } = await import('@/services/auth')
-  await authReady
-  if (!auth.currentUser) {
-    router.push({ name: 'public-login', query: { redirect: route.fullPath } })
-    return
-  }
-  loadMore()
-}
-
-// Reinicia la paginación al cambiar la búsqueda
-watch(query, () => {
-  visible.value = PAGE
-})
 </script>
 
 <template>
@@ -123,64 +99,64 @@ watch(query, () => {
     <PublicHeader />
 
     <main class="container catalog-main">
-      <div v-if="userNiches && userNiches.length" class="catalog-personal">
-        <span>
-          Catálogo <strong>personalizado</strong> · tus nichos:
-          {{ userNiches.join(', ') }}
-        </span>
-        <button type="button" class="catalog-personal__toggle" @click="showAll = !showAll">
-          {{ showAll ? 'Solo mis nichos' : 'Ver todo el catálogo' }}
-        </button>
-      </div>
-      <form class="catalog-search" @submit.prevent>
-        <input
-          v-model="query"
-          type="search"
-          placeholder="Busca ofertas en AliExpress, Amazon y Alibaba…"
-          aria-label="Buscar ofertas"
-        />
-      </form>
-
-      <div class="section__head">
-        <span class="section__tag">Catálogo</span>
-        <h1 class="section__title">Explora todas las ofertas</h1>
-        <p class="section__lead">
-          Compara precios, valoraciones y comisiones de los 3 gigantes del
-          ecommerce en un solo lugar.
+      <div v-if="isGuest" class="catalog-gate">
+        <span class="catalog-gate__icon">🔒</span>
+        <h1 class="catalog-gate__title">El catálogo solo para ti</h1>
+        <p class="catalog-gate__lead">
+          Entra con tu cuenta para explorar todas las ofertas comparadas en
+          AliExpress, Amazon y Alibaba, en un solo lugar y en orden aleatorio.
         </p>
+        <div class="catalog-gate__actions">
+          <button type="button" class="catalog-gate__btn" @click="goLogin">
+            Iniciar sesión
+          </button>
+          <button type="button" class="catalog-gate__btn catalog-gate__btn--ghost" @click="goRegister">
+            Crear cuenta gratis
+          </button>
+        </div>
       </div>
 
-      <div v-if="paged.length" class="pin-grid">
-        <ProductCard
-          v-for="product in paged"
-          :key="product.id"
-          :product="product"
-        />
-      </div>
-      <p v-else class="catalog-empty">
-        No encontramos ofertas para “{{ query }}”.
-      </p>
+      <template v-else>
+        <div v-if="userNiches && userNiches.length" class="catalog-personal">
+          <span>
+            Catálogo <strong>personalizado</strong> · tus nichos:
+            {{ userNiches.join(', ') }}
+          </span>
+          <button type="button" class="catalog-personal__toggle" @click="showAll = !showAll">
+            {{ showAll ? 'Solo mis nichos' : 'Ver todo el catálogo' }}
+          </button>
+        </div>
+        <form class="catalog-search" @submit.prevent>
+          <input
+            v-model="query"
+            type="search"
+            placeholder="Busca ofertas en AliExpress, Amazon y Alibaba…"
+            aria-label="Buscar ofertas"
+          />
+        </form>
 
-      <div v-if="hasMore" class="catalog-more">
-        <button class="catalog-more__btn" type="button" @click="onLoadMore">
-          Cargar más ({{ products.length - visible }} restantes)
-        </button>
-      </div>
+        <div class="section__head">
+          <span class="section__tag">Catálogo</span>
+          <h1 class="section__title">Explora todas las ofertas</h1>
+          <p class="section__lead">
+            Tu catálogo completo, en orden aleatorio. ¡Toca fondo cuando quieras!
+          </p>
+        </div>
 
-      <div v-if="isGuest" class="catalog-guest">
-        <span>
-          Solo estás viendo <strong>una parte</strong>. El catálogo completo
-          esconde mucho más de lo que imaginas…
-        </span>
-        <button type="button" class="catalog-guest__btn" @click="goLogin">
-          Ver catálogo completo
-        </button>
-      </div>
+        <div v-if="products.length" class="pin-grid">
+          <ProductCard
+            v-for="product in products"
+            :key="product.id"
+            :product="product"
+          />
+        </div>
+        <p v-else class="catalog-empty">
+          No encontramos ofertas para “{{ query }}”.
+        </p>
 
-      <EarningsMeter />
+        <EarningsMeter />
+      </template>
     </main>
-
-    <TheFooter />
   </div>
 </template>
 
@@ -293,30 +269,6 @@ watch(query, () => {
   font-size: 1.05rem;
 }
 
-.catalog-more {
-  display: flex;
-  justify-content: center;
-  margin: 40px 0 8px;
-}
-
-.catalog-more__btn {
-  padding: 12px 28px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-full);
-  background: var(--white);
-  color: var(--ink);
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--transition), background var(--transition), transform var(--transition);
-}
-
-.catalog-more__btn:hover {
-  border-color: var(--green-500);
-  background: var(--green-50);
-  transform: translateY(-1px);
-}
-
 .catalog-personal {
   display: flex;
   flex-wrap: wrap;
@@ -342,37 +294,62 @@ watch(query, () => {
   white-space: nowrap;
 }
 
-.catalog-guest {
+/* ---- Pantalla de acceso para visitantes sin sesión ---- */
+.catalog-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 72px 24px;
+}
+.catalog-gate__icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+.catalog-gate__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.catalog-gate__lead {
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  max-width: 440px;
+}
+.catalog-gate__actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  margin: -14px 0 26px;
-  padding: 14px 18px;
-  border-radius: var(--radius);
-  background: var(--green-900);
-  color: var(--green-100);
-  font-size: 0.92rem;
+  margin-top: 8px;
 }
-@media (min-width: 768px) {
-  .catalog-guest {
-    width: min(100vw - 32px, 1500px);
-    margin-left: 50%;
-    transform: translateX(-50%);
-    padding: 18px 32px;
-    font-size: 1.05rem;
-  }
-}
-.catalog-guest__btn {
-  padding: 9px 18px;
-  border: none;
+.catalog-gate__btn {
+  padding: 12px 26px;
+  border: 1.5px solid transparent;
   border-radius: var(--radius-full);
-  background: var(--white);
-  color: var(--green-900);
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: var(--white);
+  font-size: 0.95rem;
   font-weight: 700;
-  font-size: 0.84rem;
   cursor: pointer;
-  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.catalog-gate__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+.catalog-gate__btn--ghost {
+  background: var(--white);
+  border-color: var(--green-300);
+  color: var(--green-700);
+}
+.catalog-gate__btn--ghost:hover {
+  background: var(--green-50);
 }
 </style>

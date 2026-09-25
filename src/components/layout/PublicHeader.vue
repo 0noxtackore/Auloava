@@ -4,10 +4,12 @@
 // Logo, navegación, buscador, "Iniciar sesión" y "Regístrese".
 // En móvil todo se colapsa en un menú desplegable.
 // ============================================================
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { decodeHtml } from '@/utils/formatters'
+import { auth, logout } from '@/services/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
@@ -15,7 +17,33 @@ const search = ref('')
 const { suggestions: searchSuggestions } = useProductSuggestions(search, 6)
 const searchOpen = ref(false)
 const country = ref('')
+const user = ref(null)
+let unsubAuth = null
 
+onMounted(() => {
+  unsubAuth = onAuthStateChanged(auth, (u) => {
+    user.value = u
+  })
+  detectLocation()
+})
+onUnmounted(() => {
+  if (unsubAuth) unsubAuth()
+})
+
+const userInitial = () => {
+  const u = user.value
+  if (!u) return ''
+  if (u.displayName) return u.displayName.trim().charAt(0).toUpperCase()
+  return ((u.email || '?').trim().charAt(0) || '?').toUpperCase()
+}
+
+function goLogout() {
+  logout()
+}
+
+function goRegister() {
+  router.push({ name: 'register' })
+}
 function goSearch() {
   const q = search.value.trim()
   router.push({ name: 'catalog', query: q ? { q } : {} })
@@ -30,9 +58,6 @@ function onSearchBlur() {
   setTimeout(() => {
     searchOpen.value = false
   }, 150)
-}
-function goRegister() {
-  router.push({ name: 'register' })
 }
 
 async function detectLocation() {
@@ -69,7 +94,6 @@ async function detectLocation() {
     byIp()
   }
 }
-onMounted(detectLocation)
 </script>
 
 <template>
@@ -124,14 +148,30 @@ onMounted(detectLocation)
           <span>{{ country || '—' }}</span>
         </div>
 
-        <div class="topbar__actions">
-          <RouterLink class="topbar__login" :to="{ name: 'public-login' }">
-            Iniciar sesión
-          </RouterLink>
-          <button class="topbar__cta" type="button" @click="goRegister">
-            Regístrese
-          </button>
-        </div>
+        <template v-if="user">
+          <div class="topbar__account" :title="user.email || ''">
+            <span class="topbar__account-avatar">{{ userInitial() }}</span>
+            <span class="topbar__account-mail">{{ user.email || 'Mi cuenta' }}</span>
+            <button
+              class="topbar__account-logout"
+              type="button"
+              aria-label="Cerrar sesión"
+              @click="goLogout"
+            >
+              Salir
+            </button>
+          </div>
+        </template>
+        <template v-else>
+          <div class="topbar__actions">
+            <RouterLink class="topbar__login" :to="{ name: 'public-login' }">
+              Iniciar sesión
+            </RouterLink>
+            <button class="topbar__cta" type="button" @click="goRegister">
+              Regístrese
+            </button>
+          </div>
+        </template>
       </div>
     </nav>
   </header>
@@ -323,6 +363,55 @@ onMounted(detectLocation)
   box-shadow: var(--shadow);
 }
 
+/* ---- Cuenta (sesión iniciada) en esquina ---- */
+.topbar__account {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 5px 8px 5px 5px;
+  border: 1.5px solid var(--green-200);
+  border-radius: var(--radius-full);
+  background: var(--green-50);
+  max-width: 100%;
+}
+.topbar__account-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.topbar__account-mail {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+.topbar__account-logout {
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--green-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 10px;
+  transition: background var(--transition);
+}
+.topbar__account-logout:hover {
+  background: var(--green-100);
+}
+
 /* ---- Móvil: contenido apilado uno debajo de otro ---- */
 @media (max-width: 820px) {
   .topbar__inner {
@@ -367,6 +456,16 @@ onMounted(detectLocation)
     width: 100%;
     padding: 11px 14px;
     font-size: 0.9rem;
+  }
+  .topbar__account {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+    padding: 6px 10px;
+  }
+  .topbar__account-mail {
+    max-width: none;
+    flex: 1;
   }
 }
 </style>
