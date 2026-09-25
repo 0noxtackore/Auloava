@@ -10,6 +10,13 @@ import { auth, authReady } from '@/services/auth'
 import { useSavedProducts } from '@/composables/useSavedProducts'
 import { profileService } from '@/services/profile'
 import { updateProfile } from 'firebase/auth'
+import {
+  getStorage,
+  ref as sRef,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage'
 import ProductCard from '@/components/product/ProductCard.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
 
@@ -21,6 +28,9 @@ const savingName = ref(false)
 const nameError = ref('')
 const nameSaved = ref(false)
 const editingName = ref(false)
+const avatarInput = ref(null)
+const uploadingPhoto = ref(false)
+const photoError = ref('')
 const { savedList, load: loadSaved } = useSavedProducts()
 
 function goCatalog() {
@@ -106,6 +116,53 @@ function cancelEdit() {
   editingName.value = false
 }
 
+const photoURL = () => user.value?.photoURL || ''
+
+function triggerPhotoPicker() {
+  avatarInput.value?.click()
+}
+
+async function onPhotoPicked(e) {
+  const file = e.target.files?.[0]
+  e.target.value = ''
+  if (!file) return
+  photoError.value = ''
+  const ok = ['image/jpeg', 'image/png', 'image/webp']
+  if (!ok.includes(file.type)) {
+    photoError.value = 'Usa una imagen JPG, PNG o WebP.'
+    return
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    photoError.value = 'La imagen es demasiado grande (máximo 2 MB).'
+    return
+  }
+  const u = auth.currentUser
+  if (!u) return
+  uploadingPhoto.value = true
+  try {
+    const prev = u.photoURL || ''
+    if (prev.includes('firebasestorage.googleapis.com')) {
+      try {
+        const oldRef = sRef(getStorage(), prev)
+        await deleteObject(oldRef)
+      } catch {
+        /* fotos previas: borrado no crítico */
+      }
+    }
+    const ext = file.type === 'image/jpeg' ? 'jpg' : file.type.split('/')[1]
+    const name = `avatar-${Date.now()}.${ext}`
+    const fileRef = sRef(getStorage(), `profile-photos/${u.uid}/${name}`)
+    await uploadBytes(fileRef, file)
+    const url = await getDownloadURL(fileRef)
+    await updateProfile(u, { photoURL: url })
+    user.value = auth.currentUser
+  } catch {
+    photoError.value = 'No se pudo subir la foto. Revisa las reglas de Firebase Storage.'
+  } finally {
+    uploadingPhoto.value = false
+  }
+}
+
 const initial = () => {
   const u = user.value
   if (!u) return ''
@@ -122,7 +179,31 @@ const displayName = () => user.value?.displayName?.trim() || ''
 
     <main class="container profile-main">
       <div v-if="user" class="profile-card">
-        <span class="profile-card__avatar">{{ initial() }}</span>
+        <div
+          class="profile-card__avatar-wrap"
+          role="button"
+          tabindex="0"
+          title="Cambiar foto de perfil"
+          @click="triggerPhotoPicker"
+          @keyup.enter="triggerPhotoPicker"
+        >
+          <img
+            v-if="photoURL()"
+            class="profile-card__avatar-img"
+            :src="photoURL()"
+            alt="Foto de perfil"
+          />
+          <span v-else class="profile-card__avatar">{{ initial() }}</span>
+          <span class="profile-card__avatar-cam">📷</span>
+        </div>
+        <input
+          ref="avatarInput"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+          @change="onPhotoPicked"
+        />
+
         <div class="profile-card__info">
           <h1
             v-if="!editingName"
@@ -158,6 +239,8 @@ const displayName = () => user.value?.displayName?.trim() || ''
           <p v-if="editingName" class="profile-card__name-hint">
             Enter para guardar · Esc para cancelar
           </p>
+          <p v-if="uploadingPhoto" class="profile-card__name-hint">Subiendo foto…</p>
+          <p v-if="photoError" class="profile-card__name-error">{{ photoError }}</p>
         </div>
       </div>
 
@@ -207,7 +290,14 @@ const displayName = () => user.value?.displayName?.trim() || ''
   background: var(--off-white);
   margin-bottom: 44px;
 }
-.profile-card__avatar {
+.profile-card__avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.profile-card__avatar,
+.profile-card__avatar-img {
   display: grid;
   place-items: center;
   width: 64px;
@@ -217,7 +307,26 @@ const displayName = () => user.value?.displayName?.trim() || ''
   color: var(--white);
   font-size: 1.6rem;
   font-weight: 700;
-  flex-shrink: 0;
+  overflow: hidden;
+  object-fit: cover;
+}
+.profile-card__avatar-cam {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--green-500);
+  font-size: 0.8rem;
+}
+.profile-card__avatar-wrap:hover .profile-card__avatar,
+.profile-card__avatar-wrap:hover .profile-card__avatar-img {
+  filter: brightness(0.92);
 }
 .profile-card__info {
   min-width: 0;
@@ -355,7 +464,8 @@ const displayName = () => user.value?.displayName?.trim() || ''
     padding: 16px;
     gap: 14px;
   }
-  .profile-card__avatar {
+  .profile-card__avatar,
+  .profile-card__avatar-img {
     width: 52px;
     height: 52px;
     font-size: 1.3rem;

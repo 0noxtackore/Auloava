@@ -43,6 +43,8 @@ const userLabel = () => {
   return ((u.displayName || '').trim() || u.email || 'Mi cuenta').trim()
 }
 
+const photoURL = () => user.value?.photoURL || ''
+
 function goLogout() {
   logout()
 }
@@ -157,7 +159,15 @@ async function detectLocation() {
         <template v-if="user">
           <div class="topbar__account" :title="user.email || ''">
             <RouterLink class="topbar__account-link" :to="{ name: 'profile' }">
-              <span class="topbar__account-avatar">{{ userInitial() }}</span>
+              <span class="topbar__account-avatar">
+              <img
+                v-if="photoURL()"
+                class="topbar__account-avatar-img"
+                :src="photoURL()"
+                alt=""
+              />
+              <template v-else>{{ userInitial() }}</template>
+            </span>
               <span class="topbar__account-mail">{{ userLabel() }}</span>
             </RouterLink>
             <button
@@ -406,6 +416,12 @@ async function detectLocation() {
   font-size: 1rem;
   font-weight: 700;
   flex-shrink: 0;
+  overflow: hidden;
+}
+.topbar__account-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .topbar__account-mail {
   font-size: 0.85rem;
