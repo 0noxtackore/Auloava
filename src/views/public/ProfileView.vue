@@ -10,8 +10,16 @@ import { auth, authReady } from '@/services/auth'
 import { useSavedProducts } from '@/composables/useSavedProducts'
 import { profileService } from '@/services/profile'
 import { updateProfile } from 'firebase/auth'
-import ProductCard from '@/components/product/ProductCard.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
+import { PLATFORMS } from '@/constants'
+import {
+  formatPrice,
+  formatPercent,
+  decodeHtml,
+} from '@/utils/formatters'
+import { cleanAffiliateUrl } from '@/utils/links'
+import { optimizeProductImage } from '@/utils/images'
+import { useProductStore } from '@/store/products'
 
 const router = useRouter()
 const user = ref(null)
@@ -26,10 +34,25 @@ const uploadingPhoto = ref(false)
 const photoError = ref('')
 const photoSaved = ref(false)
 const profilePhoto = ref('')
-const { savedList, load: loadSaved } = useSavedProducts()
+const { savedList, load: loadSaved, toggle } = useSavedProducts()
+
+const productStore = useProductStore()
 
 function goCatalog() {
   router.push({ name: 'catalog' })
+}
+
+const buyUrl = (p) => cleanAffiliateUrl(p.affiliateUrl)
+const platformName = (p) => PLATFORMS[p.platform]?.name || 'la tienda'
+const savedImage = (p) => optimizeProductImage(p.image, 480)
+
+function onSavedClick(p) {
+  if (p?.id) productStore.registerClick(p.id)
+  window.open(buyUrl(p), '_blank', 'noopener,noreferrer')
+}
+
+function removeSaved(p) {
+  toggle(p)
 }
 
 onMounted(async () => {
@@ -274,8 +297,60 @@ const displayName = () => user.value?.displayName?.trim() || ''
       </div>
 
       <div class="profile-section">
-        <div v-if="savedList.length" class="pin-grid">
-          <ProductCard v-for="product in savedList" :key="product.id" :product="product" />
+        <div v-if="savedList.length" class="saved-list">
+          <article
+            v-for="product in savedList"
+            :key="product.id"
+            class="saved-row"
+          >
+            <a
+              class="saved-row__media"
+              :href="buyUrl(product)"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              :title="'Ver en ' + platformName(product)"
+              @click="onSavedClick(product)"
+            >
+              <img
+                class="saved-row__img"
+                :src="savedImage(product)"
+                :alt="product.title"
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+            <div class="saved-row__body">
+              <h3 class="saved-row__title">{{ decodeHtml(product.title) }}</h3>
+              <div class="saved-row__meta">
+                <span class="saved-row__prices">
+                  <strong>{{ formatPrice(product.price) }}</strong>
+                  <del v-if="product.originalPrice">{{ formatPrice(product.originalPrice) }}</del>
+                </span>
+                <span class="saved-row__platform">{{ platformName(product) }}</span>
+                <span class="saved-row__commission">
+                  Comisión {{ formatPercent(product.commission) }}
+                </span>
+              </div>
+              <div class="saved-row__actions">
+                <a
+                  class="saved-row__buy"
+                  :href="buyUrl(product)"
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  @click="onSavedClick(product)"
+                >
+                  Comprar en {{ platformName(product) }}
+                </a>
+                <button
+                  type="button"
+                  class="saved-row__remove"
+                  @click="removeSaved(product)"
+                >
+                  Quitar
+                </button>
+              </div>
+            </div>
+          </article>
         </div>
         <div v-else class="profile-empty">
           <p class="profile-empty__text">
@@ -435,10 +510,129 @@ const displayName = () => user.value?.displayName?.trim() || ''
   color: var(--muted);
 }
 
-.profile-section__head,
-.profile-section__title,
-.profile-section__lead {
-  display: none;
+/* ---- Listado de guardados en filas ---- */
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+.saved-row {
+  display: flex;
+  gap: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.saved-row:hover {
+  border-color: var(--green-200);
+  box-shadow: var(--shadow-sm);
+}
+.saved-row__media {
+  flex: 0 0 132px;
+  align-self: flex-start;
+  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #d3ded6;
+}
+.saved-row__img {
+  display: block;
+  width: 132px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.saved-row__media:hover .saved-row__img {
+  transform: scale(1.03);
+}
+.saved-row__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.saved-row__title {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+.saved-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+.saved-row__prices strong {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.saved-row__prices del {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-left: 6px;
+}
+.saved-row__platform {
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--green-100);
+  color: var(--green-700);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.saved-row__commission {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.saved-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+}
+.saved-row__buy {
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: var(--white);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.saved-row__buy:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+.saved-row__remove {
+  padding: 10px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--white);
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+}
+.saved-row__remove:hover {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .profile-empty {
@@ -482,6 +676,20 @@ const displayName = () => user.value?.displayName?.trim() || ''
     width: 52px;
     height: 52px;
     font-size: 1.3rem;
+  }
+  .saved-row {
+    gap: 12px;
+    padding: 12px;
+  }
+  .saved-row__media,
+  .saved-row__img {
+    width: 100px;
+    flex-basis: 100px;
+  }
+  .saved-row__buy,
+  .saved-row__remove {
+    padding: 9px 14px;
+    font-size: 0.82rem;
   }
 }
 </style>
