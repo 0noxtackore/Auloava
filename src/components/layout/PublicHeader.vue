@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router'
 import { useProductSuggestions } from '@/composables/useProductSuggestions'
 import { decodeHtml } from '@/utils/formatters'
 import { auth, logout } from '@/services/auth'
+import { profileService } from '@/services/profile'
 import { onAuthStateChanged } from 'firebase/auth'
 
 const router = useRouter()
@@ -19,10 +20,20 @@ const searchOpen = ref(false)
 const country = ref('')
 const user = ref(null)
 let unsubAuth = null
+const profilePhoto = ref('')
 
 onMounted(() => {
-  unsubAuth = onAuthStateChanged(auth, (u) => {
+  unsubAuth = onAuthStateChanged(auth, async (u) => {
     user.value = u
+    profilePhoto.value = ''
+    if (u?.uid) {
+      try {
+        const profile = await profileService.get(u.uid)
+        if (profile?.photo) profilePhoto.value = profile.photo
+      } catch {
+        /* foto no disponible */
+      }
+    }
   })
   detectLocation()
 })
@@ -43,7 +54,7 @@ const userLabel = () => {
   return ((u.displayName || '').trim() || u.email || 'Mi cuenta').trim()
 }
 
-const photoURL = () => user.value?.photoURL || ''
+const photoURL = () => user.value?.photoURL || profilePhoto.value || ''
 
 function goLogout() {
   logout()

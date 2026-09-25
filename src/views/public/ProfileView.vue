@@ -10,13 +10,6 @@ import { auth, authReady } from '@/services/auth'
 import { useSavedProducts } from '@/composables/useSavedProducts'
 import { profileService } from '@/services/profile'
 import { updateProfile } from 'firebase/auth'
-import {
-  getStorage,
-  ref as sRef,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from 'firebase/storage'
 import ProductCard from '@/components/product/ProductCard.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
 
@@ -31,6 +24,8 @@ const editingName = ref(false)
 const avatarInput = ref(null)
 const uploadingPhoto = ref(false)
 const photoError = ref('')
+const photoSaved = ref(false)
+const profilePhoto = ref('')
 const { savedList, load: loadSaved } = useSavedProducts()
 
 function goCatalog() {
@@ -67,7 +62,13 @@ onMounted(async () => {
       /* sin fecha de alta */
     }
   }
-  loadSaved()
+  loadSaved(true)
+  try {
+    const profile = await profileService.get(u.uid)
+    if (profile?.photo) profilePhoto.value = profile.photo
+  } catch {
+    /* foto no disponible */
+  }
 })
 
 async function saveName() {
@@ -116,10 +117,32 @@ function cancelEdit() {
   editingName.value = false
 }
 
-const photoURL = () => user.value?.photoURL || ''
+const photoURL = () => user.value?.photoURL || profilePhoto.value || ''
 
 function triggerPhotoPicker() {
   avatarInput.value?.click()
+}
+
+// Convierte la imagen a un data URL pequeño (link embebido) sin Firebase Storage
+function fileToDataUrl(file, maxSize = 256, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height))
+      const w = Math.max(1, Math.round(img.width * scale))
+      const h = Math.max(1, Math.round(img.height * scale))
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, w, h)
+      URL.revokeObjectURL(url)
+      resolve(canvas.toDataURL('image/jpeg', quality))
+    }
+    img.onerror = () => reject(new Error('No se pudo leer la imagen.'))
+    img.src = url
+  })
 }
 
 async function onPhotoPicked(e) {
@@ -127,37 +150,29 @@ async function onPhotoPicked(e) {
   e.target.value = ''
   if (!file) return
   photoError.value = ''
+  photoSaved.value = false
   const ok = ['image/jpeg', 'image/png', 'image/webp']
   if (!ok.includes(file.type)) {
     photoError.value = 'Usa una imagen JPG, PNG o WebP.'
     return
   }
-  if (file.size > 2 * 1024 * 1024) {
-    photoError.value = 'La imagen es demasiado grande (máximo 2 MB).'
+  if (file.size > 5 * 1024 * 1024) {
+    photoError.value = 'La imagen es demasiado grande (máximo 5 MB).'
     return
   }
   const u = auth.currentUser
   if (!u) return
   uploadingPhoto.value = true
   try {
-    const prev = u.photoURL || ''
-    if (prev.includes('firebasestorage.googleapis.com')) {
-      try {
-        const oldRef = sRef(getStorage(), prev)
-        await deleteObject(oldRef)
-      } catch {
-        /* fotos previas: borrado no crítico */
-      }
-    }
-    const ext = file.type === 'image/jpeg' ? 'jpg' : file.type.split('/')[1]
-    const name = `avatar-${Date.now()}.${ext}`
-    const fileRef = sRef(getStorage(), `profile-photos/${u.uid}/${name}`)
-    await uploadBytes(fileRef, file)
-    const url = await getDownloadURL(fileRef)
-    await updateProfile(u, { photoURL: url })
-    user.value = auth.currentUser
-  } catch {
-    photoError.value = 'No se pudo subir la foto. Revisa las reglas de Firebase Storage.'
+    const dataUrl = await fileToDataUrl(file)
+    await profileService.savePhoto(u.uid, dataUrl)
+    profilePhoto.value = dataUrl
+    photoSaved.value = true
+    setTimeout(() => {
+      photoSaved.value = false
+    }, 2000)
+  } catch (err) {
+    photoError.value = err?.message || 'No se pudo guardar tu foto.'
   } finally {
     uploadingPhoto.value = false
   }
@@ -194,7 +209,20 @@ const displayName = () => user.value?.displayName?.trim() || ''
             alt="Foto de perfil"
           />
           <span v-else class="profile-card__avatar">{{ initial() }}</span>
-          <span class="profile-card__avatar-cam">📷</span>
+          <span class="profile-card__avatar-cam">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 8a2 2 0 0 1 2-2h1.5l1.6-1.9a1 1 0 0 1 .8-.36h5.2c.32 0 .61.14.8.36L16.5 6H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" />
+              <circle cx="12" cy="13" r="3.4" />
+            </svg>
+          </span>
         </div>
         <input
           ref="avatarInput"
@@ -239,7 +267,8 @@ const displayName = () => user.value?.displayName?.trim() || ''
           <p v-if="editingName" class="profile-card__name-hint">
             Enter para guardar · Esc para cancelar
           </p>
-          <p v-if="uploadingPhoto" class="profile-card__name-hint">Subiendo foto…</p>
+          <p v-if="uploadingPhoto" class="profile-card__name-hint">Procesando foto…</p>
+          <span v-if="photoSaved" class="profile-card__name-ok">✓ Foto guardada</span>
           <p v-if="photoError" class="profile-card__name-error">{{ photoError }}</p>
         </div>
       </div>
@@ -316,13 +345,17 @@ const displayName = () => user.value?.displayName?.trim() || ''
   bottom: -2px;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: var(--white);
+  background: var(--green-600);
+  color: var(--white);
   box-shadow: var(--shadow-sm);
-  border: 1.5px solid var(--green-500);
-  font-size: 0.8rem;
+  border: 2px solid var(--white);
+}
+.profile-card__avatar-cam svg {
+  width: 14px;
+  height: 14px;
 }
 .profile-card__avatar-wrap:hover .profile-card__avatar,
 .profile-card__avatar-wrap:hover .profile-card__avatar-img {

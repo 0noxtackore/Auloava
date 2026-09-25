@@ -233,6 +233,17 @@ export const handler = async (event) => {
       }
     }
 
+    // ---------- Foto de perfil (data URL en RTDB, sin Storage) ----------
+    if (action === 'save-photo') {
+      const ndb = ensureAdmin()
+      const { uid, photo } = payload
+      if (!uid) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Falta uid' }) }
+      }
+      await ndb.ref(`users/${uid}/photo`).set(String(photo || ''))
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
+    }
+
     // ---------- Productos guardados por usuario (para su perfil) ----------
     if (action === 'get-saved') {
       const ndb = ensureAdmin()

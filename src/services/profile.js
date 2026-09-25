@@ -34,6 +34,11 @@ export const profileService = {
     const d = await call('get-profile', { uid })
     return d.profile || null
   },
+  /** Guarda la foto de perfil como data URL en el perfil del usuario */
+  async savePhoto(uid, photo) {
+    const d = await call('save-photo', { uid, photo })
+    return d.ok
+  },
   /** Guarda/crea el perfil con los nichos elegidos */
   async save(uid, email, niches) {
     const d = await call('save-profile', { uid, email, niches })

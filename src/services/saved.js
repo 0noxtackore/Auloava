@@ -38,11 +38,22 @@ async function call(action, body = {}) {
 
 export const savedService = {
   async get(uid) {
+    const local = lsGet(uid)
     try {
       const d = await call('get-saved', { uid })
-      return d.saved || []
+      const server = d.saved || []
+      const map = {}
+      server.forEach((p) => {
+        map[p.id] = p
+      })
+      // Los guardados locales que aún no están en el servidor también cuentan
+      // (caso en el que la función aún no tiene el despliegue nuevo).
+      local.forEach((p) => {
+        if (!map[p.id]) map[p.id] = p
+      })
+      return Object.values(map)
     } catch {
-      return lsGet(uid)
+      return local
     }
   },
   async save(uid, product) {

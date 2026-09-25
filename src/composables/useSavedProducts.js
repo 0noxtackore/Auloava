@@ -8,28 +8,33 @@ import { auth, authReady } from '@/services/auth'
 import { savedService } from '@/services/saved'
 
 const savedMap = ref({}) // { [productId]: productSnapshot }
-let loadedUid = null
 
-async function load() {
+let inFlight = null
+
+async function load(force = false) {
   await authReady
   const user = auth.currentUser
   if (!user) {
     savedMap.value = {}
-    loadedUid = null
     return
   }
-  if (loadedUid === user.uid) return
-  try {
-    const list = await savedService.get(user.uid)
-    const map = {}
-    list.forEach((p) => {
-      map[p.id] = p
-    })
-    savedMap.value = map
-    loadedUid = user.uid
-  } catch {
-    savedMap.value = {}
+  if (!force && inFlight) return inFlight
+  const run = async () => {
+    try {
+      const list = await savedService.get(user.uid)
+      const map = {}
+      list.forEach((p) => {
+        map[p.id] = p
+      })
+      savedMap.value = map
+    } catch {
+      savedMap.value = {}
+    } finally {
+      inFlight = null
+    }
   }
+  inFlight = run()
+  return inFlight
 }
 
 async function toggle(product) {
