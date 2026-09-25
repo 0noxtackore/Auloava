@@ -108,7 +108,7 @@ const products = computed(() => {
     <PublicHeader />
 
     <main class="container catalog-main" :aria-busy="pageLoading">
-      <div v-if="isGuest === true" class="catalog-gate">
+      <div v-if="isGuest === true && !pageLoading" class="catalog-gate">
         <span class="catalog-gate__icon">🔒</span>
         <h1 class="catalog-gate__title">El catálogo solo para ti</h1>
         <p class="catalog-gate__lead">
