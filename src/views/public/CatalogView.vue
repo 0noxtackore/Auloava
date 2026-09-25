@@ -107,7 +107,7 @@ const products = computed(() => {
   <div class="catalog-page">
     <PublicHeader />
 
-    <main class="container catalog-main">
+    <main class="container catalog-main" :aria-busy="pageLoading">
       <div v-if="isGuest" class="catalog-gate">
         <span class="catalog-gate__icon">🔒</span>
         <h1 class="catalog-gate__title">El catálogo solo para ti</h1>
@@ -150,7 +150,15 @@ const products = computed(() => {
         </form>
 
         <div v-if="pageLoading" class="pin-grid catalog-loading" aria-hidden="true">
-          <div v-for="n in 12" :key="'sk' + n" class="skeleton catalog-loading__pin"></div>
+          <div v-for="n in 12" :key="'sk' + n" class="catalog-loading__pin">
+            <div class="skeleton catalog-loading__media"></div>
+            <div class="skeleton catalog-loading__line catalog-loading__line--title"></div>
+            <div class="skeleton catalog-loading__line"></div>
+            <div class="catalog-loading__meta">
+              <div class="skeleton catalog-loading__avatar"></div>
+              <div class="skeleton catalog-loading__price"></div>
+            </div>
+          </div>
         </div>
         <div v-else-if="products.length" class="pin-grid">
           <ProductCard
@@ -241,7 +249,40 @@ const products = computed(() => {
   padding-bottom: 40px;
 }
 .catalog-loading__pin {
-  height: 340px;
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+.catalog-loading__media {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
+}
+.catalog-loading__line {
+  height: 14px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.catalog-loading__line--title {
+  width: 88%;
+  height: 16px;
+}
+.catalog-loading__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+.catalog-loading__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.catalog-loading__price {
+  width: 92px;
+  height: 14px;
+  border-radius: 8px;
 }
 
 /* ---- Filtro de nichos (categorías de la plataforma) ---- */
