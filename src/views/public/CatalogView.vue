@@ -5,7 +5,7 @@
 // en orden aleatorio y sin paginación. Sin sesión se ve la
 // pantalla de acceso.
 // ============================================================
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { auth, authReady } from '@/services/auth'
@@ -22,6 +22,7 @@ const categoryFilter = ref(String(route.query.category || ''))
 
 const randomOrder = ref([])
 const isGuest = ref(true)
+const pageLoading = ref(true)
 
 function goLogin() {
   router.push({ name: 'public-login', query: { redirect: route.fullPath } })
@@ -48,15 +49,18 @@ onMounted(async () => {
     router.replace({ path: catalogPath(auth.currentUser.uid), query: route.query })
   }
 
-  // Re-baraja cada vez que el store cambia la lista (carga inicial o refresco).
-  watch(
-    () => productStore.products.length,
-    () => {
-      randomOrder.value = shuffle(productStore.products)
-    },
-  )
-  if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
+  if (isGuest.value) {
+    pageLoading.value = false
+    return
+  }
+
+  try {
+    if (!productStore.products.length) await productStore.fetchProducts()
+  } catch {
+    /* sin productos todavía */
+  }
   randomOrder.value = shuffle(productStore.products)
+  pageLoading.value = false
 })
 
 // Nichos (categorías) disponibles en la plataforma.
@@ -145,7 +149,10 @@ const products = computed(() => {
           />
         </form>
 
-        <div v-if="products.length" class="pin-grid">
+        <div v-if="pageLoading" class="pin-grid catalog-loading" aria-hidden="true">
+          <div v-for="n in 12" :key="'sk' + n" class="skeleton catalog-loading__pin"></div>
+        </div>
+        <div v-else-if="products.length" class="pin-grid">
           <ProductCard
             v-for="product in products"
             :key="product.id"
@@ -227,6 +234,14 @@ const products = computed(() => {
   color: var(--muted);
   padding: 60px 0;
   font-size: 1.05rem;
+}
+
+/* ---- Skeleton mientras cargan los productos ---- */
+.catalog-loading {
+  padding-bottom: 40px;
+}
+.catalog-loading__pin {
+  height: 340px;
 }
 
 /* ---- Filtro de nichos (categorías de la plataforma) ---- */

@@ -27,6 +27,7 @@ const uploadingPhoto = ref(false)
 const photoError = ref('')
 const photoSaved = ref(false)
 const profilePhoto = ref('')
+const pageLoading = ref(true)
 const { savedList, load: loadSaved } = useSavedProducts()
 
 const catalogTo = computed(() => catalogPath(user.value?.uid))
@@ -69,13 +70,14 @@ onMounted(async () => {
       /* sin fecha de alta */
     }
   }
-  loadSaved(true)
+  await loadSaved(true)
   try {
     const profile = await profileService.get(u.uid)
     if (profile?.photo) profilePhoto.value = profile.photo
   } catch {
     /* foto no disponible */
   }
+  pageLoading.value = false
 })
 
 async function saveName() {
@@ -216,6 +218,14 @@ const displayName = () => user.value?.displayName?.trim() || ''
     </div>
 
     <main class="container profile-main">
+      <template v-if="pageLoading">
+        <div class="skeleton profile-loading__card" aria-hidden="true"></div>
+        <div class="grid-products profile-loading__grid" aria-hidden="true">
+          <div v-for="n in 4" :key="'sk' + n" class="skeleton profile-loading__pin"></div>
+        </div>
+      </template>
+
+      <template v-else>
       <div v-if="user" class="profile-card">
         <div
           class="profile-card__avatar-wrap"
@@ -310,6 +320,7 @@ const displayName = () => user.value?.displayName?.trim() || ''
           </button>
         </div>
       </div>
+      </template>
     </main>
   </div>
 </template>
@@ -495,6 +506,28 @@ const displayName = () => user.value?.displayName?.trim() || ''
 .grid-products {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
+}
+
+/* ---- Esqueletos de carga ---- */
+.profile-loading__card {
+  height: 110px;
+  margin-bottom: 44px;
+}
+.profile-loading__grid {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.profile-loading__pin {
+  height: 300px;
+}
+@media (max-width: 820px) {
+  .profile-loading__grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .profile-loading__grid {
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  }
 }
 
 @media (max-width: 820px) {
