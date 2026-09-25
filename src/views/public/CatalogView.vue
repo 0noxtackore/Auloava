@@ -117,7 +117,6 @@ const products = computed(() => {
 
       <template v-else>
         <div class="catalog-niches">
-          <span class="catalog-niches__label">Nicho</span>
           <div class="catalog-niches__list">
             <button
               v-for="niche in platformNiches"
@@ -231,14 +230,6 @@ const products = computed(() => {
   gap: 12px;
   margin: 0 0 30px;
 }
-.catalog-niches__label {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  flex-shrink: 0;
-}
 .catalog-niches__list {
   display: flex;
   flex-wrap: wrap;
@@ -346,9 +337,6 @@ const products = computed(() => {
 }
 
 @media (max-width: 480px) {
-  .catalog-niches__label {
-    display: none;
-  }
   .catalog-gate {
     padding: 44px 16px;
     gap: 14px;
