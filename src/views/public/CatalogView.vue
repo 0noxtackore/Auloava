@@ -5,7 +5,7 @@
 // en orden aleatorio y sin paginación. Sin sesión se ve la
 // pantalla de acceso.
 // ============================================================
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { auth, authReady } from '@/services/auth'
@@ -56,17 +56,15 @@ onMounted(async () => {
     }
   }
 
+  // Re-baraja cada vez que el store cambia la lista (carga inicial o refresco).
+  watch(
+    () => productStore.products.length,
+    () => {
+      randomOrder.value = shuffle(productStore.products)
+    },
+  )
   if (!productStore.products.length) productStore.fetchProducts().catch(() => {})
   randomOrder.value = shuffle(productStore.products)
-
-  const t = setInterval(() => {
-    if (productStore.products.length === randomOrder.value.length) {
-      clearInterval(t)
-      return
-    }
-    randomOrder.value = shuffle(productStore.products)
-  }, 400)
-  setTimeout(() => clearInterval(t), 5000)
 })
 
 // Productos visibles: solo para usuarios con sesión, con el orden
