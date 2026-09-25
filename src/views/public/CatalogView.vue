@@ -9,7 +9,6 @@ import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { auth, authReady } from '@/services/auth'
-import { profileService } from '@/services/profile'
 import ProductCard from '@/components/product/ProductCard.vue'
 import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
@@ -21,8 +20,6 @@ const query = ref(String(route.query.q || ''))
 const categoryFilter = ref(String(route.query.category || ''))
 
 const randomOrder = ref([])
-const userNiches = ref(null) // null = no personalizado
-const showAll = ref(false)
 const isGuest = ref(true)
 
 function goLogin() {
@@ -43,18 +40,7 @@ function shuffle(arr) {
 
 onMounted(async () => {
   await authReady
-  const user = auth.currentUser
-  isGuest.value = !user
-  if (user) {
-    try {
-      const profile = await profileService.get(user.uid)
-      if (profile && Array.isArray(profile.niches) && profile.niches.length) {
-        userNiches.value = profile.niches
-      }
-    } catch {
-      /* catálogo no personalizado */
-    }
-  }
+  isGuest.value = !auth.currentUser
 
   // Re-baraja cada vez que el store cambia la lista (carga inicial o refresco).
   watch(
@@ -67,6 +53,24 @@ onMounted(async () => {
   randomOrder.value = shuffle(productStore.products)
 })
 
+// Nichos (categorías) disponibles en la plataforma.
+const platformNiches = computed(() => {
+  const set = new Set()
+  randomOrder.value.forEach((p) => set.add((p.category || '').trim()))
+  return ['Todos', ...[...set].sort()]
+})
+
+function selectNiche(niche) {
+  const q = { ...route.query }
+  if (niche && niche !== 'Todos') {
+    q.category = niche
+  } else {
+    delete q.category
+  }
+  router.replace({ query: q })
+  categoryFilter.value = niche && niche !== 'Todos' ? niche : ''
+}
+
 // Productos visibles: solo para usuarios con sesión, con el orden
 // aleatorio fijado al montar la vista ("salida" muy scrolleable).
 const products = computed(() => {
@@ -77,9 +81,6 @@ const products = computed(() => {
   if (categoryFilter.value) {
     const c = categoryFilter.value.toLowerCase()
     list = list.filter((p) => (p.category || '').toLowerCase() === c)
-  } else if (userNiches.value && userNiches.value.length && !showAll.value) {
-    const set = new Set(userNiches.value.map((n) => n.toLowerCase()))
-    list = list.filter((p) => set.has((p.category || '').toLowerCase()))
   }
 
   if (!q) return list
@@ -115,14 +116,20 @@ const products = computed(() => {
       </div>
 
       <template v-else>
-        <div v-if="userNiches && userNiches.length" class="catalog-personal">
-          <span>
-            Catálogo <strong>personalizado</strong> · tus nichos:
-            {{ userNiches.join(', ') }}
-          </span>
-          <button type="button" class="catalog-personal__toggle" @click="showAll = !showAll">
-            {{ showAll ? 'Solo mis nichos' : 'Ver todo el catálogo' }}
-          </button>
+        <div class="catalog-niches">
+          <span class="catalog-niches__label">Nicho</span>
+          <div class="catalog-niches__list">
+            <button
+              v-for="niche in platformNiches"
+              :key="niche"
+              type="button"
+              class="catalog-niches__chip"
+              :class="{ 'is-active': niche === 'Todos' ? !categoryFilter : categoryFilter === niche }"
+              @click="selectNiche(niche)"
+            >
+              {{ niche }}
+            </button>
+          </div>
         </div>
         <form class="catalog-search" @submit.prevent>
           <input
@@ -213,29 +220,50 @@ const products = computed(() => {
   font-size: 1.05rem;
 }
 
-.catalog-personal {
+/* ---- Filtro de nichos (categorías de la plataforma) ---- */
+.catalog-niches {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 30px;
+}
+.catalog-niches__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.catalog-niches__list {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  margin: -14px 0 26px;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  background: var(--green-100);
-  color: var(--green-800);
-  font-size: 0.9rem;
+  gap: 8px;
+  overflow: hidden;
 }
-.catalog-personal__toggle {
-  padding: 7px 16px;
-  border: 1.5px solid var(--green-600);
+.catalog-niches__chip {
+  padding: 8px 16px;
+  border: 1.5px solid var(--line);
   border-radius: var(--radius-full);
   background: var(--white);
-  color: var(--green-700);
-  font-weight: 600;
+  color: var(--ink);
   font-size: 0.84rem;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  transition: border-color var(--transition), background var(--transition),
+    color var(--transition), transform var(--transition);
+}
+.catalog-niches__chip:hover {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  transform: translateY(-1px);
+}
+.catalog-niches__chip.is-active {
+  border-color: var(--green-600);
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: var(--white);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ---- Pantalla de acceso para visitantes sin sesión ---- */
