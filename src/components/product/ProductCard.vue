@@ -326,6 +326,7 @@ const mediaAspect = computed(() => {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 .pin__prices {
