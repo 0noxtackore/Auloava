@@ -9,7 +9,7 @@ import { PLATFORM_LIST, CATEGORIES } from '@/constants'
 import bestsellerProducts from '../../../data/auloava-products.json'
 
 const DB_PRODUCTS = 'db_products'
-const DB_VERSION = 12
+const DB_VERSION = 13
 
 const delay = (ms = 450) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -129,7 +129,7 @@ const productHandlers = {
 
 export const landingData = {
   stats: [
-    { label: 'Productos curados', value: '99' },
+    { label: 'Productos curados', value: String(bestsellerProducts.length) },
     { label: 'Marketplaces', value: '3' },
     { label: 'Comisión media', value: '5%' },
     { label: 'Ahorro medio', value: 'Hasta 50%' },
