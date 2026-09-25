@@ -21,7 +21,7 @@ const query = ref(String(route.query.q || ''))
 const categoryFilter = ref(String(route.query.category || ''))
 
 const randomOrder = ref([])
-const isGuest = ref(true)
+const isGuest = ref(null) // null = sesión aún comprobándose
 const pageLoading = ref(true)
 
 function goLogin() {
@@ -108,7 +108,7 @@ const products = computed(() => {
     <PublicHeader />
 
     <main class="container catalog-main" :aria-busy="pageLoading">
-      <div v-if="isGuest" class="catalog-gate">
+      <div v-if="isGuest === true" class="catalog-gate">
         <span class="catalog-gate__icon">🔒</span>
         <h1 class="catalog-gate__title">El catálogo solo para ti</h1>
         <p class="catalog-gate__lead">
