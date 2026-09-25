@@ -200,7 +200,7 @@ const products = computed(() => {
 @media (max-width: 560px) {
   .catalog-search input {
     padding: 9px 14px;
-    font-size: 0.9rem;
+    font-size: 16px;
   }
   .catalog-main {
     padding: 28px 0 48px;
@@ -240,6 +240,22 @@ const products = computed(() => {
   flex-wrap: wrap;
   gap: 8px;
   overflow: hidden;
+}
+.catalog-niches__list::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 760px) {
+  .catalog-niches {
+    margin: 0 0 18px;
+  }
+  .catalog-niches__list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 .catalog-niches__chip {
   padding: 8px 16px;
@@ -323,5 +339,33 @@ const products = computed(() => {
 }
 .catalog-gate__btn--ghost:hover {
   background: var(--green-50);
+}
+
+@media (max-width: 480px) {
+  .catalog-niches__label {
+    display: none;
+  }
+  .catalog-gate {
+    padding: 44px 16px;
+    gap: 14px;
+  }
+  .catalog-gate__icon {
+    font-size: 2.4rem;
+  }
+  .catalog-gate__title {
+    font-size: 1.6rem;
+  }
+  .catalog-gate__lead {
+    font-size: 0.95rem;
+  }
+  .catalog-gate__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .catalog-gate__btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
 }
 </style>
