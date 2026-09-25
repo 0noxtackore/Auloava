@@ -50,6 +50,7 @@ async function onSave() {
     rating: props.product.rating,
     ratingCount: props.product.ratingCount,
     commission: props.product.commission,
+    clicks: props.product.clicks || 0,
     category: props.product.category,
     platform: props.product.platform,
     affiliateUrl: props.product.affiliateUrl,
@@ -166,7 +167,7 @@ const mediaAspect = computed(() => {
       </div>
 
       <span v-if="!admin" class="pin__commission">
-        Comisión {{ formatPercent(product.commission) }} · {{ product.clicks.toLocaleString('es-ES') }} clicks
+        Comisión {{ formatPercent(product.commission) }} · {{ (product.clicks || 0).toLocaleString('es-ES') }} clicks
       </span>
     </div>
   </article>
