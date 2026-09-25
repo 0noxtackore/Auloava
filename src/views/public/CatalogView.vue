@@ -188,12 +188,14 @@ const products = computed(() => {
 }
 
 .catalog-main {
-  padding: 48px 0 80px;
+  padding-top: 48px;
+  padding-bottom: 80px;
 }
 
 @media (max-width: 768px) {
   .catalog-main {
-    padding: 40px 0 64px;
+    padding-top: 40px;
+    padding-bottom: 64px;
   }
 }
 
@@ -203,13 +205,15 @@ const products = computed(() => {
     font-size: 16px;
   }
   .catalog-main {
-    padding: 28px 0 48px;
+    padding-top: 28px;
+    padding-bottom: 48px;
   }
 }
 
 @media (max-width: 380px) {
   .catalog-main {
-    padding: 22px 0 40px;
+    padding-top: 22px;
+    padding-bottom: 40px;
   }
 }
 

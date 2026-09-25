@@ -345,7 +345,8 @@ const displayName = () => user.value?.displayName?.trim() || ''
 }
 
 .profile-main {
-  padding: 48px 0 90px;
+  padding-top: 48px;
+  padding-bottom: 90px;
 }
 
 .profile-card {
@@ -490,7 +491,8 @@ const displayName = () => user.value?.displayName?.trim() || ''
 
 @media (max-width: 820px) {
   .profile-main {
-    padding: 36px 0 72px;
+    padding-top: 36px;
+    padding-bottom: 72px;
   }
   .grid-products {
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -539,7 +541,8 @@ const displayName = () => user.value?.displayName?.trim() || ''
     height: 16px;
   }
   .profile-main {
-    padding: 28px 0 56px;
+    padding-top: 28px;
+    padding-bottom: 56px;
   }
   .profile-card {
     padding: 16px;
