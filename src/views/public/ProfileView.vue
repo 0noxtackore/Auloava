@@ -274,14 +274,6 @@ const displayName = () => user.value?.displayName?.trim() || ''
       </div>
 
       <div class="profile-section">
-        <div class="profile-section__head">
-          <h2 class="profile-section__title">Mis hallazgos guardados</h2>
-          <p class="profile-section__lead">
-            Productos que marcaste para comprarlos directo en Amazon, AliExpress
-            o Alibaba. Clic en la imagen para ir a la tienda.
-          </p>
-        </div>
-
         <div v-if="savedList.length" class="pin-grid">
           <ProductCard v-for="product in savedList" :key="product.id" :product="product" />
         </div>
@@ -443,22 +435,10 @@ const displayName = () => user.value?.displayName?.trim() || ''
   color: var(--muted);
 }
 
-.profile-section__head {
-  text-align: center;
-  margin-bottom: 36px;
-}
-.profile-section__title {
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  margin: 0 0 8px;
-}
+.profile-section__head,
+.profile-section__title,
 .profile-section__lead {
-  color: var(--muted);
-  font-size: 0.95rem;
-  max-width: 480px;
-  margin: 0 auto;
+  display: none;
 }
 
 .profile-empty {
