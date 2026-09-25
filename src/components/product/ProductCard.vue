@@ -177,6 +177,7 @@ const mediaAspect = computed(() => {
 .pin {
   border-radius: var(--radius);
   transition: transform var(--transition);
+  container-type: inline-size;
 }
 
 .pin:hover {
@@ -340,6 +341,20 @@ const mediaAspect = computed(() => {
   font-size: 0.98rem;
   font-weight: 600;
   color: var(--ink);
+}
+
+@container (max-width: 235px) {
+  .pin__meta {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pin__prices {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .pin__commission {
+    font-size: 0.74rem;
+  }
 }
 
 .pin__prices del {
