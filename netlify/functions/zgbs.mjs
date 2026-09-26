@@ -97,6 +97,11 @@ export const handler = async (event) => {
       const gridCount = (lastHtml.match(/zg-grid-general-faceout|zg-grid|bxc-grid/g) || []).length
       const asinCount = (lastHtml.match(/data-asin="/g) || []).length
       const pageTitle = lastHtml.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || ''
+      const navLinks = [
+        ...new Set(
+          [...lastHtml.matchAll(/href="(\/gp\/bestsellers\/[a-z0-9-]+)/g)].map((m) => m[1]),
+        ),
+      ].slice(0, 60)
       const sample = ((lastHtml.match(/class="[^"]*zg-item[^"]*"[\s\S]{0,700}/) || [])[0] || '').slice(0, 700)
       return {
         statusCode: 200,
@@ -111,6 +116,7 @@ export const handler = async (event) => {
           p13nCount,
           gridCount,
           asinCount,
+          navLinks,
           hasRobotText: /To discuss automated access/i.test(lastHtml),
           hasCaptcha: /captcha|px-captcha|"Robot Check"/i.test(lastHtml),
           sample,
