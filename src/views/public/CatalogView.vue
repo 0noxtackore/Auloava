@@ -97,6 +97,13 @@ function selectNiche(niche) {
   categoryFilter.value = niche && niche !== 'Todos' ? niche : ''
 }
 
+// Click en una notificación: el producto exacto va primero y se resalta,
+// con el resto de su categoría alrededor.
+const productFocus = computed(() => {
+  if (!productFilter.value) return null
+  return randomOrder.value.find((p) => p.id === productFilter.value) || null
+})
+
 // Productos visibles: solo para usuarios con sesión, con el orden
 // aleatorio fijado al montar la vista ("salida" muy scrolleable).
 const products = computed(() => {
@@ -104,10 +111,14 @@ const products = computed(() => {
   const q = query.value.trim().toLowerCase()
   let list = randomOrder.value
 
-  // Click en una notificación: mostrar SOLO el producto exacto
-  if (productFilter.value) {
-    const match = randomOrder.value.find((p) => p.id === productFilter.value)
-    return match ? [match] : []
+  if (productFocus.value) {
+    const focus = productFocus.value
+    const peers = randomOrder.value.filter(
+      (p) =>
+        p.id !== focus.id &&
+        (p.category || '').toLowerCase() === (focus.category || '').toLowerCase(),
+    )
+    return [focus, ...peers]
   }
 
   if (categoryFilter.value) {
@@ -123,8 +134,6 @@ const products = computed(() => {
       (p.description || '').toLowerCase().includes(q),
   )
 })
-
-const singleProduct = computed(() => products.value.length === 1 && !!productFilter.value)
 </script>
 
 <template>
@@ -173,14 +182,14 @@ const singleProduct = computed(() => products.value.length === 1 && !!productFil
           />
         </form>
 
-        <div v-if="singleProduct" class="catalog-single">
+        <div v-if="productFocus" class="catalog-single">
           <span class="catalog-single__badge">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="m12 3 1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3Z" />
             </svg>
             Desde tu notificación
           </span>
-          <span class="catalog-single__note">Este es el producto de tu aviso.</span>
+          <span class="catalog-single__note">Este es el producto de tu aviso (resaltado).</span>
           <button type="button" class="catalog-single__clear" @click="clearProduct">
             Ver todo el catálogo
           </button>
@@ -202,6 +211,7 @@ const singleProduct = computed(() => products.value.length === 1 && !!productFil
             v-for="product in products"
             :key="product.id"
             :product="product"
+            :highlight="product.id === productFilter"
           />
         </div>
         <p v-else class="catalog-empty">

@@ -17,6 +17,7 @@ import { useSavedProducts } from '@/composables/useSavedProducts'
 const props = defineProps({
   product: { type: Object, required: true },
   admin: { type: Boolean, default: false },
+  highlight: { type: Boolean, default: false },
 })
 
 const productStore = useProductStore()
@@ -104,7 +105,7 @@ const mediaAspect = computed(() => {
 </script>
 
 <template>
-  <article class="pin" v-reveal>
+  <article class="pin" :class="{ 'pin--highlight': highlight }" v-reveal>
     <a
       class="pin__media"
       :style="{ aspectRatio: mediaAspect }"
@@ -176,12 +177,28 @@ const mediaAspect = computed(() => {
 <style scoped>
 .pin {
   border-radius: var(--radius);
-  transition: transform var(--transition);
+  transition: transform var(--transition), box-shadow var(--transition);
   container-type: inline-size;
 }
 
 .pin:hover {
   transform: scale(1.02);
+}
+
+.pin--highlight {
+  outline: 3px solid var(--green-500);
+  outline-offset: 2px;
+  animation: pin-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes pin-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.16), 0 10px 28px rgba(22, 163, 74, 0.28);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(22, 163, 74, 0.24), 0 10px 36px rgba(22, 163, 74, 0.45);
+  }
 }
 
 .pin__media {
