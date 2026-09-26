@@ -63,12 +63,13 @@ export const handler = async (event) => {
     payload = {}
   }
 
-  const { url, retries = 3 } = payload || {}
+  const { url, retries = 3, debug = false } = payload || {}
   if (!url)
     return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ error: 'Falta la url' }) }
 
   try {
     let lastHtml = ''
+    let lastStatus = 0
     for (let i = 0; i <= retries; i++) {
       const res = await fetch(url, {
         headers: {
@@ -76,7 +77,9 @@ export const handler = async (event) => {
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
           'Accept-Language': 'en-US,en;q=0.9',
         },
+        redirect: 'follow',
       })
+      lastStatus = res.status
       const html = await res.text()
       const items = parsePage(html)
       if (items.length > 0) {
@@ -89,7 +92,32 @@ export const handler = async (event) => {
       lastHtml = html
       if (i < retries) await new Promise((r) => setTimeout(r, 1200))
     }
-    const robot = /captcha|Robot|To discuss automated access/i.test(lastHtml)
+    if (debug) {
+      const p13nCount = (lastHtml.match(/p13n-asin-index/g) || []).length
+      const gridCount = (lastHtml.match(/zg-grid-general-faceout|zg-grid|bxc-grid/g) || []).length
+      const asinCount = (lastHtml.match(/data-asin="/g) || []).length
+      const pageTitle = lastHtml.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || ''
+      const sample = ((lastHtml.match(/class="[^"]*zg-item[^"]*"[\s\S]{0,700}/) || [])[0] || '').slice(0, 700)
+      return {
+        statusCode: 200,
+        headers: HEADERS,
+        body: JSON.stringify({
+          ok: false,
+          error: 'sin items (debug)',
+          url,
+          status: lastStatus,
+          bytes: lastHtml.length,
+          pageTitle,
+          p13nCount,
+          gridCount,
+          asinCount,
+          hasRobotText: /To discuss automated access/i.test(lastHtml),
+          hasCaptcha: /captcha|px-captcha|"Robot Check"/i.test(lastHtml),
+          sample,
+        }),
+      }
+    }
+    const robot = /captcha|Robot Check|To discuss automated access/i.test(lastHtml)
     return {
       statusCode: 422,
       headers: HEADERS,
