@@ -3,3 +3,4 @@
 // ============================================================
 export { useProductStore } from './products'
 export { useNotificationStore } from './notifications'
+export { useInboxStore } from './inbox'

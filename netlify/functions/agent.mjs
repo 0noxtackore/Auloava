@@ -134,7 +134,64 @@ export const handler = async (event) => {
       product.affiliateUrl = injectAffiliateTag(product.affiliateUrl || '', product.platform)
       const newRef = db.ref('products').push()
       await newRef.set(product)
+      // Avisa a todos los usuarios con una notificación "nuevo producto"
+      await broadcastNewProduct(db, newRef.key, product)
       return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, product: { id: newRef.key, ...product } }) }
+    }
+
+    // ---------- Notificaciones del usuario (bandeja clicable) ----------
+    if (action === 'list-notifications') {
+      const db = ensureAdmin()
+      if (!payload.uid) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Falta uid' }) }
+      }
+      const snap = await db.ref(`notifications/${payload.uid}`).get()
+      const list = []
+      if (snap.exists()) {
+        Object.entries(snap.val() || {}).forEach(([id, n]) => {
+          if (n && typeof n === 'object') list.push({ id, ...n })
+        })
+      }
+      list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true, notifications: list }) }
+    }
+
+    if (action === 'mark-notification-read') {
+      const db = ensureAdmin()
+      const { uid, id, read = true } = payload
+      if (!uid || !id) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Faltan uid o id' }) }
+      }
+      await db.ref(`notifications/${uid}/${id}`).update({ read: !!read })
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
+    }
+
+    if (action === 'mark-all-notifications-read') {
+      const db = ensureAdmin()
+      if (!payload.uid) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Falta uid' }) }
+      }
+      const snap = await db.ref(`notifications/${payload.uid}`).get()
+      const updates = {}
+      if (snap.exists()) {
+        Object.keys(snap.val() || {}).forEach((id) => {
+          updates[`${id}/read`] = true
+        })
+      }
+      if (Object.keys(updates).length) {
+        await db.ref(`notifications/${payload.uid}`).update(updates)
+      }
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
+    }
+
+    if (action === 'delete-notification') {
+      const db = ensureAdmin()
+      const { uid, id } = payload
+      if (!uid || !id) {
+        return { statusCode: 400, headers: HEADERS, body: JSON.stringify({ ok: false, error: 'Faltan uid o id' }) }
+      }
+      await db.ref(`notifications/${uid}/${id}`).remove()
+      return { statusCode: 200, headers: HEADERS, body: JSON.stringify({ ok: true }) }
     }
 
     if (action === 'update-product') {
@@ -441,6 +498,49 @@ function ensureAdmin() {
     })
   }
   return getDatabase(_adminApp)
+}
+
+// ---------- Notificaciones "nuevo producto" al catálogo ----------
+// Notifica a la bandeja de todos los usuarios registrados y marca el
+// producto como anunciado (evita re-emitir en el scheduler diario).
+async function broadcastNewProduct(db, productId, product) {
+  try {
+    const usersSnap = await db.ref('users').get()
+    const users = usersSnap.exists() ? Object.keys(usersSnap.val() || {}) : []
+    if (!users.length) return
+    const now = Date.now()
+    const title = String(product.title || 'Nuevo producto').slice(0, 120)
+    const category = String(product.category || '').trim()
+    const message =
+      category && product.hasOwnProperty('platform')
+        ? `Nuevo producto en ${category}: ${title}`
+        : `Nuevo producto en el catálogo: ${title}`
+    const notif = {
+      type: 'new-product',
+      title: 'Nuevo producto',
+      message,
+      category,
+      productId,
+      productTitle: title,
+      image: product.image || (product.images && product.images[0]) || '',
+      price: Number(product.price) || 0,
+      action: 'catalog-search',
+      read: false,
+      createdAt: now,
+    }
+    await Promise.all(
+      users.map(async (uid) => {
+        try {
+          await db.ref(`notifications/${uid}`).push(notif)
+        } catch (err) {
+          console.error(`broadcastNewProduct -> ${uid}:`, err.message)
+        }
+      })
+    )
+    await db.ref(`system/announcedProducts/${productId}`).set(true)
+  } catch (err) {
+    console.error('broadcastNewProduct:', err.message)
+  }
 }
 
 // ---------- Scraper ligero (sin navegador) para auto-rellenar desde URL ----------

@@ -12,6 +12,7 @@ import { auth, logout } from '@/services/auth'
 import { profileService } from '@/services/profile'
 import { catalogPath, profilePath } from '@/utils/routes'
 import { onAuthStateChanged } from 'firebase/auth'
+import NotificationBell from '@/components/notifications/NotificationBell.vue'
 
 const router = useRouter()
 const base = import.meta.env.BASE_URL
@@ -169,6 +170,7 @@ async function detectLocation() {
         </div>
 
         <template v-if="user">
+          <NotificationBell :uid="user.uid" />
           <div class="topbar__account" :title="user.email || ''">
             <RouterLink
               class="topbar__account-link"

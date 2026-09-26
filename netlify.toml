@@ -15,6 +15,11 @@
 [functions.social-scheduler]
   schedule = "0 10 * * *"
 
+# Bandeja de notificaciones de usuarios: "nuevo producto" + recomendación
+# del más económico por nicho. Hora en UTC.
+[functions.notify-scheduler]
+  schedule = "0 9 * * *"
+
 # SPA: redirige cualquier ruta al index.html (history mode de Vue Router)
 [[redirects]]
   from = "/*"
