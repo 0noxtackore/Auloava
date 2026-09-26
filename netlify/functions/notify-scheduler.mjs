@@ -2,13 +2,15 @@
 // AULOAVA · Notify Scheduler (Netlify Scheduled Function)
 // Corre cada día y alimenta la bandeja de notificaciones de los
 // usuarios (notifications/{uid}):
-//   1) Anuncia "nuevo producto" si llegaron productos frescos (48h)
-//      que todavía no fueron anunciados (los antiguos se marcan
-//      como anunciados sin spam).
-//   2) Recomienda el producto MÁS ECONÓMICO de cada nicho en el que
-//      el usuario esté apuntado (una vez al día por nicho).
-// Solo necesita firebase-admin (mismo servicio de cuenta que el
-// agente). Cron: en netlify.toml -> [functions.notify-scheduler]
+//   1) Anuncia "nuevo producto" (máx. 3 por corrida, descartando
+//      los que lleven más de 7 días anunciados). El resto se marca
+//      anunciado en silencio para no spamear el primer arranque.
+//   2) Recomienda el producto MÁS ECONÓMICO de cada nicho del
+//      usuario (máx. 2/día) o, si no tiene nichos, la oferta del
+//      día global (el más barato del catálogo). Una vez al día.
+// La lógica vive en runNotifications(db) para poder invocarse
+// también a mano (scripts/notify-now.mjs).
+// Cron: en netlify.toml -> [functions.notify-scheduler]
 // ============================================================
 import admin from 'firebase-admin'
 import { getDatabase } from 'firebase-admin/database'
@@ -52,37 +54,19 @@ function localDateKey() {
   return new Date().toISOString().slice(0, 10)
 }
 
-// ---------- 1) Anunciar productos frescos ----------
-async function announceFreshProducts(db, users) {
-  const productsSnap = await db.ref('products').get()
-  const announcedSnap = await db.ref('system/announcedProducts').get()
-  const announced = announcedSnap.exists() ? announcedSnap.val() : {}
-  if (!productsSnap.exists()) return { announced: 0, marked: 0 }
-
+function buildNotif(type, product, category, opts = {}) {
+  const title = String(product.title || 'Producto').slice(0, 120)
+  const cat = String(category || product.category || '').trim()
   const now = Date.now()
-  const FRESH_MS = 48 * 3600 * 1000
-  let announcedCount = 0
-  let markedCount = 0
-  const marks = {}
-
-  for (const [id, product] of Object.entries(productsSnap.val() || {})) {
-    if (!product || typeof product !== 'object' || announced[id]) continue
-    marks[id] = true
-    markedCount += 1
-
-    const created = new Date(product.createdAt || 0).getTime()
-    if (!users.length || now - created > FRESH_MS) continue // backfill silencioso
-
-    const title = String(product.title || 'Nuevo producto').slice(0, 120)
-    const category = String(product.category || '').trim()
-    const notif = {
-      type: 'new-product',
+  if (type === 'new-product') {
+    return {
+      type,
       title: 'Nuevo producto',
-      message: category
-        ? `Nuevo producto en ${category}: ${title}`
-        : `Nuevo producto en el catálogo: ${title}`,
-      category,
-      productId: id,
+      message: cat
+        ? `Llegó al catálogo: ${title} (${cat})`
+        : `Llegó al catálogo: ${title}`,
+      category: cat,
+      productId: product.id,
       productTitle: title,
       image: product.image || (product.images && product.images[0]) || '',
       price: Number(product.price) || 0,
@@ -90,19 +74,59 @@ async function announceFreshProducts(db, users) {
       read: false,
       createdAt: now,
     }
-    announcedCount += 1
-    await Promise.all(
-      users.map((uid) => db.ref(`notifications/${uid}`).push(notif))
-    )
   }
-
-  if (Object.keys(marks).length) {
-    await db.ref('system/announcedProducts').update(marks)
+  // cheap-pick
+  return {
+    type,
+    title: opts.global ? 'Oferta del día' : `El más económico en ${cat}`,
+    message: opts.global
+      ? `Hoy el producto más barato del catálogo es "${title}" por $${Number(product.price) || 0}.`
+      : `Hoy te recomendamos "${title}" por $${Number(product.price) || 0} — la mejor oferta en ${cat}.`,
+    category: cat,
+    productId: product.id,
+    productTitle: title,
+    image: product.image || (product.images && product.images[0]) || '',
+    price: Number(product.price) || 0,
+    action: 'catalog-category',
+    read: false,
+    createdAt: now,
   }
-  return { announced: announcedCount, marked: markedCount }
 }
 
-// ---------- 2) Producto más económico por nicho ----------
+// ---------- 1) Anunciar productos nuevos (sin spam) ----------
+// Friega: entre los NO anunciados, anuncia como mucho NEW_PICK_LIMIT
+// (los más recientes) siempre que tengan menos de FRESH_MS. Todos los
+// demás se marcan anunciados en silencio.
+async function announceNewProducts(db, users) {
+  const productsSnap = await db.ref('products').get()
+  const announcedSnap = await db.ref('system/announcedProducts').get()
+  const announced = announcedSnap.exists() ? announcedSnap.val() : {}
+  if (!productsSnap.exists()) return { announced: 0, marked: 0 }
+
+  const FRESH_MS = 7 * 86400000
+  const NEW_PICK_LIMIT = 3
+  const now = Date.now()
+
+  const pending = Object.entries(productsSnap.val() || {})
+    .map(([id, product]) => ({ id, ...product }))
+    .filter((p) => p && typeof p === 'object' && !announced[p.id])
+    .sort((a, b) => (new Date(b.createdAt || 0) - new Date(a.createdAt || 0)))
+
+  let announcedCount = 0
+  const marks = {}
+  for (const p of pending) {
+    marks[p.id] = true
+    const fresh = now - new Date(p.createdAt || 0).getTime() <= FRESH_MS
+    if (!users.length || !fresh || announcedCount >= NEW_PICK_LIMIT) continue
+    const notif = buildNotif('new-product', p, p.category)
+    announcedCount += 1
+    await Promise.all(users.map((user) => db.ref(`notifications/${user.uid}`).push(notif)))
+  }
+  await db.ref('system/announcedProducts').update(marks)
+  return { announced: announcedCount, marked: pending.length }
+}
+
+// ---------- 2) Producto más económico (nicho o global) ----------
 async function recommendCheapest(db, users) {
   const productsSnap = await db.ref('products').get()
   const products = productsSnap.exists()
@@ -110,13 +134,14 @@ async function recommendCheapest(db, users) {
     : []
   if (!products.length) return 0
 
-  // Cheapest por categoría normalizada
   const byCategory = new Map()
+  let globalPick = null
   for (const p of products) {
     const key = normalizeCategory(p.category)
     if (!key) continue
     const cheapest = byCategory.get(key)
     if (!cheapest || productPrice(p) < productPrice(cheapest)) byCategory.set(key, p)
+    if (!globalPick || productPrice(p) < productPrice(globalPick)) globalPick = p
   }
 
   const dateKey = localDateKey()
@@ -124,40 +149,40 @@ async function recommendCheapest(db, users) {
 
   for (const user of users) {
     const niches = Array.isArray(user.niches) ? user.niches : []
-    if (!niches.length) continue
-    for (const niche of niches.slice(0, 2)) {
-      const key = normalizeCategory(niche)
-      if (!key) continue
+    const catKeys = new Set(niches.map(normalizeCategory).filter(Boolean))
+
+    // Por nicho (máx 2 recomendaciones/día/usuario)
+    let sent = 0
+    for (const key of catKeys) {
+      if (sent >= 2) break
       const pick = byCategory.get(key)
       if (!pick || productPrice(pick) === Infinity) continue
-      const dedupeKey = `${dateKey}:${user.uid}:${key}`
-      const sentSnap = await db.ref(`system/cheapSent/${dedupeKey}`).get()
+      const dedupe = `${dateKey}:${user.uid}:niche:${key}`
+      const sentSnap = await db.ref(`system/cheapSent/${dedupe}`).get()
       if (sentSnap.exists()) continue
+      await db.ref(`notifications/${user.uid}`).push(buildNotif('cheap-pick', pick, pick.category))
+      await db.ref(`system/cheapSent/${dedupe}`).set(true)
+      sent += 1
+      count += 1
+    }
 
-      const notif = {
-        type: 'cheap-pick',
-        title: `El más económico en ${pick.category}`,
-        message: `Hoy te recomendamos "${pick.title}" por ${pick.price} — la mejor oferta en ${pick.category}.`,
-        category: pick.category,
-        productId: pick.id,
-        productTitle: pick.title,
-        image: pick.image || (pick.images && pick.images[0]) || '',
-        price: Number(pick.price) || 0,
-        action: 'catalog-category',
-        read: false,
-        createdAt: Date.now(),
-      }
-      await db.ref(`notifications/${user.uid}`).push(notif)
-      await db.ref(`system/cheapSent/${dedupeKey}`).set(true)
+    // Sin nichos (o ninguno con oferta): oferta del día global
+    if (!catKeys.size && globalPick && productPrice(globalPick) !== Infinity) {
+      const dedupe = `${dateKey}:${user.uid}:global`
+      const sentSnap = await db.ref(`system/cheapSent/${dedupe}`).get()
+      if (sentSnap.exists()) continue
+      await db.ref(`notifications/${user.uid}`).push(
+        buildNotif('cheap-pick', globalPick, globalPick.category, { global: true })
+      )
+      await db.ref(`system/cheapSent/${dedupe}`).set(true)
       count += 1
     }
   }
   return count
 }
 
-export const handler = async () => {
-  const db = ensureAdmin()
-
+// ---------- Núcleo (reutilizable por la script/ahora y el cron) ----------
+export async function runNotifications(db) {
   const usersSnap = await db.ref('users').get()
   const users = []
   if (usersSnap.exists()) {
@@ -166,11 +191,17 @@ export const handler = async () => {
     })
   }
 
-  const fresh = await announceFreshProducts(db, users)
+  const fresh = await announceNewProducts(db, users)
   const cheap = await recommendCheapest(db, users)
 
   console.log(
-    `[notify-scheduler] usuarios=${users.length} nuevo-producto=${fresh.announced} (marcados=${fresh.marked}) recomendaciones=${cheap}`
+    `[notify] usuarios=${users.length} nuevo-producto=${fresh.announced} (marcados=${fresh.marked}) recomendaciones=${cheap}`
   )
+  return { users: users.length, fresh, cheap }
+}
+
+export const handler = async () => {
+  const db = ensureAdmin()
+  await runNotifications(db)
   return { statusCode: 200, body: 'OK' }
 }
