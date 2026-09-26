@@ -100,8 +100,9 @@ function toProduct(x, { category, commission }) {
 }
 
 function pick(items, count, existingAsins) {
+  const asinOfItem = (x) => x.asin || asinOf(x.affiliateUrl)
   return items
-    .filter((x) => x.asin && !existingAsins.has(x.asin))
+    .filter((x) => asinOfItem(x) && !existingAsins.has(asinOfItem(x)))
     .sort((a, b) => (b.ratingCount || 0) - (a.ratingCount || 0))
     .slice(0, count)
 }
@@ -151,14 +152,22 @@ function main() {
             source: 'auloava-nuevos-nichos-2026-09-25',
           }
         : toProduct(x, src)
-      product.photos = x.photos && x.photos.length ? x.photos : product.photos && Array.isArray(product.photos) ? product.photos : [product.image]
+      product.photos = x.photos && x.photos.length ? x.photos : x.images && x.images.length ? x.images : [product.image]
       newProducts.push(product)
       existingAsins.add(asinOf(product.affiliateUrl))
     }
     console.log(`✓ ${src.category}: ${picks.length} productos`)
   }
 
-  const merged = existing.concat(newProducts)
+  const mergedRaw = existing.concat(newProducts)
+  const merged = []
+  const seenAsin = new Set()
+  for (const p of mergedRaw) {
+    const a = asinOf(p.affiliateUrl)
+    if (a ? seenAsin.has(a) : false) continue
+    if (a) seenAsin.add(a)
+    merged.push(p)
+  }
   let rank = 1
   for (const p of merged) p.rank = rank++
 
@@ -177,13 +186,13 @@ function main() {
     return
   }
 
-  const admin = (await import('firebase-admin')).default
-  const sa = JSON.parse(readFileSync(new URL('./serviceAccount.json', import.meta.url), 'utf8'))
-  if (!admin.apps.length)
-    admin.initializeApp({ credential: admin.credential.cert(sa), databaseURL: DATABASE_URL })
-  const db = admin.database()
-
   return (async () => {
+    const admin = (await import('firebase-admin')).default
+    const sa = JSON.parse(readFileSync(new URL('./serviceAccount.json', import.meta.url), 'utf8'))
+    if (!admin.apps.length)
+      admin.initializeApp({ credential: admin.credential.cert(sa), databaseURL: DATABASE_URL })
+    const db = admin.database()
+
     // --- Publica solo los nuevos (no borra nada) ---
     const snap = await db.ref('products').get()
     const remoteAsins = new Set()
@@ -220,7 +229,10 @@ function main() {
   })()
 }
 
-main().catch((e) => {
-  console.error(e)
-  process.exit(1)
-})
+const run = main()
+if (run && typeof run.catch === 'function') {
+  run.catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+}
