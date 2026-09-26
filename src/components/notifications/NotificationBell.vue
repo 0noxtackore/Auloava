@@ -48,7 +48,9 @@ function open(n) {
   show.value = false
   inbox.markRead(n.id)
   const query = {}
-  if (n.action === 'catalog-category' && n.category) {
+  if (n.productId) {
+    query.product = n.productId
+  } else if (n.action === 'catalog-category' && n.category) {
     query.category = n.category
   } else {
     query.q = n.productTitle || n.title || ''

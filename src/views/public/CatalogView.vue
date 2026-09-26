@@ -5,7 +5,7 @@
 // en orden aleatorio y sin paginación. Sin sesión se ve la
 // pantalla de acceso.
 // ============================================================
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/store/products'
 import { auth, authReady } from '@/services/auth'
@@ -19,6 +19,22 @@ const route = useRoute()
 const router = useRouter()
 const query = ref(String(route.query.q || ''))
 const categoryFilter = ref(String(route.query.category || ''))
+const productFilter = ref(String(route.query.product || ''))
+
+watch(
+  () => route.query,
+  (q) => {
+    query.value = String(q.q || '')
+    categoryFilter.value = String(q.category || '')
+    productFilter.value = String(q.product || '')
+  }
+)
+
+function clearProduct() {
+  const q = { ...route.query }
+  delete q.product
+  router.replace({ query: q })
+}
 
 const randomOrder = ref([])
 const isGuest = ref(null) // null = sesión aún comprobándose
@@ -88,6 +104,12 @@ const products = computed(() => {
   const q = query.value.trim().toLowerCase()
   let list = randomOrder.value
 
+  // Click en una notificación: mostrar SOLO el producto exacto
+  if (productFilter.value) {
+    const match = randomOrder.value.find((p) => p.id === productFilter.value)
+    return match ? [match] : []
+  }
+
   if (categoryFilter.value) {
     const c = categoryFilter.value.toLowerCase()
     list = list.filter((p) => (p.category || '').toLowerCase() === c)
@@ -101,6 +123,8 @@ const products = computed(() => {
       (p.description || '').toLowerCase().includes(q),
   )
 })
+
+const singleProduct = computed(() => products.value.length === 1 && !!productFilter.value)
 </script>
 
 <template>
@@ -148,6 +172,19 @@ const products = computed(() => {
             aria-label="Buscar ofertas"
           />
         </form>
+
+        <div v-if="singleProduct" class="catalog-single">
+          <span class="catalog-single__badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m12 3 1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3Z" />
+            </svg>
+            Desde tu notificación
+          </span>
+          <span class="catalog-single__note">Este es el producto de tu aviso.</span>
+          <button type="button" class="catalog-single__clear" @click="clearProduct">
+            Ver todo el catálogo
+          </button>
+        </div>
 
         <div v-if="pageLoading" class="pin-grid catalog-loading" aria-hidden="true">
           <div v-for="n in 12" :key="'sk' + n" class="catalog-loading__pin">
@@ -242,6 +279,53 @@ const products = computed(() => {
   color: var(--muted);
   padding: 60px 0;
   font-size: 1.05rem;
+}
+
+/* ---- Producto exacto desde una notificación ---- */
+.catalog-single {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 auto 26px;
+  padding: 10px 14px;
+  max-width: 560px;
+  border: 1.5px solid var(--green-200);
+  border-radius: var(--radius);
+  background: var(--green-50);
+}
+.catalog-single__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green-700);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.catalog-single__note {
+  color: var(--green-900);
+  font-size: 0.85rem;
+}
+.catalog-single__clear {
+  margin-left: auto;
+  border: none;
+  background: var(--white);
+  color: var(--green-700);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.catalog-single__clear:hover {
+  background: var(--green-100);
+}
+@media (max-width: 560px) {
+  .catalog-single__clear {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 /* ---- Skeleton mientras cargan los productos ---- */
