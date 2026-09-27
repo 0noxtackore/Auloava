@@ -500,53 +500,66 @@ async function detectLocation() {
   }
 }
 
-/* ---- Móvil: contenido apilado uno debajo de otro ---- */
+/* ---- Móvil: logo y ubicación arriba, buscador a lo ancho, acciones debajo ---- */
 @media (max-width: 820px) {
   .topbar__inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
     height: auto;
-    padding: 12px 0;
+    padding: 12px 16px;
+  }
+  .topbar__brand {
+    order: 1;
+    margin-right: auto;
   }
   .topbar__logo-img {
-    height: 32px;
+    height: 34px;
   }
   .topbar__collapse {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    margin-left: 0;
+    display: contents;
   }
   .topbar__search {
-    flex: 1 1 auto;
+    order: 3;
+    flex: 1 0 100%;
     min-width: 0;
     max-width: 100%;
   }
   .topbar__search input {
-    padding: 9px 14px 9px 38px;
-    font-size: 0.9rem;
+    padding: 11px 14px 11px 40px;
+    font-size: 16px;
   }
   .topbar__location {
-    display: inline-flex;
-    align-self: flex-start;
+    order: 2;
+    margin-left: auto;
+    padding: 7px 10px;
+  }
+  .topbar__location span {
+    display: none;
   }
   .topbar__actions {
+    order: 4;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
-    width: 100%;
-    margin-left: 0;
     gap: 10px;
+    flex: 1;
+    min-width: 0;
+    margin-left: 0;
   }
   .topbar__login,
   .topbar__cta {
-    width: 100%;
-    padding: 11px 14px;
-    font-size: 0.9rem;
+    flex: 1;
+    width: auto;
+    padding: 12px 10px;
+    font-size: 0.92rem;
   }
   .topbar__account {
-    width: 100%;
+    order: 4;
+    flex: 1;
+    min-width: 0;
+    width: auto;
     margin-left: 0;
     justify-content: space-between;
     padding: 6px 10px;
@@ -558,6 +571,10 @@ async function detectLocation() {
   .topbar__account-mail {
     max-width: none;
     flex: 1;
+  }
+  .topbar__inner :deep(.bell) {
+    order: 4;
+    flex: 0 0 auto;
   }
 }
 </style>
