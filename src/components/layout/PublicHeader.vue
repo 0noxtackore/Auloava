@@ -38,7 +38,15 @@ onMounted(() => {
       }
     }
   })
-  detectLocation()
+  // La geolocalización solo se pide tras una interacción real del usuario
+  // (evita el aviso de permiso al cargar y las peticiones en renders de bots).
+  const onFirstGesture = () => {
+    detectLocation()
+    window.removeEventListener('pointerdown', onFirstGesture)
+    window.removeEventListener('keydown', onFirstGesture)
+  }
+  window.addEventListener('pointerdown', onFirstGesture)
+  window.addEventListener('keydown', onFirstGesture)
 })
 onUnmounted(() => {
   if (unsubAuth) unsubAuth()
