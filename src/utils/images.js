@@ -18,6 +18,12 @@
 export function optimizeProductImage(url, width = 320) {
   if (!url || typeof url !== 'string') return url
   const m = url.match(/^(https?:\/\/[\w.-]*amazon\.com\/images\/I\/.+?)_AC_SX\d+_(\.[A-Za-z0-9]+)$/i)
-  if (m) return `${m[1]}_AC_SX${width}_${m[2]}`
+  if (m) {
+    // Sirve la imagen desde m.media-amazon.com (CDN oficial de las páginas
+    // de producto de Amazon). images-na.ssl-images-amazon.com queda
+    // bloqueado o inaccesible en algunas redes y en el renderizador de
+    // Google, mientras que m.media-amazon.com responde en todas.
+    return `https://m.media-amazon.com/images/I/${m[1].split('/images/I/').pop()}_AC_SX${width}_${m[2]}`
+  }
   return url
 }
