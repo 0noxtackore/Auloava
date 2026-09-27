@@ -19,6 +19,7 @@ const base = import.meta.env.BASE_URL
 const search = ref('')
 const { suggestions: searchSuggestions } = useProductSuggestions(search, 6)
 const searchOpen = ref(false)
+const mobileOpen = ref(false)
 const country = ref('')
 const user = ref(null)
 let unsubAuth = null
@@ -124,7 +125,19 @@ async function detectLocation() {
         <img class="topbar__logo-img" :src="`${base}images/logo.png`" alt="Auloava" />
       </RouterLink>
 
-      <div class="topbar__collapse">
+      <button
+        class="topbar__hamburger"
+        type="button"
+        :aria-expanded="mobileOpen"
+        aria-label="Abrir menú"
+        @click="mobileOpen = !mobileOpen"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+
+      <div class="topbar__collapse" :class="{ 'topbar__collapse--open': mobileOpen }">
         <form class="topbar__search" @submit.prevent="goSearch">
           <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="11" cy="11" r="7" />
@@ -169,6 +182,7 @@ async function detectLocation() {
           <span>{{ country || '—' }}</span>
         </div>
 
+        <div class="topbar__session">
         <template v-if="user">
           <NotificationBell :uid="user.uid" />
           <div class="topbar__account" :title="user.email || ''">
@@ -207,6 +221,7 @@ async function detectLocation() {
             </button>
           </div>
         </template>
+        </div>
       </div>
     </nav>
   </header>
@@ -239,6 +254,16 @@ async function detectLocation() {
   height: 40px;
   width: auto;
   object-fit: contain;
+}
+
+/* ---- Botón menú móvil (solo < 820px) ---- */
+.topbar__hamburger {
+  display: none;
+}
+
+/* ---- Zona de sesión: se aplana en escritorio ---- */
+.topbar__session {
+  display: contents;
 }
 
 /* ---- Fila de menubar (siempre visible) ---- */
@@ -500,7 +525,7 @@ async function detectLocation() {
   }
 }
 
-/* ---- Móvil: logo y ubicación arriba, buscador a lo ancho, acciones debajo ---- */
+/* ---- Móvil: logo + flecha arriba, panel desplegable ---- */
 @media (max-width: 820px) {
   .topbar__inner {
     flex-wrap: wrap;
@@ -512,17 +537,51 @@ async function detectLocation() {
   }
   .topbar__brand {
     order: 1;
-    margin-right: auto;
   }
   .topbar__logo-img {
     height: 34px;
   }
-  .topbar__collapse {
-    display: contents;
+
+  .topbar__hamburger {
+    order: 2;
+    display: grid;
+    place-items: center;
+    margin-left: auto;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1.5px solid var(--green-200);
+    border-radius: var(--radius-full);
+    background: var(--white);
+    color: var(--green-700);
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition);
   }
-  .topbar__search {
+  .topbar__hamburger svg {
+    width: 20px;
+    height: 20px;
+    transition: transform var(--transition);
+  }
+  .topbar__hamburger[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+
+  .topbar__collapse {
     order: 3;
+    display: none;
     flex: 1 0 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-left: 0;
+    padding-top: 4px;
+  }
+  .topbar__collapse--open {
+    display: flex;
+  }
+
+  .topbar__search {
+    flex: 1 1 auto;
     min-width: 0;
     max-width: 100%;
   }
@@ -530,16 +589,33 @@ async function detectLocation() {
     padding: 11px 14px 11px 40px;
     font-size: 16px;
   }
+
   .topbar__location {
-    order: 2;
-    margin-left: auto;
-    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--green-200);
+    border-radius: var(--radius);
+    background: var(--green-50);
   }
   .topbar__location span {
-    display: none;
+    display: inline;
+    font-size: 0.88rem;
+  }
+
+  .topbar__session {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 auto;
+  }
+  .topbar__session :deep(.bell) {
+    flex: 0 0 auto;
   }
   .topbar__actions {
-    order: 4;
     display: flex;
     flex-direction: row;
     align-items: stretch;
@@ -556,7 +632,6 @@ async function detectLocation() {
     font-size: 0.92rem;
   }
   .topbar__account {
-    order: 4;
     flex: 1;
     min-width: 0;
     width: auto;
@@ -571,10 +646,6 @@ async function detectLocation() {
   .topbar__account-mail {
     max-width: none;
     flex: 1;
-  }
-  .topbar__inner :deep(.bell) {
-    order: 4;
-    flex: 0 0 auto;
   }
 }
 </style>
