@@ -247,6 +247,7 @@ async function detectLocation() {
   align-items: center;
   gap: 14px;
   flex: 1;
+  min-width: 0;
   margin-left: 14px;
 }
 
@@ -279,6 +280,7 @@ async function detectLocation() {
 .topbar__search {
   position: relative;
   flex: 1 1 360px;
+  min-width: 0;
   max-width: 560px;
 }
 .topbar__search-icon {
@@ -462,6 +464,40 @@ async function detectLocation() {
 }
 .topbar__account-logout:hover {
   background: var(--green-100);
+}
+
+/* ---- Pantallas medianas: comprimir sin desbordar ---- */
+@media (max-width: 1080px) {
+  .topbar__inner {
+    gap: 10px;
+  }
+  .topbar__collapse {
+    gap: 10px;
+    margin-left: 10px;
+  }
+  .topbar__search {
+    flex-basis: 280px;
+  }
+  .topbar__location {
+    padding: 6px 8px;
+  }
+  .topbar__location span {
+    display: none;
+  }
+  .topbar__login,
+  .topbar__cta {
+    width: 116px;
+    padding: 10px 10px;
+  }
+}
+
+@media (max-width: 940px) {
+  .topbar__search {
+    flex-basis: 200px;
+  }
+  .topbar__account-mail {
+    max-width: 90px;
+  }
 }
 
 /* ---- Móvil: contenido apilado uno debajo de otro ---- */
