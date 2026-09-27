@@ -25,3 +25,20 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Auloava no publica recursos agénticos: las rutas ARD responden 404 real
+# para que la auditoría ARD de Lighthouse se marque como "No aplica".
+[[redirects]]
+  from = "/.well-known/ai-catalog.json"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/.well-known/ard.json"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/ai-catalog.json"
+  to = "/404.html"
+  status = 404
