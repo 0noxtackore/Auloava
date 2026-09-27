@@ -11,6 +11,7 @@ import { useProductStore } from '@/store/products'
 import { socialService } from '@/services/social'
 import { optimizeProductImage } from '@/utils/images'
 import { decodeHtml } from '@/utils/formatters'
+import { downloadPin } from '@/utils/pin'
 
 const store = useProductStore()
 const query = ref('')
@@ -18,6 +19,7 @@ const copiedId = ref('')
 const selectedPlatform = ref('tiktok') // 'tiktok' | 'pinterest'
 const generatingAll = ref(false)
 const generatedCount = ref(0)
+const pinLoading = ref('')
 
 const products = computed(() => {
   const q = query.value.trim().toLowerCase()
@@ -66,6 +68,17 @@ async function copy(id, text) {
   } catch {
     /* el navegador bloqueó el portapapeles */
   }
+}
+
+// Genera y descarga la imagen del pin de Pinterest (1000x1500) del producto.
+function descargarPin(p) {
+  if (pinLoading.value) return
+  pinLoading.value = p.id
+  downloadPin(p)
+    .catch(() => {})
+    .finally(() => {
+      pinLoading.value = ''
+    })
 }
 
 // Genera borradores para todos los productos visibles en secuencia (con
@@ -202,6 +215,15 @@ function suggestBoards(p) {
             @click="generate(p)"
           >
             {{ drafts[p.id]?.loading ? 'Generando…' : 'Generar borrador' }}
+          </button>
+
+          <button
+            class="social-card__pin"
+            type="button"
+            :disabled="!!pinLoading"
+            @click="descargarPin(p)"
+          >
+            {{ pinLoading === p.id ? 'Descargando pin…' : 'Descargar pin Pinterest' }}
           </button>
 
           <div v-if="drafts[p.id]?.error" class="social-card__error">
@@ -400,6 +422,25 @@ function suggestBoards(p) {
   background: var(--green-700);
 }
 .social-card__btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.social-card__pin {
+  padding: 9px 14px;
+  border: 1px solid var(--green-700);
+  border-radius: var(--radius-full);
+  background: var(--off-white);
+  color: var(--green-800);
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.social-card__pin:hover:not(:disabled) {
+  background: var(--green-700);
+  color: var(--white);
+}
+.social-card__pin:disabled {
   opacity: 0.6;
   cursor: default;
 }
