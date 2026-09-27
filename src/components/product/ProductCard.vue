@@ -92,7 +92,10 @@ const optimizedImage = computed(() => optimizeProductImage(props.product.image, 
 
 // ---- Fallback anti-imágenes rotas ----
 // Si la imagen principal falla al cargar en el navegador, se prueba la
-// galería (photos/images) y, en última instancia, un placeholder de marca.
+// galería (photos/images) y, por último, un placeholder de marca.
+// Además, si la imagen viene de images-na.ssl-images-amazon.com y la red
+// bloquea ese host (ERR_INTERNET_DISCONNECTED), se reintenta la MISMA
+// imagen en m.media-amazon.com (mismo CDN de Amazon, no bloqueado).
 const IMG_PLACEHOLDER =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
@@ -103,6 +106,8 @@ const IMG_PLACEHOLDER =
       `<text x="240" y="330" font-family="Arial, sans-serif" font-size="26" font-weight="600" fill="#166534" text-anchor="middle">Auloava</text>` +
       `</svg>`,
   )
+const amazonMirror = (url) =>
+  url.replace(/^https:\/\/images-na\.ssl-images-amazon\.com/, 'https://m.media-amazon.com')
 const imgCandidates = computed(() => {
   const list = []
   if (optimizedImage.value && typeof optimizedImage.value === 'string') {
@@ -113,7 +118,12 @@ const imgCandidates = computed(() => {
     const o = optimizeProductImage(ph, 480)
     if (!list.includes(o)) list.push(o)
   }
-  list.push(IMG_PLACEHOLDER)
+  const mirrored = []
+  for (const u of list) {
+    const m = amazonMirror(u)
+    if (m !== u && !list.includes(m) && !mirrored.includes(m)) mirrored.push(m)
+  }
+  list.push(...mirrored, IMG_PLACEHOLDER)
   return list
 })
 const imgFallback = ref(0)
