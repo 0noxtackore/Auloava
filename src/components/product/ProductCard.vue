@@ -4,7 +4,7 @@
 // Imagen destacada, overlay con botón Guardar al hacer hover,
 // precio y título. Alturas variables para el efecto masonry.
 // ============================================================
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { PLATFORMS } from '@/constants'
 import { formatPrice, formatRating, formatPercent, decodeHtml } from '@/utils/formatters'
@@ -90,6 +90,41 @@ const avatarColor = computed(() => {
 // Imagen optimizada (tamaño medio en Amazon) para cargar rápido y nítida
 const optimizedImage = computed(() => optimizeProductImage(props.product.image, 480))
 
+// ---- Fallback anti-imágenes rotas ----
+// Si la imagen principal falla al cargar en el navegador, se prueba la
+// galería (photos/images) y, en última instancia, un placeholder de marca.
+const IMG_PLACEHOLDER =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480">` +
+      `<rect width="480" height="480" fill="#e8f3ec"/>` +
+      `<circle cx="240" cy="200" r="90" fill="#16a34a"/>` +
+      `<text x="240" y="238" font-family="Arial, sans-serif" font-size="110" font-weight="700" fill="#ffffff" text-anchor="middle">A</text>` +
+      `<text x="240" y="330" font-family="Arial, sans-serif" font-size="26" font-weight="600" fill="#166534" text-anchor="middle">Auloava</text>` +
+      `</svg>`,
+  )
+const imgCandidates = computed(() => {
+  const list = []
+  if (optimizedImage.value && typeof optimizedImage.value === 'string') {
+    list.push(optimizedImage.value)
+  }
+  for (const ph of props.product.photos || props.product.images || []) {
+    if (!ph) continue
+    const o = optimizeProductImage(ph, 480)
+    if (!list.includes(o)) list.push(o)
+  }
+  list.push(IMG_PLACEHOLDER)
+  return list
+})
+const imgFallback = ref(0)
+const imgSrc = computed(() => {
+  const i = Math.min(imgFallback.value, imgCandidates.value.length - 1)
+  return imgCandidates.value[i]
+})
+function onImgError() {
+  if (imgFallback.value < imgCandidates.value.length - 1) imgFallback.value++
+}
+
 // Enlace de afiliado canónico (ASIN limpio) para evitar la página
 // interstitial "Continue shopping" de Amazon.
 const affiliateHref = computed(() => cleanAffiliateUrl(props.product.affiliateUrl))
@@ -116,10 +151,11 @@ const mediaAspect = computed(() => {
     >
       <img
         class="pin__img"
-        :src="optimizedImage"
+        :src="imgSrc"
         :alt="product.title"
         loading="lazy"
         decoding="async"
+        @error="onImgError"
       />
 
       <!-- Overlay al hacer hover -->
