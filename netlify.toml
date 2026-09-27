@@ -20,14 +20,9 @@
 [functions.notify-scheduler]
   schedule = "0 9 * * *"
 
-# SPA: redirige cualquier ruta al index.html (history mode de Vue Router)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 # Auloava no publica recursos agénticos: las rutas ARD responden 404 real
 # para que la auditoría ARD de Lighthouse se marque como "No aplica".
+# IMPORTANTE: deben ir ANTES que el catch-all SPA (primera regla que coincide).
 [[redirects]]
   from = "/.well-known/ai-catalog.json"
   to = "/404.html"
@@ -42,3 +37,9 @@
   from = "/ai-catalog.json"
   to = "/404.html"
   status = 404
+
+# SPA: redirige cualquier ruta al index.html (history mode de Vue Router)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
