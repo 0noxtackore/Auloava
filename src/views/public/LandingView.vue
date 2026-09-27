@@ -1528,6 +1528,12 @@ onMounted(async () => {
 @media (max-width: 767px) {
   .catalog-guest--landing {
     width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  .catalog-guest--landing .catalog-guest__btn {
+    width: 100%;
   }
 }
 .catalog-guest {

@@ -537,6 +537,9 @@ async function detectLocation() {
   }
   .topbar__brand {
     order: 1;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
   }
   .topbar__logo-img {
     height: 34px;
