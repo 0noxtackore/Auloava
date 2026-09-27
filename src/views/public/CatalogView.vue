@@ -13,6 +13,7 @@ import ProductCard from '@/components/product/ProductCard.vue'
 import EarningsMeter from '@/components/layout/EarningsMeter.vue'
 import PublicHeader from '@/components/layout/PublicHeader.vue'
 import { catalogPath } from '@/utils/routes'
+import { loadAds } from '@/services/ads'
 
 const productStore = useProductStore()
 const route = useRoute()
@@ -57,6 +58,9 @@ function shuffle(arr) {
 }
 
 onMounted(async () => {
+  // AdSense solo en páginas interiores (fuera de la portada)
+  loadAds()
+
   await authReady
   isGuest.value = !auth.currentUser
 
