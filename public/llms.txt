@@ -1,0 +1,7 @@
+# Auloava
+
+Auloava es un catálogo de ofertas seleccionadas y verificadas de Amazon, AliExpress y Alibaba. Los usuarios pueden navegar las ofertas, ver el catálogo público y guardar productos de su interés.
+
+- [Inicio](https://auloava.netlify.app/)
+- [Catálogo de ofertas](https://auloava.netlify.app/catalog)
+- [Política de privacidad](https://auloava.netlify.app/privacy)

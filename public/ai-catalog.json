@@ -1,0 +1,9 @@
+{
+  "name": "Auloava",
+  "url": "https://auloava.netlify.app/",
+  "description": "Catálogo de ofertas seleccionadas y verificadas de Amazon, AliExpress y Alibaba.",
+  "resources": [
+    { "entity": "website", "name": "Auloava", "href": "https://auloava.netlify.app/" },
+    { "entity": "catalog", "name": "Catálogo de ofertas", "href": "https://auloava.netlify.app/catalog" }
+  ]
+}
