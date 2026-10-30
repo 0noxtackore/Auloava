@@ -265,10 +265,8 @@ onMounted(async () => {
         <div class="container hero__center" v-reveal>
           <span class="hero__eyebrow">
             <span class="hero__pulse" />
-            <img class="hero__plat-logo" :src="logoFor('aliexpress')" alt="AliExpress" />
-            <img class="hero__plat-logo" :src="logoFor('amazon')" alt="Amazon" />
-            <img class="hero__plat-logo" :src="logoFor('alibaba')" alt="Alibaba" />
-            <span class="hero__eyebrow-text">Un mismo hallazgo, tres marketplaces</span>
+            <img class="hero__plat-logo" :src="logoFor('auloava')" alt="Auloava" />
+            <span class="hero__eyebrow-text">Home & Living · Productos curados para tu hogar</span>
           </span>
 
           <h1 class="hero__title">
@@ -277,8 +275,8 @@ onMounted(async () => {
           </h1>
 
           <p class="hero__subtitle">
-            Tecnología, hogar, cocina, belleza y oficina: comparamos el mismo
-            producto en Amazon, AliExpress y Alibaba para que ahorres sin riesgos.
+            Decoración, mobiliario, cocina, iluminación y más: seleccionamos
+            los mejores productos para transformar cualquier espacio en un hogar.
             Sin cuentas, sin sorpresas.
           </p>
 
@@ -358,9 +356,9 @@ onMounted(async () => {
             </div>
             <h3 class="empty-catalog__title">Nuestro catálogo está en preparación</h3>
             <p class="empty-catalog__text">
-              Muy pronto encontrarás aquí ofertas reales de AliExpress, Amazon
-              y Alibaba. Mientras tanto, explora el catálogo para conocer cómo
-              funcionará todo.
+              Muy pronto encontrarás aquí productos seleccionados para tu hogar.
+              Mientras tanto, explora el catálogo para conocer nuestra propuesta
+              de Home & Living.
             </p>
             <button class="empty-catalog__btn" @click="goToCatalog">
               Explorar catálogo

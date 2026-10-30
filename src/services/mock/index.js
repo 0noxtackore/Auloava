@@ -130,19 +130,19 @@ const productHandlers = {
 export const landingData = {
   stats: [
     { label: 'Productos curados', value: String(bestsellerProducts.length) },
-    { label: 'Marketplaces', value: '3' },
-    { label: 'Comisión media', value: '5%' },
-    { label: 'Ahorro medio', value: 'Hasta 50%' },
+    { label: 'Marca', value: 'Auloava' },
+    { label: 'Nicho', value: 'Home & Living' },
+    { label: 'Ahorro medio', value: 'Hasta 40%' },
   ],
   platforms: PLATFORM_LIST,
   categories: CATEGORIES,
   steps: [
-    { title: 'Explora', text: 'Navega por productos curados y verificados de los 3 gigantes del ecommerce.' },
-    { title: 'Compara', text: 'Compara precios, comisiones y valoraciones en una sola vista.' },
-    { title: 'Compra', text: 'Consigue el mejor precio del mercado con enlaces seguros de afiliado.' },
-    { title: 'Ahorra', text: 'Acumula el ahorro real de cada compra y revive tus mejores decisiones.' },
-    { title: 'Recibe alertas', text: 'Te avisamos cuando un producto baja de precio en cualquiera de los 3 marketplaces.' },
-    { title: 'Comparte', text: 'Envía tu pin favorito a amigos o redes con un solo clic.' },
+    { title: 'Explora', text: 'Navega por productos curados de Home & Living para cada rincón de tu hogar.' },
+    { title: 'Elige', text: 'Selecciona artículos de decoración, mobiliario, cocina, iluminación y más.' },
+    { title: 'Transforma', text: 'Mejora tu espacio con productos verificados y de calidad.' },
+    { title: 'Ahorra', text: 'Aprovecha precios claros y sin comisiones ocultas.' },
+    { title: 'Recibe alertas', text: 'Te avisamos cuando un producto baja de precio.' },
+    { title: 'Comparte', text: 'Envía tu producto favorito a amigos o redes con un clic.' },
   ],
   testimonials: [
     { name: 'Lucía Fernández', role: 'Compradora frecuente', text: 'He ahorrado un 35% en mi última compra. La comparativa es clarísima.', avatar: 'https://i.pravatar.cc/96?img=47' },
