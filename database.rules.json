@@ -2,15 +2,15 @@
   "rules": {
     "products": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "categories": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": true
     },
     "socialDrafts": {
-      ".read": "auth != null",
-      ".write": "auth != null"
+      ".read": true,
+      ".write": true
     }
   }
 }
