@@ -32,6 +32,7 @@ const featured = computed(() => {
 
 const assetsBase = import.meta.env.BASE_URL
 const platformLogos = {
+  auloava: assetsBase + 'images/logo_solid.png',
   aliexpress: assetsBase + 'images/logos/aliexpress.svg',
   amazon: assetsBase + 'images/logos/amazon.svg',
   alibaba: assetsBase + 'images/logos/alibaba.svg',
