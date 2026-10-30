@@ -1,5 +1,5 @@
-{
-  "1": {
+[
+  {
     "title": "Set de 3 Jarrones Cerámica Blanca",
     "platform": "homeliving",
     "category": "Decoración",
@@ -20,7 +20,7 @@
       "https://picsum.photos/seed/auloava-decoración-1-d/600/600"
     ]
   },
-  "2": {
+  {
     "title": "Cuadro Abstracto Minimalista 60x40 cm",
     "platform": "homeliving",
     "category": "Decoración",
@@ -41,7 +41,7 @@
       "https://picsum.photos/seed/auloava-decoración-2-d/600/600"
     ]
   },
-  "3": {
+  {
     "title": "Espejo Redondo Marco Dorado 50 cm",
     "platform": "homeliving",
     "category": "Decoración",
@@ -62,7 +62,7 @@
       "https://picsum.photos/seed/auloava-decoración-3-d/600/600"
     ]
   },
-  "4": {
+  {
     "title": "Vela Perfumada de Vainilla 200g",
     "platform": "homeliving",
     "category": "Decoración",
@@ -83,7 +83,7 @@
       "https://picsum.photos/seed/auloava-decoración-4-d/600/600"
     ]
   },
-  "5": {
+  {
     "title": "Bandeja Decorativa de Madera Natural",
     "platform": "homeliving",
     "category": "Decoración",
@@ -104,7 +104,7 @@
       "https://picsum.photos/seed/auloava-decoración-5-d/600/600"
     ]
   },
-  "6": {
+  {
     "title": "Portavelas de Cobre Moderna",
     "platform": "homeliving",
     "category": "Decoración",
@@ -125,7 +125,7 @@
       "https://picsum.photos/seed/auloava-decoración-6-d/600/600"
     ]
   },
-  "7": {
+  {
     "title": "Maceta Cerámica Geométrica",
     "platform": "homeliving",
     "category": "Decoración",
@@ -146,7 +146,7 @@
       "https://picsum.photos/seed/auloava-decoración-7-d/600/600"
     ]
   },
-  "8": {
+  {
     "title": "Escultura de Piedra Decorativa",
     "platform": "homeliving",
     "category": "Decoración",
@@ -167,7 +167,7 @@
       "https://picsum.photos/seed/auloava-decoración-8-d/600/600"
     ]
   },
-  "9": {
+  {
     "title": "Cojín de Lino Beige 45x45 cm",
     "platform": "homeliving",
     "category": "Decoración",
@@ -188,7 +188,7 @@
       "https://picsum.photos/seed/auloava-decoración-9-d/600/600"
     ]
   },
-  "10": {
+  {
     "title": "Tienda de Velas Aromáticas 3 Uds.",
     "platform": "homeliving",
     "category": "Decoración",
@@ -209,7 +209,7 @@
       "https://picsum.photos/seed/auloava-decoración-10-d/600/600"
     ]
   },
-  "11": {
+  {
     "title": "Estantería Flotante de Madera Blanca",
     "platform": "homeliving",
     "category": "Decoración",
@@ -230,7 +230,7 @@
       "https://picsum.photos/seed/auloava-decoración-11-d/600/600"
     ]
   },
-  "12": {
+  {
     "title": "Figura Decorativa de Cerámica Azul",
     "platform": "homeliving",
     "category": "Decoración",
@@ -251,7 +251,7 @@
       "https://picsum.photos/seed/auloava-decoración-12-d/600/600"
     ]
   },
-  "13": {
+  {
     "title": "Alfombra Oriental Diseño Clásico 160x230",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -272,7 +272,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-13-d/600/600"
     ]
   },
-  "14": {
+  {
     "title": "Tapete de Yute Natural 120x180 cm",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -293,7 +293,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-14-d/600/600"
     ]
   },
-  "15": {
+  {
     "title": "Alfombra Antideslizante Gris 80x150 cm",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -314,7 +314,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-15-d/600/600"
     ]
   },
-  "16": {
+  {
     "title": "Tapete de Pelo Corto Beige 200x300 cm",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -335,7 +335,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-16-d/600/600"
     ]
   },
-  "17": {
+  {
     "title": "Alfombra de Algodón Tejido a Mano",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -356,7 +356,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-17-d/600/600"
     ]
   },
-  "18": {
+  {
     "title": "Tapete Redondo de Sisal 120 cm",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -377,7 +377,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-18-d/600/600"
     ]
   },
-  "19": {
+  {
     "title": "Alfombra de Piezas Geométricas 160x230",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -398,7 +398,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-19-d/600/600"
     ]
   },
-  "20": {
+  {
     "title": "Tapete de Felpa Suave Gris 60x90 cm",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -419,7 +419,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-20-d/600/600"
     ]
   },
-  "21": {
+  {
     "title": "Alfombra de Lana Merino 140x200 cm",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -440,7 +440,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-21-d/600/600"
     ]
   },
-  "22": {
+  {
     "title": "Tapete de Polipropileno Resistente 80x150",
     "platform": "homeliving",
     "category": "Tapetes y alfombras",
@@ -461,7 +461,7 @@
       "https://picsum.photos/seed/auloava-tapetes-y-alfombras-22-d/600/600"
     ]
   },
-  "23": {
+  {
     "title": "Sofá de Tela Gris 3 Plazas 210 cm",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -482,7 +482,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-23-d/600/600"
     ]
   },
-  "24": {
+  {
     "title": "Mesa de Comedor de Madera Roble 180 cm",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -503,7 +503,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-24-d/600/600"
     ]
   },
-  "25": {
+  {
     "title": "Estantería Abierta 5 Niveles Negra",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -524,7 +524,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-25-d/600/600"
     ]
   },
-  "26": {
+  {
     "title": "Sillón de Terciopelo Verde 85 cm",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -545,7 +545,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-26-d/600/600"
     ]
   },
-  "27": {
+  {
     "title": "Mesa Auxiliar Redonda de Metal 45 cm",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -566,7 +566,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-27-d/600/600"
     ]
   },
-  "28": {
+  {
     "title": "Cama de Madera Maciza 160x200 cm",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -587,7 +587,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-28-d/600/600"
     ]
   },
-  "29": {
+  {
     "title": "Escritorio Minimalista Blanco 140 cm",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -608,7 +608,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-29-d/600/600"
     ]
   },
-  "30": {
+  {
     "title": "Librería Alta 5 Cubos Natural",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -629,7 +629,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-30-d/600/600"
     ]
   },
-  "31": {
+  {
     "title": "Sofa Modular Gris 3 Piezas",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -650,7 +650,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-31-d/600/600"
     ]
   },
-  "32": {
+  {
     "title": "Mesa de Centro de Vidrio 80 cm",
     "platform": "homeliving",
     "category": "Mobiliario",
@@ -671,7 +671,7 @@
       "https://picsum.photos/seed/auloava-mobiliario-32-d/600/600"
     ]
   },
-  "33": {
+  {
     "title": "Caja de Almacenaje con Tapa 50 L",
     "platform": "homeliving",
     "category": "Organización",
@@ -692,7 +692,7 @@
       "https://picsum.photos/seed/auloava-organización-33-d/600/600"
     ]
   },
-  "34": {
+  {
     "title": "Juego de 3 Cestas de Mimbre Natural",
     "platform": "homeliving",
     "category": "Organización",
@@ -713,7 +713,7 @@
       "https://picsum.photos/seed/auloava-organización-34-d/600/600"
     ]
   },
-  "35": {
+  {
     "title": "Organizador de Cajones Ajustable 6 Compartimentos",
     "platform": "homeliving",
     "category": "Organización",
@@ -734,7 +734,7 @@
       "https://picsum.photos/seed/auloava-organización-35-d/600/600"
     ]
   },
-  "36": {
+  {
     "title": "Estantería de Baño 3 Niveles Acero",
     "platform": "homeliving",
     "category": "Organización",
@@ -755,7 +755,7 @@
       "https://picsum.photos/seed/auloava-organización-36-d/600/600"
     ]
   },
-  "37": {
+  {
     "title": "Set de 10 Cajas de Cartón Decorativo",
     "platform": "homeliving",
     "category": "Organización",
@@ -776,7 +776,7 @@
       "https://picsum.photos/seed/auloava-organización-37-d/600/600"
     ]
   },
-  "38": {
+  {
     "title": "Contenedor de Plástico Apilable 30 L",
     "platform": "homeliving",
     "category": "Organización",
@@ -797,7 +797,7 @@
       "https://picsum.photos/seed/auloava-organización-38-d/600/600"
     ]
   },
-  "39": {
+  {
     "title": "Gavetero de 6 Cajones de Madera",
     "platform": "homeliving",
     "category": "Organización",
@@ -818,7 +818,7 @@
       "https://picsum.photos/seed/auloava-organización-39-d/600/600"
     ]
   },
-  "40": {
+  {
     "title": "Portaobjetos de Metal 3 Cubos",
     "platform": "homeliving",
     "category": "Organización",
@@ -839,7 +839,7 @@
       "https://picsum.photos/seed/auloava-organización-40-d/600/600"
     ]
   },
-  "41": {
+  {
     "title": "Bandeja Organizadora de Cuero Sintético",
     "platform": "homeliving",
     "category": "Organización",
@@ -860,7 +860,7 @@
       "https://picsum.photos/seed/auloava-organización-41-d/600/600"
     ]
   },
-  "42": {
+  {
     "title": "Armario de Pared 2 Puertas Blanco",
     "platform": "homeliving",
     "category": "Organización",
@@ -881,7 +881,7 @@
       "https://picsum.photos/seed/auloava-organización-42-d/600/600"
     ]
   },
-  "43": {
+  {
     "title": "Juego de Utensilios de Acero Inoxidable 10 Piezas",
     "platform": "homeliving",
     "category": "Cocina",
@@ -902,7 +902,7 @@
       "https://picsum.photos/seed/auloava-cocina-43-d/600/600"
     ]
   },
-  "44": {
+  {
     "title": "Olla de Cacerola de Cerámica 24 cm",
     "platform": "homeliving",
     "category": "Cocina",
@@ -923,7 +923,7 @@
       "https://picsum.photos/seed/auloava-cocina-44-d/600/600"
     ]
   },
-  "45": {
+  {
     "title": "Set de 8 Recipientes de Vidrio Tapa",
     "platform": "homeliving",
     "category": "Cocina",
@@ -944,7 +944,7 @@
       "https://picsum.photos/seed/auloava-cocina-45-d/600/600"
     ]
   },
-  "46": {
+  {
     "title": "Cafetera Eléctrica 1.2 L",
     "platform": "homeliving",
     "category": "Cocina",
@@ -965,7 +965,7 @@
       "https://picsum.photos/seed/auloava-cocina-46-d/600/600"
     ]
   },
-  "47": {
+  {
     "title": "Tabla de Cortar de Madera de Bambú 45 cm",
     "platform": "homeliving",
     "category": "Cocina",
@@ -986,7 +986,7 @@
       "https://picsum.photos/seed/auloava-cocina-47-d/600/600"
     ]
   },
-  "48": {
+  {
     "title": "Cestillo de Pan de Ratán 30 cm",
     "platform": "homeliving",
     "category": "Cocina",
@@ -1007,7 +1007,7 @@
       "https://picsum.photos/seed/auloava-cocina-48-d/600/600"
     ]
   },
-  "49": {
+  {
     "title": "Batidor Eléctrico 300W",
     "platform": "homeliving",
     "category": "Cocina",
@@ -1028,7 +1028,7 @@
       "https://picsum.photos/seed/auloava-cocina-49-d/600/600"
     ]
   },
-  "50": {
+  {
     "title": "Vaso de Acero Inoxidable Doble Pared 350ml",
     "platform": "homeliving",
     "category": "Cocina",
@@ -1049,7 +1049,7 @@
       "https://picsum.photos/seed/auloava-cocina-50-d/600/600"
     ]
   },
-  "51": {
+  {
     "title": "Juego de Platos de Porcelana 12 Piezas Blanco",
     "platform": "homeliving",
     "category": "Cocina",
@@ -1070,7 +1070,7 @@
       "https://picsum.photos/seed/auloava-cocina-51-d/600/600"
     ]
   },
-  "52": {
+  {
     "title": "Ropa de Cama de Algodón 200x200 cm",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1091,7 +1091,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-52-d/600/600"
     ]
   },
-  "53": {
+  {
     "title": "Manta de Lana Merino 150x200 cm",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1112,7 +1112,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-53-d/600/600"
     ]
   },
-  "54": {
+  {
     "title": "Conjunto Cortinas Lino Crudo 140x260 cm",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1133,7 +1133,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-54-d/600/600"
     ]
   },
-  "55": {
+  {
     "title": "Funda de Cojín Decorativo Terciopelo 2 Uds.",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1154,7 +1154,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-55-d/600/600"
     ]
   },
-  "56": {
+  {
     "title": "Almohada de Plumas 70x40 cm (2 Uds)",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1175,7 +1175,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-56-d/600/600"
     ]
   },
-  "57": {
+  {
     "title": "Cubrecama de Jacquard Gris 240x260 cm",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1196,7 +1196,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-57-d/600/600"
     ]
   },
-  "58": {
+  {
     "title": "Sábana de Perca 160x200 cm",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1217,7 +1217,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-58-d/600/600"
     ]
   },
-  "59": {
+  {
     "title": "Manta Tejida de Algodón 120x180 cm",
     "platform": "homeliving",
     "category": "Textiles del hogar",
@@ -1238,7 +1238,7 @@
       "https://picsum.photos/seed/auloava-textiles-del-hogar-59-d/600/600"
     ]
   },
-  "60": {
+  {
     "title": "Lámpara de Mesa de Cerámica 45 cm",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1259,7 +1259,7 @@
       "https://picsum.photos/seed/auloava-iluminación-60-d/600/600"
     ]
   },
-  "61": {
+  {
     "title": "Aplique de Pared LED 6W Cálido",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1280,7 +1280,7 @@
       "https://picsum.photos/seed/auloava-iluminación-61-d/600/600"
     ]
   },
-  "62": {
+  {
     "title": "Colgante de Cristal 35 cm de Diámetro",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1301,7 +1301,7 @@
       "https://picsum.photos/seed/auloava-iluminación-62-d/600/600"
     ]
   },
-  "63": {
+  {
     "title": "Lámpara de Pie de Madera Negra 160 cm",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1322,7 +1322,7 @@
       "https://picsum.photos/seed/auloava-iluminación-63-d/600/600"
     ]
   },
-  "64": {
+  {
     "title": "Guirnalda LED Interior 5 m 300 LED",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1343,7 +1343,7 @@
       "https://picsum.photos/seed/auloava-iluminación-64-d/600/600"
     ]
   },
-  "65": {
+  {
     "title": "Lámpara de Techo Moderna 3 Lluces",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1364,7 +1364,7 @@
       "https://picsum.photos/seed/auloava-iluminación-65-d/600/600"
     ]
   },
-  "66": {
+  {
     "title": "Velas LED con Temporizador 4 Uds.",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1385,7 +1385,7 @@
       "https://picsum.photos/seed/auloava-iluminación-66-d/600/600"
     ]
   },
-  "67": {
+  {
     "title": "Farol Decorativo de Metal Negro 30 cm",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1406,7 +1406,7 @@
       "https://picsum.photos/seed/auloava-iluminación-67-d/600/600"
     ]
   },
-  "68": {
+  {
     "title": "Lámpara de Escritorio con USB 6W",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1427,7 +1427,7 @@
       "https://picsum.photos/seed/auloava-iluminación-68-d/600/600"
     ]
   },
-  "69": {
+  {
     "title": "Aplique Exterior Solar 2 Piezas",
     "platform": "homeliving",
     "category": "Iluminación",
@@ -1448,4 +1448,4 @@
       "https://picsum.photos/seed/auloava-iluminación-69-d/600/600"
     ]
   }
-}
+]
