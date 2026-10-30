@@ -10,7 +10,7 @@
     "commission": 2,
     "stock": 45,
     "image": "https://picsum.photos/seed/auloava-decoración-1-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/1",
+    "affiliateUrl": "https://auloava.com/product/1?tag=auloava-20",
     "rank": 1,
     "source": "auloava-home-living",
     "photos": [
@@ -31,7 +31,7 @@
     "commission": 4,
     "stock": 30,
     "image": "https://picsum.photos/seed/auloava-decoración-2-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/2",
+    "affiliateUrl": "https://auloava.com/product/2?tag=auloava-20",
     "rank": 2,
     "source": "auloava-home-living",
     "photos": [
@@ -52,7 +52,7 @@
     "commission": 5,
     "stock": 20,
     "image": "https://picsum.photos/seed/auloava-decoración-3-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/3",
+    "affiliateUrl": "https://auloava.com/product/3?tag=auloava-20",
     "rank": 3,
     "source": "auloava-home-living",
     "photos": [
@@ -73,7 +73,7 @@
     "commission": 1,
     "stock": 200,
     "image": "https://picsum.photos/seed/auloava-decoración-4-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/4",
+    "affiliateUrl": "https://auloava.com/product/4?tag=auloava-20",
     "rank": 4,
     "source": "auloava-home-living",
     "photos": [
@@ -94,7 +94,7 @@
     "commission": 2,
     "stock": 60,
     "image": "https://picsum.photos/seed/auloava-decoración-5-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/5",
+    "affiliateUrl": "https://auloava.com/product/5?tag=auloava-20",
     "rank": 5,
     "source": "auloava-home-living",
     "photos": [
@@ -115,7 +115,7 @@
     "commission": 3,
     "stock": 15,
     "image": "https://picsum.photos/seed/auloava-decoración-6-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/6",
+    "affiliateUrl": "https://auloava.com/product/6?tag=auloava-20",
     "rank": 6,
     "source": "auloava-home-living",
     "photos": [
@@ -136,7 +136,7 @@
     "commission": 1,
     "stock": 100,
     "image": "https://picsum.photos/seed/auloava-decoración-7-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/7",
+    "affiliateUrl": "https://auloava.com/product/7?tag=auloava-20",
     "rank": 7,
     "source": "auloava-home-living",
     "photos": [
@@ -157,7 +157,7 @@
     "commission": 4,
     "stock": 10,
     "image": "https://picsum.photos/seed/auloava-decoración-8-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/8",
+    "affiliateUrl": "https://auloava.com/product/8?tag=auloava-20",
     "rank": 8,
     "source": "auloava-home-living",
     "photos": [
@@ -178,7 +178,7 @@
     "commission": 2,
     "stock": 50,
     "image": "https://picsum.photos/seed/auloava-decoración-9-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/9",
+    "affiliateUrl": "https://auloava.com/product/9?tag=auloava-20",
     "rank": 9,
     "source": "auloava-home-living",
     "photos": [
@@ -199,7 +199,7 @@
     "commission": 2,
     "stock": 80,
     "image": "https://picsum.photos/seed/auloava-decoración-10-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/10",
+    "affiliateUrl": "https://auloava.com/product/10?tag=auloava-20",
     "rank": 10,
     "source": "auloava-home-living",
     "photos": [
@@ -220,7 +220,7 @@
     "commission": 3,
     "stock": 25,
     "image": "https://picsum.photos/seed/auloava-decoración-11-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/11",
+    "affiliateUrl": "https://auloava.com/product/11?tag=auloava-20",
     "rank": 11,
     "source": "auloava-home-living",
     "photos": [
@@ -241,7 +241,7 @@
     "commission": 2,
     "stock": 20,
     "image": "https://picsum.photos/seed/auloava-decoración-12-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/12",
+    "affiliateUrl": "https://auloava.com/product/12?tag=auloava-20",
     "rank": 12,
     "source": "auloava-home-living",
     "photos": [
@@ -262,7 +262,7 @@
     "commission": 10,
     "stock": 12,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-13-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/13",
+    "affiliateUrl": "https://auloava.com/product/13?tag=auloava-20",
     "rank": 13,
     "source": "auloava-home-living",
     "photos": [
@@ -283,7 +283,7 @@
     "commission": 4,
     "stock": 30,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-14-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/14",
+    "affiliateUrl": "https://auloava.com/product/14?tag=auloava-20",
     "rank": 14,
     "source": "auloava-home-living",
     "photos": [
@@ -304,7 +304,7 @@
     "commission": 3,
     "stock": 60,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-15-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/15",
+    "affiliateUrl": "https://auloava.com/product/15?tag=auloava-20",
     "rank": 15,
     "source": "auloava-home-living",
     "photos": [
@@ -325,7 +325,7 @@
     "commission": 16,
     "stock": 8,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-16-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/16",
+    "affiliateUrl": "https://auloava.com/product/16?tag=auloava-20",
     "rank": 16,
     "source": "auloava-home-living",
     "photos": [
@@ -346,7 +346,7 @@
     "commission": 7,
     "stock": 15,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-17-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/17",
+    "affiliateUrl": "https://auloava.com/product/17?tag=auloava-20",
     "rank": 17,
     "source": "auloava-home-living",
     "photos": [
@@ -367,7 +367,7 @@
     "commission": 4,
     "stock": 25,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-18-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/18",
+    "affiliateUrl": "https://auloava.com/product/18?tag=auloava-20",
     "rank": 18,
     "source": "auloava-home-living",
     "photos": [
@@ -388,7 +388,7 @@
     "commission": 10,
     "stock": 10,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-19-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/19",
+    "affiliateUrl": "https://auloava.com/product/19?tag=auloava-20",
     "rank": 19,
     "source": "auloava-home-living",
     "photos": [
@@ -409,7 +409,7 @@
     "commission": 2,
     "stock": 45,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-20-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/20",
+    "affiliateUrl": "https://auloava.com/product/20?tag=auloava-20",
     "rank": 20,
     "source": "auloava-home-living",
     "photos": [
@@ -430,7 +430,7 @@
     "commission": 14,
     "stock": 6,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-21-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/21",
+    "affiliateUrl": "https://auloava.com/product/21?tag=auloava-20",
     "rank": 21,
     "source": "auloava-home-living",
     "photos": [
@@ -451,7 +451,7 @@
     "commission": 3,
     "stock": 35,
     "image": "https://picsum.photos/seed/auloava-tapetes-y-alfombras-22-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/22",
+    "affiliateUrl": "https://auloava.com/product/22?tag=auloava-20",
     "rank": 22,
     "source": "auloava-home-living",
     "photos": [
@@ -472,7 +472,7 @@
     "commission": 44,
     "stock": 5,
     "image": "https://picsum.photos/seed/auloava-mobiliario-23-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/23",
+    "affiliateUrl": "https://auloava.com/product/23?tag=auloava-20",
     "rank": 23,
     "source": "auloava-home-living",
     "photos": [
@@ -493,7 +493,7 @@
     "commission": 28,
     "stock": 8,
     "image": "https://picsum.photos/seed/auloava-mobiliario-24-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/24",
+    "affiliateUrl": "https://auloava.com/product/24?tag=auloava-20",
     "rank": 24,
     "source": "auloava-home-living",
     "photos": [
@@ -514,7 +514,7 @@
     "commission": 10,
     "stock": 10,
     "image": "https://picsum.photos/seed/auloava-mobiliario-25-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/25",
+    "affiliateUrl": "https://auloava.com/product/25?tag=auloava-20",
     "rank": 25,
     "source": "auloava-home-living",
     "photos": [
@@ -535,7 +535,7 @@
     "commission": 24,
     "stock": 4,
     "image": "https://picsum.photos/seed/auloava-mobiliario-26-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/26",
+    "affiliateUrl": "https://auloava.com/product/26?tag=auloava-20",
     "rank": 26,
     "source": "auloava-home-living",
     "photos": [
@@ -556,7 +556,7 @@
     "commission": 5,
     "stock": 15,
     "image": "https://picsum.photos/seed/auloava-mobiliario-27-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/27",
+    "affiliateUrl": "https://auloava.com/product/27?tag=auloava-20",
     "rank": 27,
     "source": "auloava-home-living",
     "photos": [
@@ -577,7 +577,7 @@
     "commission": 48,
     "stock": 3,
     "image": "https://picsum.photos/seed/auloava-mobiliario-28-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/28",
+    "affiliateUrl": "https://auloava.com/product/28?tag=auloava-20",
     "rank": 28,
     "source": "auloava-home-living",
     "photos": [
@@ -598,7 +598,7 @@
     "commission": 16,
     "stock": 7,
     "image": "https://picsum.photos/seed/auloava-mobiliario-29-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/29",
+    "affiliateUrl": "https://auloava.com/product/29?tag=auloava-20",
     "rank": 29,
     "source": "auloava-home-living",
     "photos": [
@@ -619,7 +619,7 @@
     "commission": 7,
     "stock": 12,
     "image": "https://picsum.photos/seed/auloava-mobiliario-30-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/30",
+    "affiliateUrl": "https://auloava.com/product/30?tag=auloava-20",
     "rank": 30,
     "source": "auloava-home-living",
     "photos": [
@@ -640,7 +640,7 @@
     "commission": 64,
     "stock": 2,
     "image": "https://picsum.photos/seed/auloava-mobiliario-31-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/31",
+    "affiliateUrl": "https://auloava.com/product/31?tag=auloava-20",
     "rank": 31,
     "source": "auloava-home-living",
     "photos": [
@@ -661,7 +661,7 @@
     "commission": 12,
     "stock": 6,
     "image": "https://picsum.photos/seed/auloava-mobiliario-32-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/32",
+    "affiliateUrl": "https://auloava.com/product/32?tag=auloava-20",
     "rank": 32,
     "source": "auloava-home-living",
     "photos": [
@@ -682,7 +682,7 @@
     "commission": 2,
     "stock": 50,
     "image": "https://picsum.photos/seed/auloava-organización-33-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/33",
+    "affiliateUrl": "https://auloava.com/product/33?tag=auloava-20",
     "rank": 33,
     "source": "auloava-home-living",
     "photos": [
@@ -703,7 +703,7 @@
     "commission": 2,
     "stock": 40,
     "image": "https://picsum.photos/seed/auloava-organización-34-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/34",
+    "affiliateUrl": "https://auloava.com/product/34?tag=auloava-20",
     "rank": 34,
     "source": "auloava-home-living",
     "photos": [
@@ -724,7 +724,7 @@
     "commission": 1,
     "stock": 100,
     "image": "https://picsum.photos/seed/auloava-organización-35-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/35",
+    "affiliateUrl": "https://auloava.com/product/35?tag=auloava-20",
     "rank": 35,
     "source": "auloava-home-living",
     "photos": [
@@ -745,7 +745,7 @@
     "commission": 3,
     "stock": 20,
     "image": "https://picsum.photos/seed/auloava-organización-36-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/36",
+    "affiliateUrl": "https://auloava.com/product/36?tag=auloava-20",
     "rank": 36,
     "source": "auloava-home-living",
     "photos": [
@@ -766,7 +766,7 @@
     "commission": 3,
     "stock": 30,
     "image": "https://picsum.photos/seed/auloava-organización-37-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/37",
+    "affiliateUrl": "https://auloava.com/product/37?tag=auloava-20",
     "rank": 37,
     "source": "auloava-home-living",
     "photos": [
@@ -787,7 +787,7 @@
     "commission": 1,
     "stock": 80,
     "image": "https://picsum.photos/seed/auloava-organización-38-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/38",
+    "affiliateUrl": "https://auloava.com/product/38?tag=auloava-20",
     "rank": 38,
     "source": "auloava-home-living",
     "photos": [
@@ -808,7 +808,7 @@
     "commission": 6,
     "stock": 15,
     "image": "https://picsum.photos/seed/auloava-organización-39-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/39",
+    "affiliateUrl": "https://auloava.com/product/39?tag=auloava-20",
     "rank": 39,
     "source": "auloava-home-living",
     "photos": [
@@ -829,7 +829,7 @@
     "commission": 2,
     "stock": 25,
     "image": "https://picsum.photos/seed/auloava-organización-40-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/40",
+    "affiliateUrl": "https://auloava.com/product/40?tag=auloava-20",
     "rank": 40,
     "source": "auloava-home-living",
     "photos": [
@@ -850,7 +850,7 @@
     "commission": 1,
     "stock": 60,
     "image": "https://picsum.photos/seed/auloava-organización-41-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/41",
+    "affiliateUrl": "https://auloava.com/product/41?tag=auloava-20",
     "rank": 41,
     "source": "auloava-home-living",
     "photos": [
@@ -871,7 +871,7 @@
     "commission": 7,
     "stock": 10,
     "image": "https://picsum.photos/seed/auloava-organización-42-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/42",
+    "affiliateUrl": "https://auloava.com/product/42?tag=auloava-20",
     "rank": 42,
     "source": "auloava-home-living",
     "photos": [
@@ -892,7 +892,7 @@
     "commission": 3,
     "stock": 60,
     "image": "https://picsum.photos/seed/auloava-cocina-43-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/43",
+    "affiliateUrl": "https://auloava.com/product/43?tag=auloava-20",
     "rank": 43,
     "source": "auloava-home-living",
     "photos": [
@@ -913,7 +913,7 @@
     "commission": 4,
     "stock": 20,
     "image": "https://picsum.photos/seed/auloava-cocina-44-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/44",
+    "affiliateUrl": "https://auloava.com/product/44?tag=auloava-20",
     "rank": 44,
     "source": "auloava-home-living",
     "photos": [
@@ -934,7 +934,7 @@
     "commission": 2,
     "stock": 45,
     "image": "https://picsum.photos/seed/auloava-cocina-45-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/45",
+    "affiliateUrl": "https://auloava.com/product/45?tag=auloava-20",
     "rank": 45,
     "source": "auloava-home-living",
     "photos": [
@@ -955,7 +955,7 @@
     "commission": 5,
     "stock": 15,
     "image": "https://picsum.photos/seed/auloava-cocina-46-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/46",
+    "affiliateUrl": "https://auloava.com/product/46?tag=auloava-20",
     "rank": 46,
     "source": "auloava-home-living",
     "photos": [
@@ -976,7 +976,7 @@
     "commission": 2,
     "stock": 80,
     "image": "https://picsum.photos/seed/auloava-cocina-47-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/47",
+    "affiliateUrl": "https://auloava.com/product/47?tag=auloava-20",
     "rank": 47,
     "source": "auloava-home-living",
     "photos": [
@@ -997,7 +997,7 @@
     "commission": 1,
     "stock": 35,
     "image": "https://picsum.photos/seed/auloava-cocina-48-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/48",
+    "affiliateUrl": "https://auloava.com/product/48?tag=auloava-20",
     "rank": 48,
     "source": "auloava-home-living",
     "photos": [
@@ -1018,7 +1018,7 @@
     "commission": 3,
     "stock": 25,
     "image": "https://picsum.photos/seed/auloava-cocina-49-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/49",
+    "affiliateUrl": "https://auloava.com/product/49?tag=auloava-20",
     "rank": 49,
     "source": "auloava-home-living",
     "photos": [
@@ -1039,7 +1039,7 @@
     "commission": 1,
     "stock": 70,
     "image": "https://picsum.photos/seed/auloava-cocina-50-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/50",
+    "affiliateUrl": "https://auloava.com/product/50?tag=auloava-20",
     "rank": 50,
     "source": "auloava-home-living",
     "photos": [
@@ -1060,7 +1060,7 @@
     "commission": 5,
     "stock": 18,
     "image": "https://picsum.photos/seed/auloava-cocina-51-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/51",
+    "affiliateUrl": "https://auloava.com/product/51?tag=auloava-20",
     "rank": 51,
     "source": "auloava-home-living",
     "photos": [
@@ -1081,7 +1081,7 @@
     "commission": 6,
     "stock": 40,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-52-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/52",
+    "affiliateUrl": "https://auloava.com/product/52?tag=auloava-20",
     "rank": 52,
     "source": "auloava-home-living",
     "photos": [
@@ -1102,7 +1102,7 @@
     "commission": 7,
     "stock": 15,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-53-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/53",
+    "affiliateUrl": "https://auloava.com/product/53?tag=auloava-20",
     "rank": 53,
     "source": "auloava-home-living",
     "photos": [
@@ -1123,7 +1123,7 @@
     "commission": 4,
     "stock": 25,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-54-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/54",
+    "affiliateUrl": "https://auloava.com/product/54?tag=auloava-20",
     "rank": 54,
     "source": "auloava-home-living",
     "photos": [
@@ -1144,7 +1144,7 @@
     "commission": 2,
     "stock": 50,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-55-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/55",
+    "affiliateUrl": "https://auloava.com/product/55?tag=auloava-20",
     "rank": 55,
     "source": "auloava-home-living",
     "photos": [
@@ -1165,7 +1165,7 @@
     "commission": 2,
     "stock": 30,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-56-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/56",
+    "affiliateUrl": "https://auloava.com/product/56?tag=auloava-20",
     "rank": 56,
     "source": "auloava-home-living",
     "photos": [
@@ -1186,7 +1186,7 @@
     "commission": 5,
     "stock": 12,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-57-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/57",
+    "affiliateUrl": "https://auloava.com/product/57?tag=auloava-20",
     "rank": 57,
     "source": "auloava-home-living",
     "photos": [
@@ -1207,7 +1207,7 @@
     "commission": 2,
     "stock": 40,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-58-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/58",
+    "affiliateUrl": "https://auloava.com/product/58?tag=auloava-20",
     "rank": 58,
     "source": "auloava-home-living",
     "photos": [
@@ -1228,7 +1228,7 @@
     "commission": 3,
     "stock": 30,
     "image": "https://picsum.photos/seed/auloava-textiles-del-hogar-59-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/59",
+    "affiliateUrl": "https://auloava.com/product/59?tag=auloava-20",
     "rank": 59,
     "source": "auloava-home-living",
     "photos": [
@@ -1249,7 +1249,7 @@
     "commission": 7,
     "stock": 10,
     "image": "https://picsum.photos/seed/auloava-iluminación-60-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/60",
+    "affiliateUrl": "https://auloava.com/product/60?tag=auloava-20",
     "rank": 60,
     "source": "auloava-home-living",
     "photos": [
@@ -1270,7 +1270,7 @@
     "commission": 2,
     "stock": 25,
     "image": "https://picsum.photos/seed/auloava-iluminación-61-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/61",
+    "affiliateUrl": "https://auloava.com/product/61?tag=auloava-20",
     "rank": 61,
     "source": "auloava-home-living",
     "photos": [
@@ -1291,7 +1291,7 @@
     "commission": 12,
     "stock": 6,
     "image": "https://picsum.photos/seed/auloava-iluminación-62-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/62",
+    "affiliateUrl": "https://auloava.com/product/62?tag=auloava-20",
     "rank": 62,
     "source": "auloava-home-living",
     "photos": [
@@ -1312,7 +1312,7 @@
     "commission": 10,
     "stock": 8,
     "image": "https://picsum.photos/seed/auloava-iluminación-63-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/63",
+    "affiliateUrl": "https://auloava.com/product/63?tag=auloava-20",
     "rank": 63,
     "source": "auloava-home-living",
     "photos": [
@@ -1333,7 +1333,7 @@
     "commission": 1,
     "stock": 60,
     "image": "https://picsum.photos/seed/auloava-iluminación-64-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/64",
+    "affiliateUrl": "https://auloava.com/product/64?tag=auloava-20",
     "rank": 64,
     "source": "auloava-home-living",
     "photos": [
@@ -1354,7 +1354,7 @@
     "commission": 16,
     "stock": 4,
     "image": "https://picsum.photos/seed/auloava-iluminación-65-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/65",
+    "affiliateUrl": "https://auloava.com/product/65?tag=auloava-20",
     "rank": 65,
     "source": "auloava-home-living",
     "photos": [
@@ -1375,7 +1375,7 @@
     "commission": 2,
     "stock": 20,
     "image": "https://picsum.photos/seed/auloava-iluminación-66-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/66",
+    "affiliateUrl": "https://auloava.com/product/66?tag=auloava-20",
     "rank": 66,
     "source": "auloava-home-living",
     "photos": [
@@ -1396,7 +1396,7 @@
     "commission": 3,
     "stock": 15,
     "image": "https://picsum.photos/seed/auloava-iluminación-67-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/67",
+    "affiliateUrl": "https://auloava.com/product/67?tag=auloava-20",
     "rank": 67,
     "source": "auloava-home-living",
     "photos": [
@@ -1417,7 +1417,7 @@
     "commission": 4,
     "stock": 12,
     "image": "https://picsum.photos/seed/auloava-iluminación-68-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/68",
+    "affiliateUrl": "https://auloava.com/product/68?tag=auloava-20",
     "rank": 68,
     "source": "auloava-home-living",
     "photos": [
@@ -1438,7 +1438,7 @@
     "commission": 3,
     "stock": 18,
     "image": "https://picsum.photos/seed/auloava-iluminación-69-a/600/600",
-    "affiliateUrl": "https://auloava.com/product/69",
+    "affiliateUrl": "https://auloava.com/product/69?tag=auloava-20",
     "rank": 69,
     "source": "auloava-home-living",
     "photos": [
