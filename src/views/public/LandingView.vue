@@ -266,7 +266,7 @@ onMounted(async () => {
         <div class="container hero__center" v-reveal>
           <span class="hero__eyebrow">
             <span class="hero__pulse" />
-            <img class="hero__plat-logo" :src="logoFor('auloava')" alt="Auloava" />
+            <img class="hero__plat-logo" src="/images/logo_solid.png" alt="Auloava" width="28" height="28" />
             <span class="hero__eyebrow-text">Home & Living · Productos curados para tu hogar</span>
           </span>
 
