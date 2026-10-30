@@ -1,42 +1,30 @@
 // ============================================================
-// AULOAVA · Constantes globales
+// AULOAVA · Constantes globales · Nicho Home & Living
 // ============================================================
 
-/** Marketplaces afiliados */
+/** Plataforma de marca */
 export const PLATFORMS = {
-  aliexpress: {
-    id: 'aliexpress',
-    name: 'AliExpress',
-    color: '#E6422A',
-    logo: 'images/platforms/aliexpress.svg',
-    tagline: 'Ofertas globales',
-  },
-  amazon: {
-    id: 'amazon',
-    name: 'Amazon',
-    color: '#146EB4',
-    logo: 'images/platforms/amazon.svg',
-    tagline: 'Envío rápido',
-  },
-  alibaba: {
-    id: 'alibaba',
-    name: 'Alibaba',
-    color: '#FF6A00',
-    logo: 'images/platforms/alibaba.svg',
-    tagline: 'Mayorista B2B',
+  auloava: {
+    id: 'auloava',
+    name: 'Auloava',
+    color: '#C5A880',
+    logo: 'images/platforms/logo_solid.png',
+    tagline: 'Todo lo que hace de una casa un hogar',
   },
 }
 
-/** Lista ordenada de marketplaces (para filtros y tarjetas) */
+/** Lista ordenada de plataformas */
 export const PLATFORM_LIST = Object.values(PLATFORMS)
 
-/** Categorías de productos · Nicho Auloava: hallazgos asequibles (tech, hogar, cocina, belleza, oficina) */
+/** Categorías del nicho Home & Living */
 export const CATEGORIES = [
-  'Tecnología',
-  'Hogar',
+  'Decoración',
+  'Tapetes y alfombras',
+  'Mobiliario',
+  'Organización',
   'Cocina',
-  'Belleza',
-  'Oficina',
+  'Textiles del hogar',
+  'Iluminación',
 ]
 
 /** Moneda por defecto */
