@@ -19,12 +19,24 @@ scripts/posts-drafts.md
 .env.*.local
 *.local
 
-# Credenciales de administrador (no subir al repo)
+# Credenciales y secretos (NUNCA subir al repo)
 admin-credentials.txt
+*.credentials
+*.secret
+*.key
+*.pem
+serviceAccount.json
+scripts/serviceAccount.json
 
-# Logs
+# Logs (locales y build)
 logs
 *.log
+build.log
+cic.log
+cic2.log
+inst.log
+vite-dev.log
+dist
 npm-debug.log*
 
 # Editor
