@@ -43,9 +43,10 @@ function saveProducts(items) {
 
 /* ---------- Datos semilla ---------- */
 
-/** Productos reales: Best Sellers de Amazon (6 categorías) extraídos 2026-09-23. */
+/** Productos semilla: usa los datos locales si son array, si no, array vacío. */
 function seedProducts() {
-  return bestsellerProducts.map((p, i) => ({
+  const products = Array.isArray(bestsellerProducts) ? bestsellerProducts : [];
+  return products.map((p, i) => ({
     id: ids.next(),
     clicks: 0,
     createdAt: new Date(Date.now() - i * 86400000).toISOString(),
