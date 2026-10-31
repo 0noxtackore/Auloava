@@ -14,20 +14,20 @@ const updated = '20 de agosto de 2026'
       <section class="legal__section">
         <h2>1. Responsable</h2>
         <p>
-          Auloava (en adelante, "el Sitio") es una tienda de enlaces de afiliado.
-          Puedes contactarnos a través de los canales indicados al final de este
-          documento.
+          Auloava (en adelante, "el Sitio") es una tienda online especializada
+          en Home &amp; Living: decoración, mobiliario, textiles, iluminación y
+          organización del hogar. Puedes contactarnos a través de los canales
+          indicados al final de este documento.
         </p>
       </section>
 
       <section class="legal__section">
-        <h2>2. Enlaces de afiliado</h2>
+        <h2>2. Enlaces y compras</h2>
         <p>
-          El Sitio participa en programas de afiliados de terceros, incluyendo
-          Amazon, AliExpress y Alibaba. Como afiliado, podemos recibir una
-          comisión por las compras realizadas a través de los enlaces de este
-          Sitio, sin coste adicional para ti. Los enlaces de Amazon incluyen
-          nuestro identificador de afiliado (<code>tag=auloava-20</code>).
+          Algunos enlaces del Sitio pueden dirigir a tiendas de terceros.
+          Auloava puede recibir una comisión por las compras realizadas a través
+          de ellos, sin coste adicional para ti. Los enlaces incluyen nuestro
+          identificador (<code>tag=auloava-20</code>).
         </p>
       </section>
 

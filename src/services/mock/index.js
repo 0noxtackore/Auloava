@@ -130,28 +130,22 @@ const productHandlers = {
 
 export const landingData = {
   stats: [
-    { label: 'Productos curados', value: String(bestsellerProducts.length) },
+    { label: 'Productos curados', value: String(Array.isArray(bestsellerProducts) ? bestsellerProducts.length : 0) },
     { label: 'Marca', value: 'Auloava' },
     { label: 'Nicho', value: 'Home & Living' },
-    { label: 'Ahorro medio', value: 'Hasta 40%' },
+    { label: 'Selección', value: 'A mano' },
   ],
   platforms: PLATFORM_LIST,
   categories: CATEGORIES,
   steps: [
-    { title: 'Explora', text: 'Navega por productos curados de Home & Living para cada rincón de tu hogar.' },
-    { title: 'Elige', text: 'Selecciona artículos de decoración, mobiliario, cocina, iluminación y más.' },
-    { title: 'Transforma', text: 'Mejora tu espacio con productos verificados y de calidad.' },
-    { title: 'Ahorra', text: 'Aprovecha precios claros y sin comisiones ocultas.' },
-    { title: 'Recibe alertas', text: 'Te avisamos cuando un producto baja de precio.' },
-    { title: 'Comparte', text: 'Envía tu producto favorito a amigos o redes con un clic.' },
+    { title: 'Explora', text: 'Recorre la colección por ambiente y descubre piezas pensadas para dar carácter a tu hogar.' },
+    { title: 'Selecciona', text: 'Guarda tus favoritas y compara con calma. Cada producto está descrito con honestidad.' },
+    { title: 'Transforma', text: 'Recibe tu pieza y dale a tu casa ese detalle que lo cambia todo. Así de simple.' },
   ],
   testimonials: [
-    { name: 'Lucía Fernández', role: 'Compradora frecuente', text: 'He ahorrado un 35% en mi última compra. La comparativa es clarísima.', avatar: 'https://i.pravatar.cc/96?img=47' },
-    { name: 'Elena Ruiz', role: 'Compradora exigente', text: 'Encontré la misma cámara 40€ más barata en otro marketplace. La comparativa es increíble.', avatar: 'https://randomuser.me/api/portraits/women/68.jpg' },
-    { name: 'Sofía Navarro', role: 'Community manager', text: 'Diseño impecable y ofertas reales de AliExpress. Lo recomiendo al 100%.', avatar: 'https://i.pravatar.cc/96?img=32' },
-    { name: 'Hugo Moreno', role: 'Comprador tech', text: 'Comparar los 3 marketplaces en una sola vista me ahorra un montón de tiempo. Top.', avatar: 'https://randomuser.me/api/portraits/men/52.jpg' },
-    { name: 'Daniel Castro', role: 'Padre y comprador', text: 'Compro juguetes y electrónica para la familia y siempre encuentro el mejor precio aquí.', avatar: 'https://randomuser.me/api/portraits/men/76.jpg' },
-    { name: 'Pablo Serra', role: 'Estudiante', text: 'De alumno, cualquier euro cuenta. La comparativa de comisiones me ha salvado más de una vez.', avatar: 'https://randomuser.me/api/portraits/men/14.jpg' },
+    { name: 'Lucía Fernández', role: 'Piso reformado en Madrid', text: 'Encontré la lámpara del salón y los cojines del sofá en la misma tarde. Todo encaja y se siente muy cuidado.', avatar: 'https://i.pravatar.cc/96?img=47' },
+    { name: 'Elena Ruiz', role: 'Casa de campo', text: 'Me encanta que esté organizado por ambientes. Es como tener a alguien con buen gusto filtrando por mí.', avatar: 'https://randomuser.me/api/portraits/women/68.jpg' },
+    { name: 'Hugo Moreno', role: 'Primer alquiler', text: 'Monté el dormitorio entero sin volverme loco. Piezas bonitas, precios claros y sin letra pequeña.', avatar: 'https://randomuser.me/api/portraits/men/52.jpg' },
   ],
 }
 

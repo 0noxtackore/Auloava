@@ -71,7 +71,7 @@ onMounted(() => {
       <div>
         <h1 class="products__title">Explorar</h1>
         <p class="products__subtitle">
-          {{ store.filteredProducts.length }} de {{ store.totalProducts }} productos afiliados
+          {{ store.filteredProducts.length }} de {{ store.totalProducts }} productos
         </p>
       </div>
       <BaseButton @click="goCreate">

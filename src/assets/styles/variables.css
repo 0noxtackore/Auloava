@@ -1,26 +1,40 @@
 /* ============================================================
    AULOAVA · Variables de diseño · Home & Living
-   Paleta cálida: beige, crema, marrón suave, blanco natural.
+   Paleta editorial: verde bosque + blanco + crema.
    ============================================================ */
 :root {
-  /* Escala cálida (marca Home & Living) */
-  --warm-900: #3e2b1f;
-  --warm-800: #5a3f2e;
-  --warm-700: #7a5d45; /* hover */
-  --warm-600: #9a724d; /* color principal */
-  --warm-500: #b58b6a;
-  --warm-400: #cfa683;
-  --warm-300: #dbc2a5;
-  --warm-200: #e8d8bc;
-  --warm-100: #f0e9dc; /* tint cálido */
-  --warm-50:  #f8f4ec;  /* tint suave */
+  /* Escala verde (color de marca) */
+  --green-900: #0c2418;
+  --green-800: #113a25;
+  --green-700: #16512f;
+  --green-600: #1d6b3f; /* color principal */
+  --green-500: #2e8a57;
+  --green-400: #57ab78;
+  --green-300: #8ecfa8;
+  --green-200: #c4e8d3;
+  --green-100: #e6f4ec; /* tint verde claro */
+  --green-50: #f3faf6;  /* tint verde suave */
 
   /* Blancos y neutros */
-  --white: #f7f3eb;
-  --off-white: #f6f3ee;
-  --ink: #2e2016;
-  --muted: #8a7864;
-  --line: #ece6d8;
+  --white: #ffffff;
+  --off-white: #f7f9f6;
+  --cream: #f3efe6;
+  --sand: #d9cbb3;
+  --ink: #12251a;
+  --muted: #5c6f63;
+  --line: #e2ece5;
+
+  /* Alias cálidos (compatibilidad con estilos existentes) */
+  --warm-900: var(--green-900);
+  --warm-800: var(--green-800);
+  --warm-700: var(--green-700);
+  --warm-600: var(--green-600);
+  --warm-500: var(--green-500);
+  --warm-400: var(--green-400);
+  --warm-300: var(--green-300);
+  --warm-200: var(--green-200);
+  --warm-100: var(--green-100);
+  --warm-50: var(--green-50);
 
   /* Colores de estado */
   --danger: #b03a2e;
@@ -35,14 +49,14 @@
   --radius-lg: 24px;
   --radius-full: 999px;
 
-  /* Sombras (sutiles, estilo cálido) */
-  --shadow-sm: 0 1px 2px rgba(62, 43, 31, 0.06);
-  --shadow: 0 4px 12px rgba(62, 43, 31, 0.08);
-  --shadow-lg: 0 16px 40px rgba(62, 43, 31, 0.14);
+  /* Sombras (sutiles, con tinte verde) */
+  --shadow-sm: 0 1px 2px rgba(12, 36, 24, 0.06);
+  --shadow: 0 6px 18px rgba(12, 36, 24, 0.08);
+  --shadow-lg: 0 22px 50px rgba(12, 36, 24, 0.16);
 
   /* Tipografías */
   --font-sans: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
-  --font-display: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
 
   /* Transiciones */
   --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);

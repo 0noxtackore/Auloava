@@ -79,25 +79,25 @@ function goAfterOnboarding() {
 
       <div class="login__brand-inner">
         <img class="login__logo" src="/images/logo-white.png" alt="Auloava" />
-        <h1 class="login__claim">Tu tienda de afiliados,<br />en un solo lugar.</h1>
-        <p class="login__lead">Explora el catálogo curado de AliExpress, Amazon y Alibaba en un solo sitio.</p>
+        <h1 class="login__claim">Todo lo que hace de una casa<br />un hogar.</h1>
+        <p class="login__lead">Descubre la colección curada de Home &amp; Living: decoración, mobiliario, textiles, iluminación y más.</p>
 
         <ul class="login__features">
           <li>
             <span class="login__check" />
-            Compara precios, valoraciones y comisiones
+            Piezas seleccionadas por ambiente
           </li>
           <li>
             <span class="login__check" />
-            Catálogo curado y verificado
+            Colección curada y verificada
           </li>
           <li>
             <span class="login__check" />
-            Publicación automática en GitHub Pages
+            Precios claros, sin letra pequeña
           </li>
         </ul>
 
-        <p class="login__sign">Auloava · Affiliate Store</p>
+        <p class="login__sign">Auloava · Home &amp; Living</p>
       </div>
     </aside>
 

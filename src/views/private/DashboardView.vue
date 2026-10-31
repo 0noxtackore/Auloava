@@ -64,7 +64,7 @@ onMounted(() => {
     <header class="dash__head">
       <div>
         <h1 class="dash__title">Dashboard 👋</h1>
-        <p class="dash__subtitle">Resumen del catálogo de afiliados.</p>
+        <p class="dash__subtitle">Resumen de la colección Home &amp; Living.</p>
       </div>
       <BaseButton @click="router.push({ name: 'product-create' })">
         + Nuevo producto

@@ -134,7 +134,7 @@ function suggestBoards(p) {
   if (/bebé|baby|niño|kid|juguete|toy|infant/.test(hay)) {
     add('Para bebés', 'Juguetes')
   }
-  if (boards.size === 0) add('Compras y afiliados', 'Productos recomendados', 'Belleza')
+  if (boards.size === 0) add('Compras y hogar', 'Productos recomendados', 'Belleza')
 
   return [...boards].slice(0, 5)
 }

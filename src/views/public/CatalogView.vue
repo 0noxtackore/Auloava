@@ -149,8 +149,9 @@ const products = computed(() => {
         <span class="catalog-gate__icon">🔒</span>
         <h1 class="catalog-gate__title">El catálogo solo para ti</h1>
         <p class="catalog-gate__lead">
-          Entra con tu cuenta para explorar todas las ofertas comparadas en
-          AliExpress, Amazon y Alibaba, en un solo lugar y en orden aleatorio.
+          Entra con tu cuenta para explorar la colección completa de Home &amp;
+          Living: decoración, mobiliario, textiles e iluminación, en un solo
+          lugar y en orden aleatorio.
         </p>
         <div class="catalog-gate__actions">
           <button type="button" class="catalog-gate__btn" @click="goLogin">
@@ -181,7 +182,7 @@ const products = computed(() => {
           <input
             v-model="query"
             type="search"
-            placeholder="Busca ofertas en AliExpress, Amazon y Alibaba…"
+            placeholder="Busca en la colección: lámparas, tapetes, sillas…"
             aria-label="Buscar ofertas"
           />
         </form>

@@ -1,8 +1,12 @@
 <script setup>
 // ============================================================
 // TheFooter · Pie de página global (logo, redes y navegación)
+// Home & Living · Auloava
 // ============================================================
+import { CATEGORIES } from '@/constants'
+
 const base = import.meta.env.BASE_URL
+const footerCategories = CATEGORIES.slice(0, 4)
 </script>
 
 <template>
@@ -13,8 +17,8 @@ const base = import.meta.env.BASE_URL
           <img class="topbar__logo-img" :src="`${base}images/logo-white.png`" alt="Auloava" />
         </RouterLink>
         <p>
-          Enlaces de afiliado: al comprar a través de Auloava podemos recibir
-          una comisión sin coste extra para ti.
+          Auloava · Home &amp; Living. Piezas seleccionadas para transformar tu
+          casa en un hogar: decoración, mobiliario, textiles, iluminación y más.
         </p>
         <div class="footer__social">
           <a href="https://pin.it/mqicV1j3f" target="_blank" rel="noopener" aria-label="Pinterest"><img :src="`${base}images/social/pinterest.svg`" alt="Pinterest" /></a>
@@ -23,11 +27,11 @@ const base = import.meta.env.BASE_URL
       </div>
 
       <div class="footer__col">
-        <h4>Marketplaces</h4>
+        <h4>Categorías</h4>
         <ul>
-          <li><RouterLink :to="{ name: 'landing', hash: '#marketplaces' }">AliExpress</RouterLink></li>
-          <li><RouterLink :to="{ name: 'landing', hash: '#marketplaces' }">Amazon</RouterLink></li>
-          <li><RouterLink :to="{ name: 'landing', hash: '#marketplaces' }">Alibaba</RouterLink></li>
+          <li v-for="category in footerCategories" :key="category">
+            <RouterLink :to="{ name: 'catalog', query: { category } }">{{ category }}</RouterLink>
+          </li>
         </ul>
       </div>
 
@@ -45,7 +49,7 @@ const base = import.meta.env.BASE_URL
         <ul>
           <li><RouterLink :to="{ name: 'landing', hash: '#about' }">Quiénes somos</RouterLink></li>
           <li><RouterLink :to="{ name: 'landing', hash: '#how' }">Cómo funciona</RouterLink></li>
-          <li><RouterLink :to="{ name: 'landing', hash: '#press' }">Prensa</RouterLink></li>
+          <li><RouterLink :to="{ name: 'landing', hash: '#press' }">Opiniones</RouterLink></li>
           <li><RouterLink :to="{ name: 'privacy' }">Política de privacidad</RouterLink></li>
         </ul>
       </div>
@@ -53,7 +57,7 @@ const base = import.meta.env.BASE_URL
 
     <div class="container footer__bottom">
       <span>© {{ new Date().getFullYear() }} Auloava. Todos los derechos reservados.</span>
-      <span>Hecho con 💚 para compradores inteligentes</span>
+      <span>Hecho con 💚 para hogares con carácter</span>
     </div>
   </footer>
 </template>
@@ -80,7 +84,7 @@ const base = import.meta.env.BASE_URL
   margin-top: 14px;
   font-size: 0.88rem;
   line-height: 1.65;
-  max-width: 300px;
+  max-width: 320px;
   color: var(--green-300);
 }
 

@@ -35,10 +35,10 @@ const brand = computed(() =>
         logo: '/images/logo.png',
         cardLogo: '/images/logo-white.png',
         claim: 'Tu panel de<br />administración.',
-        lead: 'Gestiona el catálogo curado de AliExpress, Amazon y Alibaba en un solo lugar.',
+        lead: 'Gestiona la colección Home & Living de Auloava en un solo lugar.',
         features: [
-          'Añade y edita productos del catálogo',
-          'Controla precios, valoraciones y comisiones',
+          'Añade y edita productos de la colección',
+          'Controla precios, categorías y disponibilidad',
           'Publicación automática en GitHub Pages',
         ],
         sign: 'Auloava · Admin',
@@ -46,14 +46,14 @@ const brand = computed(() =>
     : {
         logo: '/images/logo-white.png',
         cardLogo: '/images/logo.png',
-        claim: 'Tu tienda de afiliados,<br />en un solo lugar.',
-        lead: 'Explora el catálogo curado de AliExpress, Amazon y Alibaba en un solo sitio.',
+        claim: 'Todo lo que hace de una casa<br />un hogar.',
+        lead: 'Explora la colección curada de Home & Living en un solo sitio.',
         features: [
-          'Compara precios, valoraciones y comisiones',
-          'Catálogo curado y verificado',
-          'Publicación automática en GitHub Pages',
+          'Piezas seleccionadas por ambiente',
+          'Colección curada y verificada',
+          'Precios claros, sin letra pequeña',
         ],
-        sign: 'Auloava · Affiliate Store',
+        sign: 'Auloava · Home & Living',
       },
 )
 

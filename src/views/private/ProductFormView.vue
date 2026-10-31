@@ -210,7 +210,7 @@ onMounted(async () => {
       <div>
         <h1 class="pform__title">{{ isEdit ? 'Editar producto' : 'Nuevo producto' }}</h1>
         <p class="pform__subtitle">
-          {{ isEdit ? 'Actualiza los datos de tu producto afiliado.' : 'Añade un nuevo producto a tu catálogo.' }}
+          {{ isEdit ? 'Actualiza los datos de tu producto.' : 'Añade un nuevo producto a la colección.' }}
         </p>
       </div>
       <BaseButton variant="ghost" @click="router.push({ name: 'products' })">
@@ -230,7 +230,7 @@ onMounted(async () => {
       <section class="pform__section">
         <h2>¿Tienes el enlace del producto?</h2>
         <p class="pform__hint">
-          Pega el enlace de Amazon, AliExpress o Alibaba y se rellena solo.
+          Pega el enlace del producto y se rellena solo.
         </p>
         <div class="pform__grid">
           <BaseInput
@@ -345,7 +345,7 @@ onMounted(async () => {
         <div class="pform__grid">
           <BaseInput
             v-model="form.affiliateUrl"
-            label="URL de afiliado"
+            label="URL del producto"
             name="affiliateUrl"
             placeholder="https://..."
             :error="errors.affiliateUrl"
