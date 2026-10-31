@@ -71,24 +71,24 @@ h4 {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--green-50);
+  background: var(--warm-50);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--green-300);
+  background: var(--warm-300);
   border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--green-400);
+  background: var(--warm-400);
 }
 
 /* Foco accesible */
 :focus-visible {
-  outline: 3px solid var(--green-300);
+  outline: 3px solid var(--warm-300);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: var(--green-600);
+  background: var(--warm-600);
   color: var(--white);
 }
 
@@ -118,7 +118,7 @@ h4 {
 }
 
 .gradient-text {
-  background: linear-gradient(120deg, var(--green-600), var(--green-400));
+  background: linear-gradient(120deg, var(--warm-600), var(--warm-400));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -172,7 +172,7 @@ h4 {
 .skeleton {
   position: relative;
   overflow: hidden;
-  background: var(--green-100);
+  background: var(--warm-100);
   border-radius: var(--radius);
 }
 .skeleton::after {

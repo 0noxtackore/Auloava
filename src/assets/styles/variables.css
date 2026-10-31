@@ -1,34 +1,33 @@
 /* ============================================================
-   AULOAVA · Variables de diseño
-   Estilo layout tipo Pinterest (masonry, píldoras, minimalista)
-   con paleta verde opaco + blanco.
+   AULOAVA · Variables de diseño · Home & Living
+   Paleta cálida: beige, crema, marrón suave, blanco natural.
    ============================================================ */
 :root {
-  /* Escala de verdes opacos (color de marca) */
-  --green-900: #10231a;
-  --green-800: #173324;
-  --green-700: #1f4431; /* hover */
-  --green-600: #2f6b4f; /* color principal */
-  --green-500: #3d8a63;
-  --green-400: #5baa7e;
-  --green-300: #8cc7a6;
-  --green-200: #c2e0cf;
-  --green-100: #e4f2e9; /* tint verde claro */
-  --green-50: #f3f9f5;  /* tint verde suave */
+  /* Escala cálida (marca Home & Living) */
+  --warm-900: #3e2b1f;
+  --warm-800: #5a3f2e;
+  --warm-700: #7a5d45; /* hover */
+  --warm-600: #9a724d; /* color principal */
+  --warm-500: #b58b6a;
+  --warm-400: #cfa683;
+  --warm-300: #dbc2a5;
+  --warm-200: #e8d8bc;
+  --warm-100: #f0e9dc; /* tint cálido */
+  --warm-50:  #faf7f2;  /* tint suave */
 
   /* Blancos y neutros */
-  --white: #ffffff;
-  --off-white: #f6f9f7;
-  --ink: #13241b;
-  --muted: #5d6f65;
-  --line: #e2ede5;
+  --white: #fdfcfb;
+  --off-white: #f6f3ee;
+  --ink: #2e2016;
+  --muted: #8a7864;
+  --line: #ece6d8;
 
   /* Colores de estado */
-  --danger: #c0392b;
-  --danger-soft: #fbeae7;
-  --warning: #b9770e;
-  --warning-soft: #fdf3e0;
-  --info: #1a6fb4;
+  --danger: #b03a2e;
+  --danger-soft: #f9e8e4;
+  --warning: #c4921a;
+  --warning-soft: #f9f0dc;
+  --info: #4a7a9a;
 
   /* Radios (píldoras y esquinas suaves) */
   --radius-sm: 10px;
@@ -36,12 +35,12 @@
   --radius-lg: 24px;
   --radius-full: 999px;
 
-  /* Sombras (sutiles, estilo Pinterest) */
-  --shadow-sm: 0 1px 2px rgba(16, 35, 26, 0.06);
-  --shadow: 0 4px 12px rgba(16, 35, 26, 0.08);
-  --shadow-lg: 0 16px 40px rgba(16, 35, 26, 0.14);
+  /* Sombras (sutiles, estilo cálido) */
+  --shadow-sm: 0 1px 2px rgba(62, 43, 31, 0.06);
+  --shadow: 0 4px 12px rgba(62, 43, 31, 0.08);
+  --shadow-lg: 0 16px 40px rgba(62, 43, 31, 0.14);
 
-  /* Tipografías (una sola familia, limpia) */
+  /* Tipografías */
   --font-sans: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
   --font-display: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 
